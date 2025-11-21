@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{#
+  Page À propos
+
+  Cette page présente une description succincte de l'entreprise. Dans
+  une version complète du site, ce contenu pourra être alimenté par
+  un CMS ou une page statique personnalisée.
+#}
+
+{% block content %}
+<h1 class="text-2xl font-semibold mb-6">À propos de {{ COMPANY_NAME }}</h1>
+<p class="mb-4 text-gray-600">
+  {{ COMPANY_NAME }} est un grossiste spécialisé dans la distribution
+  de produits de qualité. Notre mission est de fournir à nos clients
+  professionnels un catalogue riche, des prix compétitifs et un service
+  irréprochable.
+</p>
+<p class="mb-4 text-gray-600">
+  Grâce à notre expertise et à notre réseau de partenaires, nous
+  sélectionnons rigoureusement chaque article afin de répondre aux
+  exigences du marché. Notre équipe passionnée met tout en œuvre pour
+  simplifier vos achats et vous accompagner dans votre croissance.
+</p>
+<p class="text-gray-600">
+  N'hésitez pas à nous contacter pour toute question ou demande
+  spécifique. Nous sommes à votre écoute !
+</p>
+{% endblock %}

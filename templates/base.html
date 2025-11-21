@@ -1,0 +1,219 @@
+{% load static %}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{{ COMPANY_NAME }}{% if COMPANY_TAGLINE %} — {{ COMPANY_TAGLINE }}{% endif %}</title>
+
+  <!-- Tailwind (utilitaires) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Styles du site (APRÈS Tailwind) -->
+  <link rel="stylesheet" href="{% static 'css/ui.css' %}"/>
+
+  {# Overrides CSS: personnalisation de l'interface premium (panier, hero, etc.) #}
+  <link rel="stylesheet" href="{% static 'css/ui-overrides.css' %}"/>
+
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="min-h-dvh bg-[var(--surface,#f6f8fb)] text-[var(--ink,#111111)]">
+
+  <!-- HEADER / NAVBAR -->
+  <header class="site-header">
+    <div class="container">
+      {% include "partials/_navbar.html" %}
+    </div>
+  </header>
+
+  <!-- PAGE -->
+  <main class="container py-10">
+    {# Messages flash (succès, erreur, info) #}
+    {% if messages %}
+      <div class="mb-6 space-y-3">
+        {% for message in messages %}
+          {% if message.tags == 'success' %}
+            <div class="p-3 rounded-md bg-green-100 text-green-800 text-sm">{{ message }}</div>
+          {% elif message.tags == 'error' %}
+            <div class="p-3 rounded-md bg-red-100 text-red-800 text-sm">{{ message }}</div>
+          {% elif message.tags == 'warning' %}
+            <div class="p-3 rounded-md bg-yellow-100 text-yellow-800 text-sm">{{ message }}</div>
+          {% else %}
+            <div class="p-3 rounded-md bg-blue-100 text-blue-800 text-sm">{{ message }}</div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <!-- La classe site-footer applique désormais la même palette que la barre de navigation.
+       Nous supprimons les classes de bordure utilitaires afin que la couleur définie
+       dans ui-overrides.css puisse prendre toute la largeur. -->
+  <footer class="site-footer mt-16">
+    <!-- Nous retirons la classe Tailwind text-sm pour permettre à nos
+         surcharges CSS d'augmenter la taille des textes dans le pied de page. -->
+    <div class="container py-8 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <p>© {{ COMPANY_NAME }}{% if COMPANY_TAGLINE %} — {{ COMPANY_TAGLINE }}{% endif %}</p>
+        <div class="newsletter">
+          <form method="post" action="{% url 'marketing:subscribe' %}" class="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+            {% csrf_token %}
+            <label for="newsletter-email" class="sr-only">Votre e‑mail</label>
+            <input id="newsletter-email" name="email" type="email" required placeholder="Votre e‑mail"
+                   class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-brand-primary focus:border-brand-primary text-sm"
+            >
+            <button type="submit" class="px-4 py-2 rounded-md text-white text-sm" style="background: var(--brand-primary);">
+              S’abonner
+            </button>
+          </form>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+        <div>
+          <!-- Retrait des classes de couleur sombre sur le texte pour
+               permettre aux couleurs héritées de s'appliquer correctement -->
+          <h3 class="font-semibold mb-2">Contact</h3>
+          <ul class="space-y-1">
+            <li>Adresse : 123 Zone Collery&nbsp;–&nbsp;Matoury, Guyane française</li>
+            <li>Téléphone : 05&nbsp;94&nbsp;00&nbsp;00&nbsp;00</li>
+            <li>E‑mail : <a href="mailto:contact@bamytest.com" class="hover:underline">contact@bamytest.com</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2">Informations</h3>
+          <ul class="space-y-1">
+            <li><a href="{% url 'core:about' %}" class="hover:underline">À propos</a></li>
+            <li><a href="{% url 'core:contact' %}" class="hover:underline">Contact</a></li>
+            <li><a href="{% url 'catalog:product_list' %}" class="hover:underline">Catalogue</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2">Légal</h3>
+          <ul class="space-y-1">
+            <li><a href="{% url 'core:privacy' %}" class="hover:underline">Politique de confidentialité</a></li>
+            <li><a href="{% url 'core:cookies' %}" class="hover:underline">Cookies</a></li>
+            <li><a href="#" class="hover:underline">Conditions générales</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Réseaux sociaux -->
+      <div class="flex items-center gap-4 pt-2 border-t border-white/10 mt-4">
+        <span class="font-semibold">Suivez‑nous :</span>
+        <a href="#" aria-label="Instagram" class="social-link">
+          <!-- Icône Instagram -->
+          <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+            <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zM12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10zm0 1.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7zm4.75-.88a.88.88 0 1 1-1.75 0a.88.88 0 0 1 1.75 0z" />
+          </svg>
+        </a>
+        <a href="#" aria-label="LinkedIn" class="social-link">
+          <!-- Icône LinkedIn -->
+          <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+            <path d="M4.98 3C3.35 3 2 4.35 2 5.98v12.04A2.96 2.96 0 0 0 4.98 21h14.04A2.96 2.96 0 0 0 22 18.02V5.98A2.96 2.96 0 0 0 19.02 3H4.98zm1.62 5.32c.97 0 1.57.64 1.57 1.49c0 .84-.61 1.49-1.57 1.49h-.02c-.96 0-1.57-.65-1.57-1.49c0-.85.61-1.49 1.57-1.49zm-.9 3.34h1.79v6h-1.79v-6zm5.14 0h1.71v.82h.02c.24-.46.83-1 1.71-1c1.82 0 3.2 1.17 3.2 3.68v4.5h-1.79V13.8c0-1.03-.36-1.73-1.25-1.73c-.68 0-1.08.46-1.26.9c-.07.17-.09.41-.09.65v4.57h-1.79v-6.69z" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JS NAV (burger + mini-panels) -->
+  <script>
+  (function(){
+    // Si l'utilisateur n'est pas authentifié, on supprime les favoris
+    // stockés dans localStorage pour éviter qu'ils ne soient conservés
+    // d'une session à l'autre. Le template Django injecte la valeur
+    // booléenne sous forme de chaîne 'True' ou 'False'.
+    const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+    if (!isAuthenticated) {
+      try {
+        localStorage.removeItem('wishlist_ids');
+      } catch (e) {}
+    }
+    // Burger (mobile)
+    const btn = document.getElementById('nav-toggle');
+    const menu = document.getElementById('nav-menu');
+    if (btn && menu){
+      btn.addEventListener('click', ()=> {
+        menu.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', menu.classList.contains('is-open'));
+      });
+    }
+    // Panels wishlist/cart
+    function wireHover(idWrap, idPanel){
+      const w = document.getElementById(idWrap);
+      const p = document.getElementById(idPanel);
+      if(!w || !p) return;
+      p.style.display = 'none';
+      w.addEventListener('mouseenter', ()=>{ p.style.display='block'; p.classList.add('panel-show'); });
+      w.addEventListener('mouseleave', ()=>{ p.classList.remove('panel-show'); setTimeout(()=>{ p.style.display='none'; },120); });
+    }
+    wireHover('nav-wishlist','wishlist-panel');
+    wireHover('nav-cart','cart-panel');
+
+    // Wishlist badge (localStorage)
+    function refreshWishlistBadge(){
+      try{
+        const ids = JSON.parse(localStorage.getItem('wishlist_ids')||'[]');
+        const n = ids.length||0;
+        const badge = document.getElementById('wishlist-badge');
+        const count = document.getElementById('wishlist-count');
+        if (badge){ badge.textContent = n; badge.style.display = n>0 ? 'grid' : 'none'; }
+        if (count){ count.textContent = n; }
+        document.querySelectorAll('[data-wish-id]').forEach(b=>{
+          const id = String(b.getAttribute('data-wish-id'));
+          b.classList.toggle('is-wished', ids.includes(id));
+        });
+      }catch(e){}
+    }
+    window.refreshWishlistBadge = refreshWishlistBadge;
+    refreshWishlistBadge();
+
+    // Toggle wishlist sur les cartes produits
+    document.addEventListener('click', (e)=>{
+      const t = e.target.closest('[data-wish-id]');
+      if(!t) return;
+      e.preventDefault();
+      const id = String(t.getAttribute('data-wish-id'));
+      let ids = [];
+      try{ ids = JSON.parse(localStorage.getItem('wishlist_ids')||'[]'); }catch(e){}
+      const i = ids.indexOf(id);
+      if (i === -1) ids.push(id); else ids.splice(i,1);
+      localStorage.setItem('wishlist_ids', JSON.stringify(ids));
+      refreshWishlistBadge();
+    });
+  })();
+
+  </script>
+
+  {% block scripts %}{% endblock %}
+
+  {# Navigation mobile fixe en bas de page #}
+  {% include "partials/_bottom_nav.html" %}
+
+  <!-- Bandeau cookie RGPD -->
+  <div id="cookie-banner" class="fixed bottom-0 inset-x-0 bg-gray-800 text-white p-4 flex items-center justify-between" style="display:none;">
+    <p class="mr-4 text-sm">Ce site utilise des cookies pour améliorer votre expérience. En continuant votre navigation, vous acceptez leur utilisation.</p>
+    <button id="cookie-accept" class="bg-brand text-white px-4 py-2 rounded">J'accepte</button>
+  </div>
+  <script>
+    (function(){
+      const banner = document.getElementById('cookie-banner');
+      const acceptBtn = document.getElementById('cookie-accept');
+      // Vérifie si le consentement a déjà été donné
+      function hasConsent(){ return document.cookie.indexOf('cookies_accepted=true') !== -1; }
+      function showBanner(){ banner.style.display = 'flex'; }
+      function hideBanner(){ banner.style.display = 'none'; }
+      if(!hasConsent()){
+        // Attend 1s pour ne pas gêner l'utilisateur immédiatement
+        setTimeout(showBanner, 1000);
+      }
+      acceptBtn && acceptBtn.addEventListener('click', ()=>{
+        document.cookie = 'cookies_accepted=true; path=/; max-age=' + (60*60*24*365);
+        hideBanner();
+      });
+    })();
+  </script>
+</body>
+</html>

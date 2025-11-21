@@ -1,0 +1,43 @@
+<section class="lux-glass p-6 mt-8">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl font-semibold">En promotion</h2>
+    <div class="flex items-center gap-2">
+      <button class="px-2 py-1 rounded-lg border" data-pc-prev aria-label="Précédent">‹</button>
+      <button class="px-2 py-1 rounded-lg border" data-pc-next aria-label="Suivant">›</button>
+    </div>
+  </div>
+
+  {% if promos_carousel %}
+  <div id="product-carousel" class="relative overflow-hidden" data-speed="450" data-interval="3500" data-auto="true">
+    <div class="pc-track flex gap-6" style="transition:none;">
+      {% for p in promos_carousel %}
+        <a href="{{ p.get_absolute_url }}" class="block min-w-[240px] max-w-[240px] rounded-2xl bg-white shadow hover:shadow-lg transition overflow-hidden relative">
+          {% if p.is_promo %}
+            <span class="ribbon-promo">Promo</span>
+          {% endif %}
+          <div class="aspect-[4/3] bg-gray-100">
+            {% if p.image %}<img src="{{ p.image.url }}" alt="{{ p.title }}" class="w-full h-full object-contain">{% endif %}
+          </div>
+          <div class="p-3">
+            <div class="text-xs text-gray-500 mb-1">
+              {% if p.brand.logo %}<img src="{{ p.brand.logo.url }}" class="inline-block w-4 h-4 rounded mr-1" alt="{{ p.brand.name }}">{% endif %}
+              {{ p.brand.name }}
+            </div>
+            <div class="text-sm font-medium line-clamp-2">{{ p.title }}</div>
+            <div class="mt-1">
+              {% if p.discount_price %}
+                <span class="font-semibold text-brand">{{ p.discount_price }} €</span>
+                <span class="text-xs line-through text-gray-400 ml-1">{{ p.price }} €</span>
+              {% else %}
+                <span class="font-semibold text-brand">{{ p.price }} €</span>
+              {% endif %}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+    <div class="text-gray-500 py-6 px-4">Aucune promotion active pour le moment.</div>
+  {% endif %}
+</section>

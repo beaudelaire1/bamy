@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="52" viewBox="0 0 80 52" role="img" aria-label="Mastercard">
+  <rect x="0.5" y="0.5" width="79" height="51" rx="8" fill="#fff" stroke="rgba(0,0,0,.12)"></rect>
+  <!-- Cercles MasterCard -->
+  <g transform="translate(14,8)">
+    <circle cx="24" cy="18" r="14" fill="#EB001B"></circle>
+    <circle cx="40" cy="18" r="14" fill="#F79E1B" opacity="0.95"></circle>
+    <circle cx="32" cy="18" r="14" fill="#FF5F00" opacity="0.85"></circle>
+  </g>
+</svg>

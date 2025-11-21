@@ -1,0 +1,23 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block content %}
+<h1>Statut de l'import #{{ task.id }}</h1>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <p><strong>Statut&nbsp;:</strong> {{ task.get_status_display }}</p>
+        <p><strong>Créé le&nbsp;:</strong> {{ task.created_at }}</p>
+        <p><strong>Terminé le&nbsp;:</strong> {{ task.completed_at|default:"-" }}</p>
+        <p><strong>Produits importés&nbsp;:</strong> {{ task.success_count }}</p>
+        <p><strong>Erreurs&nbsp;:</strong> {{ task.failure_count }}</p>
+    </div>
+</div>
+
+{% if task.errors %}
+<h2>Détails des erreurs</h2>
+<pre class="bg-light p-3 border">{{ task.errors }}</pre>
+{% endif %}
+
+<a href="{% url 'integrations:import_data' %}" class="btn btn-secondary">Retour à l'import</a>
+{% endblock %}

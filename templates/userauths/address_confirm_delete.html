@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="max-w-md mx-auto bg-white rounded-2xl shadow p-6 text-center">
+  <nav class="text-sm mb-4" aria-label="Fil d’Ariane">
+    <ol class="flex items-center space-x-1 text-gray-500">
+      <li><a href="{% url 'core:home' %}" class="hover:underline">Accueil</a></li>
+      <li>/</li>
+      <li><a href="{% url 'userauths:account' %}" class="hover:underline">Mon compte</a></li>
+      <li>/</li>
+      <li><a href="{% url 'userauths:address_list' %}" class="hover:underline">Mes adresses</a></li>
+      <li>/</li>
+      <li>Supprimer une adresse</li>
+    </ol>
+  </nav>
+  <h1 class="text-2xl font-semibold mb-4" style="color:var(--brand-primary)">Supprimer l'adresse</h1>
+  <p class="mb-6">Êtes-vous sûr de vouloir supprimer cette adresse ?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="px-4 py-2 rounded-md text-white bg-red-600 mr-3">Supprimer</button>
+    <a href="{% url 'userauths:address_list' %}" class="px-4 py-2 rounded-md border border-gray-300">Annuler</a>
+  </form>
+</section>
+{% endblock %}

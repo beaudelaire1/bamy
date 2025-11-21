@@ -1,0 +1,38 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block content %}
+<h1>Importer des produits</h1>
+
+<form method="post" enctype="multipart/form-data" class="import-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button btn btn-primary">Importer</button>
+</form>
+
+<h2>Historique des imports</h2>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Statut</th>
+            <th>Succès</th>
+            <th>Échecs</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td><a href="{% url 'integrations:import_status' task.id %}">{{ task.id }}</a></td>
+            <td>{{ task.created_at }}</td>
+            <td>{{ task.get_status_display }}</td>
+            <td>{{ task.success_count }}</td>
+            <td>{{ task.failure_count }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">Aucun import trouvé.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1 class="text-2xl font-semibold mb-6">Sélection de la semaine</h1>
+  <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for product in products %}
+      {% include "catalog/_product_card.html" with product=product %}
+    {% empty %}
+      <p>Aucun produit n'est actuellement en sélection de la semaine.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

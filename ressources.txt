@@ -1,0 +1,20 @@
+python manage.py import_products --file=/chemin/vers/mon_fichier.csv
+celery -A xeros_project worker -l info
+celery -A xeros_project beat -l info
+python manage.py runserver
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py collectstatic
+python manage.py test
+python manage.py loaddata initial_data.json
+python manage.py dumpdata > all_data.json
+python manage.py shell
+python manage.py check
+python manage.py makemigrations
+python manage.py showmigrations
+python manage.py sqlmigrate app_name migration_name
+python manage.py dbshell
+python manage.py changepassword username
+python manage.py flush
+python manage.py inspectdb > models.py
+python manage.py graph_models -a -o my_project_visualized.png

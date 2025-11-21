@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{#
+  Template du tableau de bord « Mon compte » pour les utilisateurs.
+
+  Cette page présente un accueil personnalisé et liste les commandes
+  passées par l'utilisateur connecté. Elle utilise la table orders
+  associée à l'utilisateur via la relation ``User.orders``.
+#}
+
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Mon compte</h1>
+<p class="mb-6">Bienvenue, {{ user.get_full_name|default:user.username }}.</p>
+
+<h2 class="text-xl font-semibold mb-3">Mes commandes</h2>
+{% if orders %}
+  <div class="overflow-x-auto">
+    <table class="min-w-full border border-gray-200 text-sm">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-3 py-2 text-left">Commande</th>
+          <th class="px-3 py-2 text-left">Date</th>
+          <th class="px-3 py-2 text-left">Total</th>
+          <th class="px-3 py-2 text-left">Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+          <tr class="border-t">
+            <td class="px-3 py-2 font-mono">{{ order.order_number }}</td>
+            <td class="px-3 py-2">{{ order.created_at|date:"d/m/Y" }}</td>
+            <td class="px-3 py-2">{{ order.total }} €</td>
+            <td class="px-3 py-2 capitalize">{{ order.get_status_display }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p class="text-gray-600">Vous n'avez pas encore passé de commande.</p>
+{% endif %}
+{% endblock %}

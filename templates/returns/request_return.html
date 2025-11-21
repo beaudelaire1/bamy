@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-10 max-w-xl">
+  <h1 class="text-2xl font-semibold mb-4">Demande de retour</h1>
+  <p class="mb-4 text-gray-600">Vous demandez un retour pour l'article : <strong>{{ item.product_title }}</strong> (x{{ item.quantity }})</p>
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    <div>
+      <label for="id_reason" class="form-label">Motif du retour</label>
+      <textarea id="id_reason" name="reason" rows="4" class="w-full p-2 border rounded-md" placeholder="Veuillez décrire la raison de votre retour" required></textarea>
+    </div>
+    <button type="submit" class="btn-primary">Envoyer la demande</button>
+  </form>
+</div>
+{% endblock %}

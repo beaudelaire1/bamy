@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto bg-white rounded-xl shadow p-6">
+  <h1 class="text-2xl font-bold mb-4">Vos notifications</h1>
+  <ul class="space-y-3">
+    {% for n in notifications %}
+      <li class="p-4 rounded-lg {{ 'bg-gray-50' if not n.read else 'bg-white' }} border">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="{{ 'font-semibold' if not n.read }}">{{ n.message }}</p>
+            <p class="text-xs text-gray-500">{{ n.created_at|date:"d/m/Y H:i" }}</p>
+          </div>
+          {% if not n.read %}<span class="text-xs text-blue-600">Non lue</span>{% endif %}
+        </div>
+      </li>
+    {% empty %}
+      <li class="text-gray-500">Aucune notification pour le moment.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}

@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Progression du checkout -->
+<div class="container mt-6 mb-4">
+  <div class="flex justify-center space-x-4 text-sm">
+    <div class="flex items-center space-x-2">
+      <span class="w-6 h-6 flex items-center justify-center rounded-full bg-brand text-white">1</span>
+      <span>Panier</span>
+    </div>
+    <div class="h-0.5 w-6 bg-gray-300 mt-3"></div>
+    <div class="flex items-center space-x-2">
+      <span class="w-6 h-6 flex items-center justify-center rounded-full bg-brand text-white">2</span>
+      <span>Informations</span>
+    </div>
+    <div class="h-0.5 w-6 bg-gray-300 mt-3"></div>
+    <div class="flex items-center space-x-2 opacity-50">
+      <span class="w-6 h-6 flex items-center justify-center rounded-full border-2 border-brand text-brand">3</span>
+      <span>Paiement</span>
+    </div>
+  </div>
+</div>
+<link rel="stylesheet" href="{% static 'css/xeros-ui.css' %}">
+
+<section class="container my-10 grid lg:grid-cols-3 gap-8">
+  <!-- Récap panier -->
+  <div class="lg:col-span-1 rounded-2xl p-6 bg-card checkout-summary">
+    <h2 class="text-xl font-semibold mb-4">Récapitulatif</h2>
+
+    {% if cart and cart|length > 0 %}
+      <ul class="space-y-3">
+        {% for item in cart %}
+          {% firstof item.product.thumbnail.url item.product.image.url item.product.cover.url as prod_img %}
+          <li class="recap-item">
+            <img class="recap-thumb"
+                 src="{{ prod_img|default:'/static/img/placeholder-product.png' }}"
+                 alt="{{ item.product.title }}">
+            <div>
+              <div class="recap-title">{{ item.product.title }}</div>
+              <div class="recap-meta">SKU {{ item.product.sku }} — x{{ item.quantity }}</div>
+            </div>
+            <div class="font-medium text-right">{{ item.total_price|floatformat:2 }} €</div>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <hr class="my-4">
+      <div class="flex justify-between font-semibold text-lg">
+        <span>Total</span>
+        <span class="text-brand">{{ cart.total|floatformat:2 }} €</span>
+      </div>
+      <p class="mt-2 text-sm text-gray-500">TVA incluse. Paiements 100% sécurisés.</p>
+
+      <div class="mt-3 flex gap-2 items-center opacity-80">
+        <img src="{% static 'img/payments/visa.svg' %}" alt="Visa" width="38" height="24" loading="lazy">
+        <img src="{% static 'img/payments/mastercard.svg' %}" alt="Mastercard" width="38" height="24" loading="lazy">
+        <img src="{% static 'img/payments/amex.svg' %}" alt="Amex" width="38" height="24" loading="lazy">
+        <img src="{% static 'img/payments/paypal.svg' %}" alt="PayPal" width="38" height="24" loading="lazy">
+      </div>
+
+      {# --- MOYENS DE PAIEMENT --- #}
+      <div class="mt-6 space-y-3">
+        {# Carte bancaire (Stripe Checkout) #}
+        <form action="{% url 'payments:stripe_checkout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn-primary w-full">
+            Payer par carte bancaire (Visa / MasterCard / Amex)
+          </button>
+        </form>
+
+        {# PayPal #}
+        <div id="paypal-buttons" class="mt-1"></div>
+        <script src="https://www.paypal.com/sdk/js?client-id={{ PAYPAL_CLIENT_ID }}&currency=EUR"></script>
+        <script>
+          (function(){
+            if(!window.paypal) return;
+            function csrftoken(){
+              const m = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+              return m ? m.pop() : '';
+            }
+            paypal.Buttons({
+              // Crée l'order PayPal côté serveur à partir du total du panier
+              createOrder: function(){
+                return fetch("{% url 'payments:paypal_create' %}", {
+                  method: "POST",
+                  headers: { "X-CSRFToken": csrftoken(), "X-Requested-With": "XMLHttpRequest" }
+                }).then(r => r.json()).then(d => d.id);
+              },
+              // Capture côté serveur puis redirige
+              onApprove: function(data){
+                return fetch("{% url 'payments:paypal_capture' %}", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrftoken()
+                  },
+                  body: new URLSearchParams({ orderID: data.orderID })
+                }).then(r => r.json()).then(j => {
+                  if(j.ok){
+                    window.location.href = "{% url 'cart:detail' %}";  // ou ta page de succès
+                  } else {
+                    alert("Paiement PayPal non capturé.");
+                  }
+                });
+              }
+            }).render("#paypal-buttons");
+          })();
+        </script>
+      </div>
+    {% else %}
+      <p class="text-sm text-gray-600">Votre panier est vide.</p>
+    {% endif %}
+  </div>
+
+  <!-- Formulaire -->
+  <div class="lg:col-span-2 rounded-2xl p-6 bg-card">
+    <h1 class="text-2xl font-semibold mb-6">Coordonnées & adresse</h1>
+
+    {% if form.non_field_errors %}
+      <div class="field-error global">{{ form.non_field_errors|striptags }}</div>
+    {% endif %}
+
+    <form id="checkout-form" method="post" class="grid md:grid-cols-2 gap-6" novalidate>
+      {% csrf_token %}
+
+      <!-- Email -->
+      <div class="md:col-span-2 {% if form.email.errors %}has-error{% endif %}">
+        <label class="form-label" for="id_email">Email</label>
+        {{ form.email }}
+        {% if form.email.errors %}<p class="field-error">{{ form.email.errors|striptags }}</p>{% endif %}
+      </div>
+
+      <div class="{% if form.first_name.errors %}has-error{% endif %}">
+        <label class="form-label" for="id_first_name">Prénom</label>
+        {{ form.first_name }}
+        {% if form.first_name.errors %}<p class="field-error">{{ form.first_name.errors|striptags }}</p>{% endif %}
+      </div>
+
+      <div class="{% if form.last_name.errors %}has-error{% endif %}">
+        <label class="form-label" for="id_last_name">Nom</label>
+        {{ form.last_name }}
+        {% if form.last_name.errors %}<p class="field-error">{{ form.last_name.errors|striptags }}</p>{% endif %}
+      </div>
+
+      <div class="{% if form.phone.errors %}has-error{% endif %}">
+        <label class="form-label" for="id_phone">Téléphone</label>
+        {{ form.phone }}
+        {% if form.phone.errors %}<p class="field-error">{{ form.phone.errors|striptags }}</p>{% endif %}
+      </div>
+
+      <div class="{% if form.company.errors %}has-error{% endif %}">
+        <label class="form-label" for="id_company">Société</label>
+        {{ form.company }}
+        {% if form.company.errors %}<p class="field-error">{{ form.company.errors|striptags }}</p>{% endif %}
+      </div>
+
+      <div class="md:col-span-2 {% if form.address1.errors %}has-error{% endif %}">
+        <label class="form-label" for="id_address1">Adresse</label>
+        {{ form.address1 }}
+        {% if form.address1.errors %}<p class="field-error">{{ form.address1.errors|striptags }}</p>{% endif %}
+      </div>
+
+      <div class="md:col-span-2 {% if form.address2.errors %}has-error{% endif %}">
+        <label class="form-label" for="id_address2">Complément d'adresse</label>
+        {{ form.address2 }}
+        {% if form.address2.errors %}<p class="field-error">{{ form.address2.errors|striptags }}</p>{% endif %}
+      </div>
+
+      <div class="{% if form.city.errors %}has-error{% endif %}">
+        <label class="form-label" for="id_city">Ville</label>
+        {{ form.city }}
+        {% if form.city.errors %}<p class="field-error">{{ form.city.errors|striptags }}</p>{% endif %}
+      </div>
+
+      <div class="{% if form.postcode.errors %}has-error{% endif %}">
+        <label class="form-label" for="id_postcode">Code postal</label>
+        {{ form.postcode }}
+        {% if form.postcode.errors %}<p class="field-error">{{ form.postcode.errors|striptags }}</p>{% endif %}
+      </div>
+
+      <div class="md:col-span-2 {% if form.country.errors %}has-error{% endif %}">
+        <label class="form-label" for="id_country">Pays</label>
+        {{ form.country }}
+        {% if form.country.errors %}<p class="field-error">{{ form.country.errors|striptags }}</p>{% endif %}
+      </div>
+
+      <div class="md:col-span-2 {% if form.notes.errors %}has-error{% endif %}">
+        <label class="form-label" for="id_notes">Notes</label>
+        {{ form.notes }}
+        {% if form.notes.errors %}<p class="field-error">{{ form.notes.errors|striptags }}</p>{% endif %}
+      </div>
+
+      <!-- Actions -->
+      <div class="md:col-span-2 mt-2 flex gap-4 items-center">
+        <button type="submit" id="submit-order" class="btn-primary">Valider la commande</button>
+        <a href="{% url 'cart:detail' %}" class="underline text-gray-600 hover:text-gray-900">
+          Retour au panier
+        </a>
+      </div>
+    </form>
+
+    <!-- Live region a11y -->
+    <div id="cart-aria" aria-live="polite" class="sr-only"></div>
+  </div>
+</section>
+
+<!-- JS progressif : attributs smart + état loading + marquage invalide -->
+<script>
+  (function(){
+    const $ = sel => document.querySelector(sel);
+    const setAttrs = (id, attrs) => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k, v));
+    };
+
+    // Autocomplete & claviers mobiles
+    setAttrs('id_email',     { type:'email', inputmode:'email', autocomplete:'email', required:'' });
+    setAttrs('id_first_name',{ autocomplete:'given-name' });
+    setAttrs('id_last_name', { autocomplete:'family-name' });
+    setAttrs('id_phone',     { type:'tel', inputmode:'tel', autocomplete:'tel' });
+    setAttrs('id_address1',  { autocomplete:'address-line1' });
+    setAttrs('id_address2',  { autocomplete:'address-line2' });
+    setAttrs('id_city',      { autocomplete:'address-level2' });
+    setAttrs('id_postcode',  { inputmode:'numeric', pattern:'\\d{4,10}', autocomplete:'postal-code' });
+    setAttrs('id_country',   { autocomplete:'country-name' });
+
+    // Spinner de soumission + lock
+    const form = $('#checkout-form');
+    const submit = $('#submit-order');
+    form?.addEventListener('submit', () => {
+      if(submit){
+        submit.classList.add('is-loading');
+        submit.setAttribute('disabled', 'disabled');
+      }
+      const live = $('#cart-aria');
+      if(live) live.textContent = 'Validation de la commande en cours...';
+    });
+
+    // Appliquer styles invalides si erreurs serveur
+    document.querySelectorAll('.field-error').forEach(err => {
+      const prev = err.previousElementSibling; // juste avant: le champ
+      if(prev && /(INPUT|SELECT|TEXTAREA)/.test(prev.tagName)){
+        prev.classList.add('is-invalid');
+      }
+    });
+  })();
+</script>
+{% endblock %}

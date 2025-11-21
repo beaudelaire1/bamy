@@ -1,0 +1,303 @@
+/* ========= Thème ========= */
+:root{
+  --brand-primary: #0a36ff;      /* Bleu principal */
+  --brand-primary-700: #0a2ee0;  /* Teinte plus sombre */
+  --on-primary: #ffffff;         /* Texte sur fond bleu */
+  --surface: #f6f8fb;            /* Fond page */
+  --ink: #111111;                /* Texte par défaut (noir doux) */
+
+  /* Lux UI */
+  --glass-bg: rgba(255,255,255,0.08);
+  --glass-stroke: rgba(255,255,255,0.35);
+  --glass-shadow: 0 24px 60px rgba(10, 18, 50, .22);
+  --ring: 0 0 0 1px rgba(255,255,255,.25) inset, 0 1px 0 rgba(255,255,255,.12) inset;
+}
+
+/* ========= Layout util ========= */
+.container{ max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+.text-brand{ color: var(--brand-primary); }
+
+/* ========= HEADER / NAVBAR ========= */
+.site-header{
+  position: sticky; top:0; z-index: 60;
+  background: linear-gradient(90deg, rgba(10,54,255,.96), rgba(10,54,255,.85));
+  color: var(--on-primary);
+  box-shadow: 0 8px 20px rgba(13, 30, 80, .25);
+}
+.site-header::after{
+  content:""; display:block; height:1px;
+  background: linear-gradient(90deg, rgba(255,255,255,.25), rgba(255,255,255,0));
+}
+.site-nav{
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; min-height: 64px; gap: 12px; color: var(--on-primary);
+}
+.site-nav a{ color: var(--on-primary); text-decoration: none; }
+.brand{ font-weight: 800; font-size: 1.25rem; letter-spacing: .2px; text-shadow: 0 1px 0 rgba(0,0,0,.08); }
+.nav-burger{
+  display:none; place-self:center; width:42px; height:42px; border-radius:12px;
+  background: transparent; border: 1px solid rgba(255,255,255,.35);
+}
+.burger-bar{ display:block; width:20px; height:2px; margin:5px auto; background:#fff; border-radius:1px; }
+.nav-menu{
+  list-style: none; display: flex; gap: 22px; padding: 0; margin: 0;
+  justify-self: center; align-items: center;
+}
+.nav-link{ color:#111; opacity:.95; font-weight:500; }
+.nav-link:hover{ opacity:1; text-decoration: underline; }
+.nav-right{ justify-self: end; display:flex; align-items:center; gap: 14px; flex-wrap: nowrap; }
+.nav-hello{ opacity:.85; }
+.icon-btn{
+  position: relative; display:inline-grid; place-items:center;
+  width:40px; height:40px; border-radius:12px;
+  color:#fff; background: transparent;
+  border: 1px solid rgba(255,255,255,.35);
+  transition: background .15s ease, border-color .15s ease; box-shadow: var(--ring);
+}
+.icon-btn:hover{ background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.55); }
+.icon{ width:22px; height:22px; color:currentColor; }
+.badge{
+  position:absolute; top:-6px; right:-6px;
+  min-width: 20px; height: 20px; padding: 0 6px; display:grid; place-items:center;
+  background: #fff; color: var(--brand-primary);
+  border-radius: 999px; font-size: 12px; font-weight: 700; box-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+.panel{
+  position:absolute; right:0; margin-top: .5rem; min-width: 240px; max-width: 280px;
+  background: #fff; color:#111; border: 1px solid rgba(0,0,0,.06);
+  border-radius: 14px; padding: 12px; box-shadow: 0 18px 42px rgba(0,0,0,.18);
+  transform: translateY(4px); opacity: 0; transition: transform .12s ease, opacity .12s ease; display: none;
+}
+.panel-show{ display:block !important; transform: translateY(0); opacity: 1; }
+.panel-title{ font-size:.95rem; font-weight:600; color:#111; }
+.panel-sub{ font-size:.9rem; color:#555; margin-top:2px; }
+.panel-link{ font-size:.9rem; color:#0a36ff; text-decoration: underline; display:inline-block; margin-top:8px; }
+.panel-actions{ display:flex; gap:8px; margin-top:10px; }
+.btn{ display:inline-block; padding:.6rem .9rem; border-radius:12px; font-weight:600; }
+.btn.ghost{ border:1px solid rgba(0,0,0,.12); color:#111; background:#fff; }
+.btn.primary{ background: var(--brand-primary); color:#fff; box-shadow: 0 8px 18px rgba(10,54,255,.22); }
+.nav-action{ position: relative; }
+
+@media (max-width: 980px){
+  .site-nav{ grid-template-columns: 1fr auto 1fr; }
+  .nav-burger{ display:inline-grid; }
+  .nav-menu{
+    position: absolute; left:16px; right:16px; top: calc(100% + 10px);
+    background: rgba(255,255,255,.06);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.25); border-radius: 14px; padding: 10px;
+    display: none; flex-direction: column; gap:10px;
+  }
+  .nav-menu.is-open{ display:flex; }
+}
+
+/* ========= HÉRO "GLASS" avec rail à gauche ========= */
+.hero-glass{
+  position: relative;
+  background: linear-gradient(135deg,
+    color-mix(in oklab, var(--brand-primary) 88%, black),
+    color-mix(in oklab, var(--brand-primary) 74%, white)
+  );
+  border:1px solid color-mix(in oklab, var(--brand-primary) 72%, white);
+  color:#fff; border-radius:24px;
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+}
+/* === HERO grid : colonne gauche plus étroite === */
+.hero-inner{
+  position: relative; z-index: 1;
+  display:grid;
+  grid-template-columns: clamp(200px, 20vw, 100px) 1fr; /* + étroit */
+  gap: 28px; padding: 10px;
+}
+@media (max-width: 90%){ .hero-inner{ grid-template-columns: 1fr; } }
+
+/* === Verre : haut, étroit, overflow caché === */
+.brand-rail{
+  position: relative;
+  height: clamp(97%, 64vh, 80%);   /* long et luxueux */
+  border-radius: 20px;
+  border:1px solid var(--glass-stroke);
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;                    /* cache TOUT ce qui dépasse */
+  padding: 5px;
+}
+
+/* === Stack : 1 logo visible, les autres totalement masqués === */
+.brand-stack{
+  position: relative; width: 100%; height: 100%;
+}
+.brand-item{
+  position: absolute; inset: 0;
+  display:grid; place-items:center;
+  opacity: 0; visibility: hidden; transform: scale(.94);
+  transition: opacity .24s ease, transform .24s ease;
+}
+.brand-item.is-active{
+  opacity: 1; visibility: visible; transform: scale(1.00);
+}
+
+/* Logo = 85–90% de la zone (réglable) */
+.brand-item img{
+  width: 95%; height: 95%;           /* mets 85% ou 90% si tu préfères */
+  max-width: 95%; max-height: 95%;
+  object-fit: contain;
+}
+
+
+/* Colonne droite : texte */
+.hero-text h1{
+  font-size: clamp(3rem, 2.6vw, 5rem);
+  font-weight: 700; text-shadow: 0 1px 0 rgba(0,0,0,.12);
+}
+.hero-text p{ color: color-mix(in oklab, #fff 78%, transparent); }
+.btn-hero-ghost{
+  color:#fff; background: transparent;
+  border: 3px solid color-mix(in oklab, #fff 70%, transparent);
+  border-radius: 14px; padding: .7rem 1.1rem;
+}
+.btn-hero-ghost:hover{ background: color-mix(in oklab, #fff 14%, transparent); border-color:#fff; }
+
+/* ========= Carrousel PROMOS ========= */
+.carousel{
+  position: relative; border-radius: 18px; background: #fff;
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 14px 34px rgba(0,0,0,.08); padding: 14px;
+}
+.carousel-rail{
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(50%, 1fr);
+  gap: 16px; overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding-bottom: 6px;
+}
+.carousel-rail > *{ scroll-snap-align: start; }
+.carousel-btn{
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 42px; height: 42px; border-radius: 12px; display:grid; place-items:center;
+  background: var(--brand-primary); color:#fff;
+  border: 1px solid rgba(255,255,255,.35); box-shadow: 0 10px 26px rgba(10,54,255,.25);
+}
+.carousel-btn:hover{ filter: brightness(1.05); }
+.carousel-btn.prev{ left: -10px; }
+.carousel-btn.next{ right: -10px; }
+.carousel-btn svg{ width:20px; height:20px; }
+
+/* ========= Cartes produits ========= */
+.card{
+  border-radius: 18px; background:#fff;
+  box-shadow: 0 10px 24px rgba(0,0,0,.06);
+  overflow: hidden; position: relative;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.card:hover{ transform: translateY(-2px); box-shadow: 0 18px 44px rgba(0,0,0,.10); }
+
+/* largeur de l'écran */
+.container{ max-width:95%; margin:0 auto; padding: 0 8px; } /* ou 0 */
+main.container { padding-top: 3%; padding-bottom: 3%; paddind-left 1%; padding-right 1% }  /* ou 16px/24px */
+html, body { margin: 0; padding: 0; }
+
+/* Wishlist état actif (cartes produits) */
+[data-wish-id].is-wished svg { filter: drop-shadow(0 2px 6px rgba(0,0,0,.15)); }
+[data-wish-id].is-wished svg path { fill: var(--brand-primary) !important; }
+
+/* --- Wishlist : forcer tout en noir --- */
+#wishlist-panel,
+#wishlist-panel * {
+  color: #111 !important;
+}
+
+#wishlist-panel a {
+  color: #111 !important;
+  text-decoration: none;
+}
+#wishlist-panel a:hover {
+  color: #000 !important;
+  text-decoration: underline;
+}
+
+/* Ruban "Promo" sur carte produit */
+
+.ribbon-promo {
+  position: absolute;
+  top: 10px;
+  left: -8px;
+  background: linear-gradient(135deg, #e53935, #d32f2f); /* Rouge conventionnel pour les promos */
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 2px 6px rgba(229, 57, 53, 0.3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase; /* Pour un effet plus dynamique */
+  transform: rotate(-45deg); /* Optionnel : inclinaison pour un effet ruban */
+  width: auto; /* Permet au texte de définir la largeur */
+  text-align: center;
+}
+
+/* ===== En-tête du tableau en bleu ===== */
+table.min-w-full thead{
+  background: var(--brand-primary) !important;
+}
+table.min-w-full thead th{
+  color: var(--on-primary) !important;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  font-weight: 700;
+  border: none !important;
+  /* padding déjà dans ton HTML (px-6 py-3) */
+}
+/* coins arrondis en haut (optionnel) */
+table.min-w-full thead th:first-child{ border-top-left-radius: 10px; }
+table.min-w-full thead th:last-child { border-top-right-radius: 10px; }
+
+/* ===== Contrôles de quantité (cohérents) ===== */
+.qty-btn{
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--ink);
+  line-height: 1; font-size: 18px;
+  transition: background .15s ease, transform .05s ease;
+  cursor: pointer;
+}
+.qty-btn:hover{ background:#f6f6f6; }
+.qty-btn:active{ transform: scale(.98); }
+
+.qty-input{
+  width: 72px; min-width: 72px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: .45rem .4rem;
+  font-weight: 600;
+  background: #fff;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.qty-input:focus{
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--brand-primary) 18%, white);
+}
+/* uniformiser les <input type=number> */
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button{ margin: 0; }
+.qty-input{ -moz-appearance: textfield; }
+
+/* ===== Bouton “Mettre à jour” en bleu ===== */
+.btn-update{
+  background: var(--brand-primary) !important;
+  color: var(--on-primary) !important;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(10,54,255,.22);
+  transition: filter .15s ease, transform .05s ease;
+}
+.btn-update:hover{ filter: brightness(1.06); }
+.btn-update:active{ transform: scale(.98); }

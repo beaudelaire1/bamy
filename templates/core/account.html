@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto bg-white rounded-2xl shadow p-6">
+  {# Fil d’Ariane #}
+  <nav class="text-sm mb-4" aria-label="Fil d’Ariane">
+    <ol class="flex items-center space-x-1 text-gray-500">
+      <li><a href="{% url 'core:home' %}" class="hover:underline">Accueil</a></li>
+      <li>/</li>
+      <li>Mon compte</li>
+    </ol>
+  </nav>
+
+  <h1 class="text-2xl font-semibold mb-6" style="color:var(--brand-primary)">Mon compte</h1>
+
+  {# Section informations utilisateur #}
+  <div class="space-y-6">
+    <div>
+      <h2 class="text-xl font-semibold mb-2">Mes informations</h2>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="update_profile" value="1">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="first_name" class="form-label">Prénom</label>
+            <input id="first_name" name="first_name" type="text" value="{{ request.user.first_name }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+          </div>
+          <div>
+            <label for="last_name" class="form-label">Nom</label>
+            <input id="last_name" name="last_name" type="text" value="{{ request.user.last_name }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+          </div>
+          <div class="sm:col-span-2">
+            <label for="email" class="form-label">E‑mail</label>
+            <input id="email" name="email" type="email" value="{{ request.user.email }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-brand-primary focus:border-brand-primary">
+          </div>
+        </div>
+        <div class="mt-4 text-right">
+          <button type="submit" class="btn-primary">Mettre à jour</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="border-t pt-6">
+      <h2 class="text-xl font-semibold mb-2">Changer mon mot de passe</h2>
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="change_password" value="1">
+        {% for field in password_form %}
+          <div>
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}{% if field.field.required %}<span class="text-red-500">*</span>{% endif %}</label>
+            {{ field }}
+            {% for error in field.errors %}
+              <p class="text-sm text-red-600 mt-1">{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endfor %}
+        {% if password_form.non_field_errors %}
+          <div class="text-sm text-red-600">
+            {% for err in password_form.non_field_errors %}{{ err }}{% endfor %}
+          </div>
+        {% endif %}
+        <div class="mt-4 text-right">
+          <button type="submit" class="btn-primary">Modifier le mot de passe</button>
+        </div>
+      </form>
+    </div>
+
+    {# Liens vers gestion des adresses et changement d'e-mail #}
+    <div class="border-t pt-6">
+      <h2 class="text-xl font-semibold mb-2">Options du compte</h2>
+      <div class="space-y-4">
+        <p>
+          <a href="{% url 'userauths:address_list' %}" class="text-brand underline">Gérer mes adresses</a>
+        </p>
+        <p>
+          <a href="{% url 'userauths:email_change' %}" class="text-brand underline">Changer mon adresse e‑mail</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

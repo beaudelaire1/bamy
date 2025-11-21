@@ -1,0 +1,485 @@
+/* =============================
+   XEROS UI — Ultra-moderne v2
+   (garde le thème actuel)
+   ============================= */
+
+/* ======= Thème / Tokens ======= */
+:root{
+  /* Couleurs de marque */
+  --brand-primary: #0a36ff;
+  --brand-primary-700: #0a2ee0;
+  --on-primary: #ffffff;
+
+  /* Surfaces & encre */
+  --surface: #f6f8fb;
+  --surface-1: #ffffff;
+  --surface-2: #f1f3f8;
+  --ink: #111111;
+
+  /* Bordures & états */
+  --border: #e5e7ee;                  /* <-- manquait, rend les champs visibles */
+  --border-strong: #cfd5e2;
+  --focus-ring: color-mix(in oklab, var(--brand-primary) 22%, white);
+
+  /* Depth / verre / ombres */
+  --glass-bg: rgba(255,255,255,0.08);
+  --glass-stroke: rgba(255,255,255,0.35);
+  --glass-shadow: 0 24px 60px rgba(10, 18, 50, .22);
+  --ring: 0 0 0 1px rgba(255,255,255,.25) inset, 0 1px 0 rgba(255,255,255,.12) inset;
+
+  /* Rayons / spacing */
+  --radius-sm: 10px;
+  --radius: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+
+  /* Timing */
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --fast: .15s;
+  --med: .22s;
+}
+
+/* (optionnel) Mode sombre instantané si tu ajoutes data-theme="dark" sur <html> */
+:root[data-theme="dark"]{
+  --surface: #0c0f14;
+  --surface-1: #10151c;
+  --surface-2: #0f141b;
+  --ink: #f5f7fb;
+  --border: #1f2631;
+  --border-strong: #2a3342;
+  --glass-bg: rgba(255,255,255,0.06);
+  --glass-stroke: rgba(255,255,255,0.18);
+}
+
+/* ======= Base ======= */
+*,
+*::before,
+*::after{ box-sizing: border-box; }
+
+/*
+ * Empêche l'apparition d'une barre de défilement horizontale sur toutes les pages.
+ *
+ * Plusieurs utilisateurs ont signalé qu'une barre de scroll gauche/droite
+ * apparaissait parfois, même quand le contenu principal est correctement
+ * contenu dans la largeur de la fenêtre. Cette situation est souvent
+ * provoquée par des éléments positionnés en absolu (par ex. menus
+ * déroulants) qui dépassent légèrement du viewport. En ajoutant
+ * `overflow-x: hidden` directement sur html et body, on s'assure
+ * qu'aucun débordement horizontal ne déclenche de scroll.  Cette
+ * modification n'affecte pas le scroll vertical ni les carrousels
+ * horizontaux internes qui utilisent `overflow-x-auto`.
+ */
+html, body{
+  margin:0;
+  padding:0;
+  background: var(--surface);
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+.container{ max-width:1180px; margin:0 auto; padding-inline: 16px; }
+.text-brand{ color: var(--brand-primary); }
+
+/* Réduction de motion */
+@media (prefers-reduced-motion: reduce){
+  *{ animation: none!important; transition: none!important; scroll-behavior: auto!important; }
+}
+
+/* ======= Header / Navbar ======= */
+.site-header{
+  position: sticky; top:0; z-index: 60;
+  background: linear-gradient(90deg, rgba(10,54,255,.96), rgba(10,54,255,.85));
+  color: var(--on-primary);
+  box-shadow: 0 8px 20px rgba(13, 30, 80, .25);
+  backdrop-filter: saturate(120%) blur(8px);
+}
+.site-header::after{
+  content:""; display:block; height:1px;
+  background: linear-gradient(90deg, rgba(255,255,255,.25), rgba(255,255,255,0));
+}
+
+/* Navigation principale : grille à trois colonnes.  Nous augmentons la hauteur
+   minimale et la taille des polices pour un rendu plus haut de gamme,
+   inspiré des interfaces Samsung/ASUS. */
+.site-nav{
+  /* Utilise trois colonnes :
+     - la marque (auto) occupe uniquement la largeur de son contenu
+     - le menu central prend tout l'espace disponible
+     - les actions (nav-right) utilisent la largeur nécessaire à leurs icônes
+     Cette disposition évite que la marque ou le bloc d'actions soient
+     comprimés lorsque le menu contient de nombreux éléments. */
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  min-height: 72px;
+  gap: 16px;
+  color: var(--on-primary);
+}
+/* Liens génériques dans la navigation */
+.site-nav a{ color: var(--on-primary); text-decoration: none; }
+.brand{
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: .3px;
+  text-shadow: 0 1px 2px rgba(0,0,0,.1);
+}
+
+/* Bouton burger amélioré : plus large et espacé */
+.nav-burger{
+  display:none;
+  place-self:center;
+  width:46px;
+  height:46px;
+  border-radius:14px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.35);
+}
+.burger-bar{
+  display:block;
+  width:22px;
+  height:2px;
+  margin:6px auto;
+  background:#fff;
+  border-radius:1px;
+}
+
+/* Liste des liens : espace augmenté et fonte semi‑grasse plus grande */
+.nav-menu{
+  list-style: none;
+  display: flex;
+  gap: 28px;
+  padding: 0;
+  margin: 0;
+  justify-self: center;
+  align-items: center;
+}
+.nav-link{
+  opacity:.94;
+  font-weight:600;
+  font-size: 1.0rem;
+  transition: opacity var(--fast) var(--ease), color var(--fast) var(--ease);
+  white-space: nowrap;
+}
+.nav-link:hover{
+  opacity:1;
+  text-decoration: underline;
+}
+
+/* Colonne droite : un peu plus d'air entre les éléments */
+.nav-right{
+  justify-self: end;
+  display:flex;
+  align-items:center;
+  gap: 18px;
+  flex-wrap: nowrap;
+}
+.nav-hello{ opacity:.85; font-size:.95rem; }
+
+.icon-btn{
+  position: relative; display:inline-grid; place-items:center;
+  width:40px; height:40px; border-radius:12px; color:#fff; background: transparent;
+  border: 1px solid rgba(255,255,255,.35);
+  transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease); box-shadow: var(--ring);
+}
+.icon-btn:hover{ background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.55); }
+.icon{ width:22px; height:22px; color:currentColor; }
+.badge{
+  position:absolute; top:-6px; right:-6px;
+  min-width: 20px; height: 20px; padding: 0 6px; display:grid; place-items:center;
+  background: #fff; color: var(--brand-primary);
+  border-radius: 999px; font-size: 12px; font-weight: 700; box-shadow: 0 2px 8px rgba(0,0,0,.18);
+}
+
+.panel{
+  position:absolute; right:0; margin-top: .5rem; min-width: 240px; max-width: 280px;
+  background: var(--surface-1); color:var(--ink); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 12px; box-shadow: 0 18px 42px rgba(0,0,0,.18);
+  transform: translateY(6px) scale(.98); opacity: 0; transition: transform var(--med) var(--ease), opacity var(--med) var(--ease); display: none;
+}
+.panel-show{ display:block !important; transform: translateY(0) scale(1); opacity: 1; }
+.panel-title{ font-size:.95rem; font-weight:700; }
+.panel-sub{
+  font-size: .9rem;
+  /* Améliore la lisibilité du texte du mini-panier : utilise directement la couleur
+     d'encre plutôt qu'un mélange transparent qui pouvait rendre le texte peu visible */
+  color: var(--ink);
+  margin-top: 2px;
+}
+.panel-link{ font-size:.9rem; color:var(--brand-primary); text-decoration: underline; display:inline-block; margin-top:8px; }
+.panel-actions{ display:flex; gap:8px; margin-top:10px; }
+
+.btn{ display:inline-block; padding:.6rem .9rem; border-radius:12px; font-weight:700; }
+.btn.ghost{ border:1px solid var(--border); color:var(--ink); background:var(--surface-1); }
+.btn.primary{ background: var(--brand-primary); color:#fff; box-shadow: 0 8px 18px rgba(10,54,255,.22); }
+
+.nav-action{ position: relative; }
+
+@media (max-width: 980px){
+  .nav-burger{ display:inline-grid; }
+  .nav-menu{
+    position: absolute; left:16px; right:16px; top: calc(100% + 10px);
+    background: rgba(255,255,255,.06);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.25); border-radius: var(--radius); padding: 10px;
+    display: none; flex-direction: column; gap:10px;
+  }
+  .nav-menu.is-open{ display:flex; }
+}
+
+/* ======= Hero verre ======= */
+.hero-glass{
+  position: relative;
+  background: linear-gradient(135deg,
+    color-mix(in oklab, var(--brand-primary) 88%, black),
+    color-mix(in oklab, var(--brand-primary) 74%, white)
+  );
+  border:1px solid color-mix(in oklab, var(--brand-primary) 72%, white);
+  color:#fff; border-radius:24px;
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+}
+.hero-inner{
+  position: relative; z-index: 1;
+  display:grid;
+  grid-template-columns: clamp(160px, 22vw, 260px) 1fr; /* corrigé: min < max */
+  gap: 28px; padding: 14px;
+}
+@media (max-width: 980px){ .hero-inner{ grid-template-columns: 1fr; } }
+
+.brand-rail{
+  position: relative;
+  height: clamp(420px, 64vh, 720px);
+  border-radius: 20px;
+  border:1px solid var(--glass-stroke);
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--glass-shadow);
+  overflow: hidden;
+  padding: 5px;
+}
+.brand-stack{ position: relative; width: 100%; height: 100%; }
+.brand-item{
+  position: absolute; inset: 0; display:grid; place-items:center;
+  opacity: 0; visibility: hidden; transform: scale(.96);
+  transition: opacity var(--med) var(--ease), transform var(--med) var(--ease);
+}
+.brand-item.is-active{ opacity: 1; visibility: visible; transform: scale(1); }
+.brand-item img{
+  width: 92%; height: 92%; max-width:92%; max-height:92%; object-fit: contain;
+}
+
+.hero-text h1{
+  font-size: clamp(2.2rem, 3.2vw, 4rem);
+  font-weight: 800; letter-spacing:.2px; text-shadow: 0 1px 0 rgba(0,0,0,.12);
+}
+.hero-text p{ color: color-mix(in oklab, #fff 78%, transparent); }
+.btn-hero-ghost{
+  color:#fff; background: transparent;
+  border: 3px solid color-mix(in oklab, #fff 70%, transparent);
+  border-radius: 14px; padding: .7rem 1.1rem;
+}
+.btn-hero-ghost:hover{ background: color-mix(in oklab, #fff 14%, transparent); border-color:#fff; }
+
+/* ======= Carrousel promos ======= */
+.carousel{
+  position: relative; border-radius: var(--radius-lg); background: var(--surface-1);
+  border: 1px solid var(--border); box-shadow: 0 14px 34px rgba(0,0,0,.08); padding: 14px;
+}
+.carousel-rail{
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(55%, 1fr);
+  gap: 16px; overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding-bottom: 6px;
+  mask-image: linear-gradient(90deg, transparent 0, #000 32px, #000 calc(100% - 32px), transparent 100%);
+}
+.carousel-rail > *{ scroll-snap-align: start; }
+.carousel-btn{
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 42px; height: 42px; border-radius: 12px; display:grid; place-items:center;
+  background: var(--brand-primary); color:#fff;
+  border: 1px solid rgba(255,255,255,.35); box-shadow: 0 10px 26px rgba(10,54,255,.25);
+}
+.carousel-btn:hover{ filter: brightness(1.05); }
+.carousel-btn.prev{ left: -10px; }
+.carousel-btn.next{ right: -10px; }
+.carousel-btn svg{ width:20px; height:20px; }
+
+/* ======= Cartes produit ======= */
+.card{
+  border-radius: var(--radius-lg); background:var(--surface-1);
+  box-shadow: 0 10px 24px rgba(0,0,0,.06);
+  overflow: hidden; position: relative;
+  transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+  border: 1px solid var(--border);
+}
+.card:hover{ transform: translateY(-2px); box-shadow: 0 18px 44px rgba(0,0,0,.10); }
+
+/* ======= Layout global ======= */
+main.container{ padding-block: 3%; } /* corrige la faute "paddind-left" */
+html, body { margin: 0; padding: 0; }
+
+/* ======= Wishlist ======= */
+[data-wish-id].is-wished svg { filter: drop-shadow(0 2px 6px rgba(0,0,0,.15)); }
+[data-wish-id].is-wished svg path { fill: var(--brand-primary) !important; }
+
+#wishlist-panel, #wishlist-panel * { color: var(--ink) !important; }
+#wishlist-panel a { color: var(--ink) !important; text-decoration: none; }
+#wishlist-panel a:hover { text-decoration: underline; }
+
+/* ======= Ruban Promo ======= */
+.ribbon-promo{
+  position: absolute; top: 10px; left: -8px;
+  background: linear-gradient(135deg, #e53935, #d32f2f);
+  color: #fff; font-size: .75rem; font-weight: 800;
+  padding: .35rem .75rem; border-top-right-radius: 4px; border-bottom-right-radius: 4px;
+  box-shadow: 0 2px 6px rgba(229, 57, 53, .3); letter-spacing: .5px; text-transform: uppercase;
+  transform: rotate(-45deg); white-space: nowrap;
+}
+
+/* ======= Table Header ======= */
+table.min-w-full thead{ background: var(--brand-primary) !important; }
+table.min-w-full thead th{
+  color: var(--on-primary) !important; text-transform: uppercase; letter-spacing: .06em;
+  font-weight: 800; border: none !important;
+}
+table.min-w-full thead th:first-child{ border-top-left-radius: 10px; }
+table.min-w-full thead th:last-child { border-top-right-radius: 10px; }
+
+/* ======= Contrôles quantité ======= */
+.qty-btn{
+  width: 36px; height: 36px; display: grid; place-items: center;
+  border-radius: 10px; border: 1px solid var(--border); background: var(--surface-1);
+  color: var(--ink); line-height: 1; font-size: 18px; cursor: pointer;
+  transition: background var(--fast) var(--ease), transform .05s var(--ease);
+}
+.qty-btn:hover{ background:#f6f6f6; }
+.qty-btn:active{ transform: scale(.98); }
+
+.qty-input{
+  width: 72px; min-width: 72px; text-align: center;
+  border: 1px solid var(--border); border-radius: 12px;
+  padding: .45rem .4rem; font-weight: 700; background: var(--surface-1); color: var(--ink);
+  outline: none; transition: border-color var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
+}
+.qty-input:focus{ border-color: var(--brand-primary); box-shadow: 0 0 0 4px var(--focus-ring); }
+.qty-input::-webkit-outer-spin-button,
+.qty-input::-webkit-inner-spin-button{ margin: 0; }
+.qty-input{ -moz-appearance: textfield; }
+
+/* ======= Boutons ======= */
+.btn-primary{
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  padding: .9rem 1.2rem; border-radius: 14px; width: auto;
+  font-weight: 800; color: var(--on-primary); background: var(--brand-primary);
+  box-shadow: 0 8px 18px rgba(10,54,255,.22); cursor: pointer; border: none;
+  transition: filter var(--fast) var(--ease), transform .05s var(--ease);
+}
+.btn-primary:hover{ filter: brightness(1.06); }
+.btn-primary:active{ transform: scale(.985); }
+
+/* ======= Auth / messages (garde tes classes) ======= */
+.auth-card .auth-messages{ list-style:none; padding:0; margin:0 0 10px; }
+.auth-card .auth-msg{ padding:.6rem .8rem; border-radius:10px; margin-bottom:8px; font-size:.95rem; }
+.auth-card .auth-msg.success{ background:#e7f8ef; color:#0f5132; border:1px solid #b7ebcf; }
+.auth-card .auth-msg.error{ background:#fdecea; color:#842029; border:1px solid #f5c6cb; }
+.auth-card .auth-msg.info{ background:#eef6ff; color:#084298; border:1px solid #b6d4fe; }
+
+/* ======= Formulaires (global + checkout) ======= */
+/* Base universelle — capte aussi les champs Django sans classes */
+input, select, textarea{
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: .75rem .9rem;
+  font-size: .95rem;
+  background: var(--surface-1);
+  color: var(--ink);
+  transition: border-color var(--fast) var(--ease), box-shadow var(--fast) var(--ease), background var(--fast) var(--ease);
+  outline: none;
+}
+input::placeholder, textarea::placeholder{
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  opacity: .8;
+}
+
+/* États accessibles */
+input:focus-visible, select:focus-visible, textarea:focus-visible{
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+/* Disabled / read-only */
+input[disabled], select[disabled], textarea[disabled]{
+  background: var(--surface-2);
+  color: color-mix(in oklab, var(--ink) 55%, transparent);
+  cursor: not-allowed;
+}
+
+/* Labels & lignes */
+.form-label{
+  display:block; font-size:.9rem; font-weight:700; margin-bottom:.4rem;
+  color: color-mix(in oklab, var(--ink) 82%, transparent);
+}
+
+/* Petits helpers */
+.field-hint{ font-size:.85rem; color: color-mix(in oklab, var(--ink) 60%, transparent); margin-top:.3rem; }
+.field-error{ color:#c62828; font-size:.875rem; margin-top:.35rem; }
+.field-error.global{
+  background:#fdecea; border:1px solid #f5c6cb; color:#842029;
+  padding:.6rem .8rem; border-radius:10px; margin-bottom:.75rem;
+}
+
+/* Bouton "Mettre à jour" (garde ton style) */
+.btn-update{
+  background: var(--brand-primary) !important; color: var(--on-primary) !important;
+  border: none; border-radius: 12px; font-weight: 800;
+  box-shadow: 0 8px 18px rgba(10,54,255,.22);
+  transition: filter var(--fast) var(--ease), transform .05s var(--ease);
+}
+.btn-update:hover{ filter: brightness(1.06); }
+.btn-update:active{ transform: scale(.98); }
+
+/* Form logout inline */
+.nav-logout-form { display: inline; margin: 0; }
+
+/* Rendre <button.icon-btn> identique aux <a> */
+.icon-btn{ appearance: none; -webkit-appearance: none; background: transparent; padding: 0; }
+
+/* ======= Cartes / ombrages contextuels ======= */
+.bg-card{ background: var(--surface-1); border:1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 10px 24px rgba(0,0,0,.06); }
+
+/* ======= Utilitaires ======= */
+.shadow-glass{ box-shadow: var(--glass-shadow); }
+.rounded-xl{ border-radius: var(--radius-xl); }
+
+/* ==== Récap checkout : miniatures produit ==== */
+.recap-item{
+  display:grid; grid-template-columns: 56px 1fr auto; gap:12px; align-items:center;
+}
+.recap-thumb{
+  width:56px; height:56px; border-radius:12px; object-fit:cover;
+  background:#f3f5fa; border:1px solid var(--border);
+}
+.recap-title{ font-weight:600; line-height:1.25; }
+.recap-meta{ font-size:.78rem; opacity:.7; }
+
+/* ==== Bouton "Mettre à jour" : bleu prioritaire ==== */
+.btn-update,
+.btn.btn-update,
+button.btn-update,
+input.btn-update[type="submit"],
+button[name="update"],
+input[type="submit"][name="update"]{
+  background: var(--brand-primary) !important;
+  color: var(--on-primary) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-weight: 800 !important;
+  box-shadow: 0 8px 18px rgba(10,54,255,.22) !important;
+  transition: filter .15s ease, transform .05s ease !important;
+}
+.btn-update:hover,
+button[name="update"]:hover,
+input[type="submit"][name="update"]:hover{ filter: brightness(1.06); }
+.btn-update:active,
+button[name="update"]:active,
+input[type="submit"][name="update"]:active{ transform: scale(.985); }

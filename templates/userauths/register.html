@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="rounded-2xl p-8 bg-white shadow max-w-xl mx-auto">
+  <h1 class="text-2xl font-semibold mb-6" style="color:var(--brand-primary)">Créer un compte</h1>
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    {% for field in form %}
+      <div>
+        <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<p class="text-xs text-gray-500 mt-1">{{ field.help_text|safe }}</p>{% endif %}
+        {% for error in field.errors %}
+          <p class="text-sm text-red-600 mt-1">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    {% if form.non_field_errors %}
+      {% for e in form.non_field_errors %}
+        <p class="text-sm text-red-600">{{ e }}</p>
+      {% endfor %}
+    {% endif %}
+    <button type="submit" class="px-5 py-3 rounded-xl text-white" style="background:var(--brand-primary)">
+      S’inscrire
+    </button>
+  </form>
+  <p class="mt-4 text-sm text-gray-600">
+    Déjà un compte ? <a href="{% url 'userauths:login' %}" class="underline">Se connecter</a>
+  </p>
+</section>
+{% endblock %}

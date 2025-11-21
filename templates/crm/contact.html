@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto">
+  <h1 class="text-2xl font-semibold mb-4">Contact grossiste</h1>
+  <p class="text-gray-600 mb-6">Remplissez ce formulaire pour toute demande d’ouverture de compte ou d’information. Nous reviendrons vers vous dans les meilleurs délais.</p>
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+      <label class="block text-sm font-medium mb-1" for="id_company">Société *</label>
+      {{ form.company }}
+      {{ form.company.errors }}
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium mb-1" for="id_first_name">Prénom</label>
+        {{ form.first_name }}
+        {{ form.first_name.errors }}
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" for="id_last_name">Nom</label>
+        {{ form.last_name }}
+        {{ form.last_name.errors }}
+      </div>
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1" for="id_email">Email *</label>
+      {{ form.email }}
+      {{ form.email.errors }}
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1" for="id_phone">Téléphone</label>
+      {{ form.phone }}
+      {{ form.phone.errors }}
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1" for="id_subject">Sujet *</label>
+      {{ form.subject }}
+      {{ form.subject.errors }}
+    </div>
+    <div>
+      <label class="block text-sm font-medium mb-1" for="id_message">Message *</label>
+      {{ form.message }}
+      {{ form.message.errors }}
+    </div>
+    {# Champ caché pour le jeton reCAPTCHA, rempli via JavaScript #}
+    {{ form.captcha_token }}
+    <button type="submit" class="btn primary">Envoyer</button>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  {% if recaptcha_site_key %}
+    <!-- Chargement de l'API reCAPTCHA avec notre clé de site -->
+    <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha_site_key }}"></script>
+    <script>
+      (function(){
+        const form = document.querySelector('form');
+        if(!form) return;
+        form.addEventListener('submit', function(e){
+          const tokenField = form.querySelector('input[name="captcha_token"]');
+          if(!tokenField){ return; }
+          // Empêche l'envoi immédiat pour récupérer un jeton
+          e.preventDefault();
+          grecaptcha.ready(function(){
+            grecaptcha.execute('{{ recaptcha_site_key }}', {action: 'contact'}).then(function(token) {
+              tokenField.value = token;
+              form.submit();
+            });
+          });
+        });
+      })();
+    </script>
+  {% endif %}
+{% endblock %}

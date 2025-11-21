@@ -1,0 +1,12 @@
+# Ce fichier robots.txt informe les moteurs de recherche des règles
+# d'exploration de votre site. Par défaut, toutes les pages sont
+# accessibles. Le sitemap est indiqué pour faciliter l'indexation.
+
+User-agent: *
+# Empêche l'indexation des zones réservées et sensibles
+Disallow: /admin/
+Disallow: /accounts/
+Disallow: /cart/
+Disallow: /orders/
+
+Sitemap: /sitemap.xml

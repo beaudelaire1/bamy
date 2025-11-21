@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="auth-card rounded-2xl p-8 bg-white shadow max-w-md mx-auto my-8">
+  <h1 class="text-2xl font-semibold mb-6" style="color:var(--brand-primary)">Se connecter</h1>
+
+  {# Messages Django (facultatif) #}
+  {% if messages %}
+    <ul class="auth-messages">
+      {% for m in messages %}
+        <li class="auth-msg {{ m.tags }}">{{ m }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <form method="post" class="space-y-4" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="field-error global">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div>
+      <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium mb-1">Nom d’utilisateur</label>
+      {{ form.username }}
+      {% if form.username.errors %}
+        <p class="field-error">{{ form.username.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium mb-1">Mot de passe</label>
+      <div class="password-wrap">
+        {{ form.password }}
+        <button type="button"
+                class="toggle-password"
+                aria-label="Afficher/masquer le mot de passe"
+                data-target-id="{{ form.password.id_for_label }}">👁</button>
+      </div>
+      {% if form.password.errors %}
+        <p class="field-error">{{ form.password.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    {# Redirection post-login (évite VariableDoesNotExist) #}
+    {% if redirect_field_value %}
+      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+    {% endif %}
+
+    <label class="remember-line">
+      <input type="checkbox" name="remember" value="1">
+      Se souvenir de moi
+    </label>
+
+    <button class="btn-primary w-full btn-with-icons">
+      <!-- Icône cadenas -->
+      <svg class="btn-ico-left" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M6 10V8a6 6 0 1 1 12 0v2"/>
+        <rect x="4" y="10" width="16" height="10" rx="2" ry="2"/>
+        <path d="M12 15v2"/>
+      </svg>
+      <span>Connexion</span>
+      <!-- Icône flèche -->
+      <svg class="btn-ico-right" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14"/>
+        <path d="M12 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </form>
+
+  <div class="mt-4 text-sm">
+    <a class="underline" href="{% url 'userauths:password_reset' %}">Mot de passe oublié ?</a>
+  </div>
+</section>
+
+<script>
+  // Afficher/masquer le mot de passe
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.toggle-password');
+    if (!btn) return;
+    const id = btn.getAttribute('data-target-id');
+    const input = document.getElementById(id);
+    if (input) input.type = input.type === 'password' ? 'text' : 'password';
+  });
+</script>
+{% endblock %}

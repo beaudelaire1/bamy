@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+  {# HÉRO : rail de marques à gauche, texte à droite #}
+  {% include "partials/_hero_brands.html" %}
+
+  {# Carrousel promotions #}
+  {% include "partials/_promos_carousel.html" %}
+
+  {# Sélection de la semaine (hors promo) #}
+  <section class="mt-10">
+    <div class="flex items-baseline justify-between mb-4">
+      <h2 class="text-xl font-semibold">Sélection de la semaine</h2>
+      <a href="{% url 'catalog:product_list' %}" class="text-sm underline">Tout voir</a>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {% for product in selection_products %}
+        {% if not product.discount_price %}
+          {% include "catalog/_product_card.html" with product=product %}
+        {% endif %}
+      {% empty %}
+        <p class="text-gray-500">Bientôt une nouvelle sélection.</p>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{% static 'js/brand-rail.js' %}"></script>
+  <script src="{% static 'js/promos-carousel.js' %}"></script>
+{% endblock %}

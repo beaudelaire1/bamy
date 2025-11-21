@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block content %}
+  {# Fil d’Ariane #}
+  <nav class="text-sm mb-4" aria-label="Fil d’Ariane">
+    <ol class="flex items-center space-x-1 text-gray-500">
+      <li><a href="{% url 'core:home' %}" class="hover:underline">Accueil</a></li>
+      <li>/</li>
+      <li><a href="{% url 'catalog:product_list' %}" class="hover:underline">Catalogue</a></li>
+      <li>/</li>
+      <li><a href="{{ product.category.get_absolute_url }}" class="hover:underline">{{ product.category.name }}</a></li>
+      <li>/</li>
+      <li>{{ product.title|truncatechars:30 }}</li>
+    </ol>
+  </nav>
+<article class="grid md:grid-cols-2 gap-8">
+  <div class="rounded-2xl bg-white shadow overflow-hidden">
+    <div class="aspect-[4/3] bg-gray-100">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.title }}" loading="lazy" class="w-full h-full object-cover">
+      {% endif %}
+    </div>
+  </div>
+  <div class="flex items-center gap-2 text-sm text-gray-500 mb-4">
+  {% if product.brand.logo %}
+    <img src="{{ product.brand.logo.url }}" alt="{{ product.brand.name }}" loading="lazy" class="w-5 h-5 rounded">
+  {% endif %}
+  <a class="underline" href="{{ product.brand.get_absolute_url }}">{{ product.brand.name }}</a>
+  <span>• {{ product.category.name }} • SKU {{ product.sku }}</span>
+</div>
+  <div>
+    <h1 class="text-2xl font-semibold mb-2">{{ product.title }}</h1>
+    <div class="text-sm text-gray-500 mb-4">{{ product.brand.name }} • {{ product.category.name }} • SKU {{ product.sku }}</div>
+
+    {# Politique d’affichage des prix : afficher uniquement aux comptes B2B validés #}
+    {% if user.is_authenticated and user.is_b2b_verified %}
+      {% if product.discount_price and product.discount_price < product.price %}
+        <div class="flex items-baseline gap-2 mb-4">
+          <span class="text-2xl font-semibold" style="color:var(--brand-primary)">{{ product.discount_price }} €</span>
+          <span class="text-sm line-through text-gray-400">{{ product.price }} €</span>
+        </div>
+      {% else %}
+        <div class="text-2xl font-semibold mb-4" style="color:var(--brand-primary)">{{ product.price }} €</div>
+      {% endif %}
+    {% else %}
+      <div class="text-sm text-gray-500 mb-4">
+        Tarifs réservés aux professionnels. Veuillez vous connecter avec un compte validé pour accéder à vos prix.
+      </div>
+      <div class="mb-4">
+        <a href="{% url 'crm:quote_request' %}?product={{ product.id }}" class="text-brand underline">Demander un devis</a>
+      </div>
+      {% if user.is_authenticated and not user.is_b2b_verified %}
+        <div class="text-xs text-yellow-600 mb-4">Compte en vérification</div>
+      {% endif %}
+    {% endif %}
+    {% if product.unit %}
+      <div class="text-sm text-gray-500 mb-4">Unit&eacute; : {{ product.unit }}</div>
+    {% endif %}
+
+    <div class="prose max-w-none">
+      {{ product.description|safe }}
+    </div>
+
+    <!-- Avis clients -->
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold mb-4">Avis clients</h2>
+      <!-- Note moyenne -->
+      <div class="flex items-center mb-3">
+        <div class="flex items-center text-yellow-400">
+          {# Génère 5 étoiles en utilisant la valeur du compteur de boucle plutôt que le filtre int #}
+          {% for _ in '12345' %}
+            {% if avg_rating|floatformat:0|add:'0' >= forloop.counter %}
+              <span>&#9733;</span>
+            {% else %}
+              <span class="text-gray-300">&#9733;</span>
+            {% endif %}
+          {% endfor %}
+        </div>
+        <span class="ml-2 text-sm text-gray-600">({{ reviews|length }} avis)</span>
+      </div>
+      <!-- Liste des avis -->
+      {% if reviews %}
+        <ul class="space-y-4">
+          {% for review in reviews %}
+            <li class="border rounded-lg p-4">
+              <div class="flex items-center mb-2">
+                <div class="flex items-center text-yellow-400 text-sm">
+                  {# Affiche les étoiles en fonction de la note du commentaire sans utiliser le filtre int #}
+                  {% for _ in '12345' %}
+                    {% if review.rating >= forloop.counter %}
+                      <span>&#9733;</span>
+                    {% else %}
+                      <span class="text-gray-300">&#9733;</span>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <span class="ml-3 text-gray-700 text-sm">
+                  {{ review.user.get_full_name|default:"Client anonyme" }}
+                  • {{ review.created_at|date:"d/m/Y" }}
+                </span>
+              </div>
+              <p class="text-gray-700 text-sm">{{ review.comment }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-sm text-gray-500">Aucun avis pour le moment.</p>
+      {% endif %}
+      <!-- Formulaire d'avis -->
+      {% if user.is_authenticated %}
+        <div class="mt-6">
+          <h3 class="text-lg font-medium mb-2">Laisser un avis</h3>
+          <form action="{% url 'reviews:submit' product.slug %}" method="post" class="space-y-4">
+            {% csrf_token %}
+            {{ review_form.non_field_errors }}
+            <!-- Sélection de la note : on affiche les radios horizontalement avec leur étiquette -->
+            <div>
+              <label class="block text-sm font-medium mb-1" for="id_rating">Votre note&nbsp;:</label>
+              <div class="flex items-center gap-4">
+                {% for radio in review_form.rating %}
+                  <label class="flex items-center gap-1">
+                    {{ radio.tag }}
+                    <span>{{ radio.choice_label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+            <!-- Champ commentaire -->
+            <div>
+              <label class="block text-sm font-medium mb-1" for="{{ review_form.comment.id_for_label }}">Votre avis&nbsp;:</label>
+              {{ review_form.comment }}
+            </div>
+            <button type="submit" class="btn-primary">Envoyer</button>
+          </form>
+        </div>
+      {% else %}
+        <p class="mt-4 text-sm text-gray-600">Veuillez <a href="{% url 'userauths:login' %}" class="underline">vous connecter</a> pour laisser un avis.</p>
+      {% endif %}
+    </div>
+
+    <div class="mt-6">
+      {# Formulaire d'ajout au panier #}
+      <form method="post" action="{% url 'cart:cart_add' product.id %}" class="flex items-center gap-4">
+        {% csrf_token %}
+        <label for="id_quantity" class="sr-only">Quantité</label>
+        <input
+          id="id_quantity"
+          type="number"
+          name="quantity"
+          value="{{ product.initial_order_qty }}"
+          min="{{ product.initial_order_qty }}"
+          {% if product.order_in_packs and product.pcb_qty > 1 %}
+            step="{{ product.pcb_qty }}"
+          {% else %}
+            step="1"
+          {% endif %}
+          {% if product.stock %}max="{{ product.stock }}"{% endif %}
+          class="w-20 px-3 py-2 rounded-lg border"
+        >
+        <input type="hidden" name="override" value="False">
+        <button type="submit" class="px-5 py-3 rounded-xl text-white" style="background:var(--brand-primary)">
+          Ajouter au panier
+        </button>
+      </form>
+      {# Aide sur les contraintes de quantité #}
+      <p class="text-xs text-gray-500 mt-2">
+        {% if product.order_in_packs and product.pcb_qty > 1 %}
+          Vendu par lots de {{ product.pcb_qty }}. Minimum {{ product.min_order_qty }}.
+        {% else %}
+          Quantité minimale : {{ product.min_order_qty }}.
+        {% endif %}
+      </p>
+    </div>
+  </div>
+</article>
+{% endblock %}

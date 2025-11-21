@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="grid md:grid-cols-2 gap-8">
+  <!-- ... image et infos ... -->
+  <div>
+    <!-- ... prix & description ... -->
+
+    <form action="{% url 'cart:cart_add' product.id %}" method="post" class="mt-6 flex items-center gap-3">
+      {% csrf_token %}
+      {{ cart_form.quantity }}
+      {{ cart_form.override }}
+      <button class="px-5 py-3 rounded-xl text-white" style="background:var(--brand-primary)">
+        Ajouter au panier
+      </button>
+    </form>
+  </div>
+</article>
+{% endblock %}

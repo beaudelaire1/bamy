@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto bg-white rounded-2xl shadow p-6">
+  <nav class="text-sm mb-4" aria-label="Fil d’Ariane">
+    <ol class="flex items-center space-x-1 text-gray-500">
+      <li><a href="{% url 'core:home' %}" class="hover:underline">Accueil</a></li>
+      <li>/</li>
+      <li><a href="{% url 'userauths:account' %}" class="hover:underline">Mon compte</a></li>
+      <li>/</li>
+      <li>Mes adresses</li>
+    </ol>
+  </nav>
+  <h1 class="text-2xl font-semibold mb-6" style="color:var(--brand-primary)">Mes adresses</h1>
+  <div class="mb-4 text-right">
+    <a href="{% url 'userauths:address_create' %}" class="px-4 py-2 rounded-md text-white" style="background:var(--brand-primary)">Ajouter une adresse</a>
+  </div>
+  {% if addresses %}
+    <div class="space-y-4">
+      {% for addr in addresses %}
+        <div class="p-4 border rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center">
+          <div class="flex-1">
+            {% if addr.company_name %}
+              <p class="font-medium">{{ addr.company_name }}</p>
+            {% endif %}
+            {% if addr.contact_name %}
+              <p>{{ addr.contact_name }}</p>
+            {% endif %}
+            <p>{{ addr.address1 }}{% if addr.address2 %}, {{ addr.address2 }}{% endif %}</p>
+            <p>{{ addr.postcode }} {{ addr.city }}, {{ addr.country }}</p>
+            {% if addr.phone %}<p>Tél : {{ addr.phone }}</p>{% endif %}
+            <p class="text-xs text-gray-500 mt-1">Type : {{ addr.get_type_display }}{% if addr.is_default %} • <span class="text-green-600 font-semibold">Par défaut</span>{% endif %}</p>
+          </div>
+          <div class="flex gap-2 mt-3 sm:mt-0">
+            <a href="{% url 'userauths:address_update' addr.pk %}" class="px-3 py-1.5 text-sm text-white rounded-md" style="background:var(--brand-primary)">Modifier</a>
+            <a href="{% url 'userauths:address_delete' addr.pk %}" class="px-3 py-1.5 text-sm text-white bg-red-600 rounded-md" onclick="return confirm('Supprimer cette adresse ?');">Supprimer</a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>Aucune adresse enregistrée.</p>
+  {% endif %}
+</section>
+{% endblock %}

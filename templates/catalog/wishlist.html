@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="mb-6">
+  <h1 class="text-2xl font-semibold">Mes favoris</h1>
+  {% if count %}
+    <p class="text-gray-600">{{ count }} article{% if count > 1 %}s{% endif %} dans votre wishlist.</p>
+  {% elif ids_query %}
+    <p class="text-gray-600">
+      Aucun produit correspondant pour les IDs : {{ ids_query }}.
+      {% if missing_count and missing_count > 0 %}(manquants : {{ missing_count }}){% endif %}
+    </p>
+  {% else %}
+    <p class="text-gray-600">Votre wishlist est vide.</p>
+  {% endif %}
+</section>
+
+{% if not ids_query %}
+<script>
+(function(){
+  try{
+    const raw = localStorage.getItem('wishlist_ids');
+    const ids = raw ? JSON.parse(raw) : [];
+    if (Array.isArray(ids) && ids.length){
+      const base = window.location.pathname;
+      const qs = 'ids=' + ids.map(String).filter(Boolean).join(',');
+      const url = base + (base.includes('?') ? '&' : '?') + qs;
+      window.location.replace(url);
+    }
+  }catch(e){}
+})();
+</script>
+{% endif %}
+
+{% if count %}
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="wishlist-grid">
+    {% for product in products %}
+      {% include "catalog/_product_card.html" with product=product %}
+    {% endfor %}
+  </div>
+{% else %}
+  <a href="{% url 'catalog:product_list' %}" class="btn primary inline-block mt-3">Voir le catalogue</a>
+{% endif %}
+{% endblock %}

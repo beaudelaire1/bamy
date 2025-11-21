@@ -1,0 +1,39 @@
+<section class="lux-glass p-8 relative overflow-hidden">
+  <div class="decor-bg"></div>
+
+  <div class="relative z-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+    <div>
+      <h1 class="text-3xl md:text-4xl font-semibold text-brand">{{ COMPANY_NAME }}</h1>
+      {% if COMPANY_TAGLINE %}<p class="mt-2 text-gray-600">{{ COMPANY_TAGLINE }}</p>{% endif %}
+    </div>
+    <div class="text-sm text-gray-500">
+      <a href="{% url 'catalog:product_list' %}" class="underline">Voir le catalogue</a>
+    </div>
+  </div>
+
+  <!-- Rotator au format “panneaux de 6 logos” -->
+  <div class="relative mt-8 rounded-2xl border border-white/60 bg-white/30 backdrop-blur-xl overflow-hidden">
+    <div id="brand-rotator" class="relative w-full"
+         data-interval-min="5200" data-interval-max="9000" data-duration="700">
+      {% for b in brands %}
+        {% if forloop.first or forloop.counter0|divisibleby:6 %}
+          <div class="rotor-panel {% if not forloop.first %}is-hidden{% endif %}">
+            <div class="flex items-center gap-6 py-4 px-6">
+        {% endif %}
+
+              <a href="{{ b.get_absolute_url }}" class="group shrink-0">
+                <div class="logo-glass w-28 h-16 grid place-items-center shadow-lg">
+                  <img src="{{ b.logo.url }}" alt="{{ b.name }}" class="max-h-12 max-w-[6.5rem] object-contain opacity-90 group-hover:opacity-100 transition">
+                </div>
+              </a>
+
+        {% if forloop.counter|divisibleby:6 or forloop.last %}
+            </div>
+          </div>
+        {% endif %}
+      {% empty %}
+        <div class="py-6 px-4 text-gray-500">Aucune marque disponible pour le moment.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
