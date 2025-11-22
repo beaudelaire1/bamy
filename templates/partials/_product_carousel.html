@@ -9,6 +9,7 @@
 
   <div id="product-carousel" class="relative overflow-hidden" data-speed="450" data-interval="3500" data-auto="true">
     <div class="pc-track flex gap-6" style="transition:none;">
+      {% load catalog_extras %}
       {% for p in promos_carousel %}
         <a href="{{ p.get_absolute_url }}" class="block min-w-[240px] max-w-[240px] rounded-2xl bg-white shadow hover:shadow-lg transition overflow-hidden">
           <div class="aspect-[4/3] bg-gray-100">
@@ -21,11 +22,14 @@
             </div>
             <div class="text-sm font-medium line-clamp-2">{{ p.title }}</div>
             <div class="mt-1">
-              {% if p.discount_price %}
-                <span class="font-semibold text-brand">{{ p.discount_price }} €</span>
-                <span class="text-xs line-through text-gray-400 ml-1">{{ p.price }} €</span>
+              {% if request.user.is_authenticated %}
+                {% with user_price=p|price_for_user:request.user %}
+                  {% if user_price %}
+                    <span class="font-semibold text-brand">{{ user_price }} €</span>
+                  {% endif %}
+                {% endwith %}
               {% else %}
-                <span class="font-semibold text-brand">{{ p.price }} €</span>
+                <span class="text-sm text-gray-500">Connectez‑vous pour voir le prix</span>
               {% endif %}
             </div>
           </div>

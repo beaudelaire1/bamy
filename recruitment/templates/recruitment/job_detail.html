@@ -1,3 +1,13 @@
+<!--
+  Gabarit de détail d'une offre d'emploi.
+
+  Ce gabarit affiche le titre, la description et les informations
+  complémentaires (lieu, département) d'une offre. Il propose
+  également un formulaire de candidature basé sur
+  ``JobApplicationForm``. Le formulaire utilise ``multipart/form-data``
+  pour permettre l'envoi d'un CV. Les champs du formulaire
+  héritent des classes Tailwind définies dans le formulaire.
+-->
 
 {% extends "base.html" %}
 
@@ -15,7 +25,13 @@
     {{ job.description|linebreaks }}
   </div>
   <h2 class="text-2xl font-semibold mb-4">Postuler à cette offre</h2>
-  <form method="post" enctype="multipart/form-data" class="space-y-4">
+  <!--
+    Le formulaire envoie désormais la candidature vers l'URL
+    ``recruitment:job_apply`` qui traite la persistance.  Sans ``action``
+    explicite, le navigateur renverrait la requête POST à la page de
+    détails, provoquant un rechargement en boucle sans sauvegarde.
+  -->
+  <form method="post" action="{% url 'recruitment:job_apply' job.slug %}" enctype="multipart/form-data" class="space-y-4">
     {% csrf_token %}
     {{ form.non_field_errors }}
     <div>

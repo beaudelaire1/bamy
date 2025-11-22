@@ -9,7 +9,7 @@
 <section class="auth-card rounded-2xl p-8 bg-white shadow max-w-md mx-auto my-8">
   <h1 class="text-2xl font-semibold mb-6" style="color:var(--brand-primary)">Se connecter</h1>
 
-  {# Messages Django (facultatif) #}
+  <!-- Messages Django (facultatif) -->
   {% if messages %}
     <ul class="auth-messages">
       {% for m in messages %}
@@ -47,7 +47,7 @@
       {% endif %}
     </div>
 
-    {# Redirection post-login (évite VariableDoesNotExist) #}
+    <!-- Redirection post-login (évite VariableDoesNotExist) -->
     {% if redirect_field_value %}
       <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
     {% endif %}

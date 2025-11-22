@@ -1,7 +1,8 @@
-{# templates/catalog/_product_card.html #}
+<!-- templates/catalog/_product_card.html -->
+{% load catalog_extras %}
 <article class="card group relative">
 
-  {# Wishlist #}
+  <!-- Wishlist -->
   <button type="button"
           class="absolute top-2 right-2 z-10 p-2 rounded-xl bg-white/80 hover:bg-white"
           aria-label="Ajouter aux favoris"
@@ -35,32 +36,25 @@
 
       <h3 class="mt-1 font-medium line-clamp-2">{{ product.title }}</h3>
 
-      {# Prix et unité #}
+      <!-- Prix et unité -->
       <div class="mt-2">
-        {% if user.is_authenticated and user.is_b2b_verified %}
-          {# Affichage du prix pour les utilisateurs B2B vérifiés #}
-          {% if product.discount_price and product.discount_price < product.price %}
-            <div class="flex items-baseline gap-2">
-              <span class="text-lg font-semibold text-brand">{{ product.discount_price }} €</span>
-              <span class="text-sm line-through text-gray-400">{{ product.price }} €</span>
-            </div>
-          {% elif product.old_price and product.old_price > product.price %}
-            <div class="flex items-baseline gap-2">
-              <span class="text-lg font-semibold text-brand">{{ product.price }} €</span>
-              <span class="text-sm line-through text-gray-400">{{ product.old_price }} €</span>
-            </div>
-          {% else %}
-            <div class="text-lg font-semibold text-brand">{{ product.price }} €</div>
-          {% endif %}
+        {% if request.user.is_authenticated %}
+          <!-- Affiche un prix ajusté en fonction de la catégorie de client.  Le
+             calcul est centralisé via le filtre ``price_for_user`` qui
+             applique les remises pour les grossistes ou distributeurs. -->
+          {% with user_price=product|price_for_user:request.user %}
+            {% if user_price %}
+              <div class="text-lg font-semibold text-brand">{{ user_price }} €</div>
+            {% else %}
+              <div class="text-lg font-semibold text-brand">—</div>
+            {% endif %}
+          {% endwith %}
         {% else %}
-          {# Prix masqué pour visiteurs et comptes non validés #}
-          <div class="text-sm text-gray-500">Connectez‑vous pour voir vos tarifs HT</div>
+          <!-- Prix masqué pour les visiteurs ou comptes non validés -->
+          <div class="text-sm text-gray-500">Connectez‑vous pour voir les prix</div>
           <div class="mt-1">
             <a href="{% url 'crm:quote_request' %}?product={{ product.id }}" class="text-brand underline text-sm">Demander un devis</a>
           </div>
-          {% if user.is_authenticated and not user.is_b2b_verified %}
-            <div class="text-xs text-yellow-600 mt-1">Compte en vérification</div>
-          {% endif %}
         {% endif %}
         {% if product.unit %}
           <div class="text-xs text-gray-500">{{ product.unit }}</div>
@@ -69,14 +63,14 @@
     </div>
   </a>
 
-  {# Ajouter au panier + Quantité (MOQ + PCB intégrés) #}
+  <!-- Ajouter au panier + Quantité (MOQ + PCB intégrés) -->
   <form class="add-to-cart p-3 pt-0" method="post" action="{% url 'cart:cart_add' product.id %}">
     {% csrf_token %}
 
     <div class="qty-wrap">
       <label class="qty-label">Quantité</label>
       <div class="qty-control">
-        {# Les boutons +/- exploitent l’attribut step du champ #}
+        <!-- Les boutons +/- exploitent l’attribut step du champ -->
         <button type="button" class="qty-btn" onclick="
           const i=this.nextElementSibling; i.stepDown(); i.dispatchEvent(new Event('change'));
         " aria-label="Diminuer">−</button>
@@ -103,7 +97,7 @@
         " aria-label="Augmenter">+</button>
       </div>
 
-      {# Aide sur les contraintes de quantité #}
+      <!-- Aide sur les contraintes de quantité -->
       {% if product.order_in_packs and product.pcb_qty > 1 %}
         <p class="text-xs text-gray-500 mt-1">
           Vendu par lots de {{ product.pcb_qty }}. Minimum {{ product.min_order_qty }}.
@@ -115,7 +109,7 @@
       {% endif %}
     </div>
 
-    {# Si tu veux remplacer la quantité existante au lieu d'additionner, passe override=True #}
+    <!-- Si tu veux remplacer la quantité existante au lieu d'additionner, passe override=True -->
     <input type="hidden" name="override" value="False">
 
     <button type="submit" class="w-full px-3 py-2 rounded-xl text-white" style="background:var(--brand-primary)">

@@ -15,7 +15,7 @@
   <!-- Thème sombre (variables) -->
   <link rel="stylesheet" href="{% static 'css/ui-dark.css' %}"/>
 
-  {# Overrides CSS: personnalisation de l'interface premium (panier, hero, etc.) #}
+  <!-- Overrides CSS: personnalisation de l'interface premium (panier, hero, etc.) -->
   <link rel="stylesheet" href="{% static 'css/ui-overrides.css' %}"/>
 
   {% block head_extra %}{% endblock %}
@@ -31,7 +31,7 @@
 
   <!-- PAGE -->
   <main class="container py-10">
-    {# Messages flash (succès, erreur, info) #}
+    <!-- Messages flash (succès, erreur, info) -->
     {% if messages %}
       <div class="mb-6 space-y-3">
         {% for message in messages %}
@@ -195,7 +195,7 @@
 
   {% block scripts %}{% endblock %}
 
-  {# Navigation mobile fixe en bas de page #}
+  <!-- Navigation mobile fixe en bas de page -->
   {% include "partials/_bottom_nav.html" %}
 
   <!-- Bandeau cookie RGPD -->

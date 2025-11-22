@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load catalog_extras %}
 {% block content %}
-  {# Fil d’Ariane #}
+  <!-- Fil d’Ariane -->
   <nav class="text-sm mb-4" aria-label="Fil d’Ariane">
     <ol class="flex items-center space-x-1 text-gray-500">
       <li><a href="{% url 'core:home' %}" class="hover:underline">Accueil</a></li>
@@ -31,26 +32,23 @@
     <h1 class="text-2xl font-semibold mb-2">{{ product.title }}</h1>
     <div class="text-sm text-gray-500 mb-4">{{ product.brand.name }} • {{ product.category.name }} • SKU {{ product.sku }}</div>
 
-    {# Politique d’affichage des prix : afficher uniquement aux comptes B2B validés #}
-    {% if user.is_authenticated and user.is_b2b_verified %}
-      {% if product.discount_price and product.discount_price < product.price %}
-        <div class="flex items-baseline gap-2 mb-4">
-          <span class="text-2xl font-semibold" style="color:var(--brand-primary)">{{ product.discount_price }} €</span>
-          <span class="text-sm line-through text-gray-400">{{ product.price }} €</span>
+    <!-- Politique d’affichage des prix : afficher uniquement aux comptes B2B validés -->
+    {% if request.user.is_authenticated %}
+      <!-- Pour les clients vérifiés, utilise le filtre ``price_for_user`` pour
+         calculer le tarif en fonction de leur catégorie. -->
+      {% with user_price=product|price_for_user:request.user %}
+        <div class="text-2xl font-semibold mb-4" style="color:var(--brand-primary)">
+          {% if user_price %}{{ user_price }} €{% else %}—{% endif %}
         </div>
-      {% else %}
-        <div class="text-2xl font-semibold mb-4" style="color:var(--brand-primary)">{{ product.price }} €</div>
-      {% endif %}
+      {% endwith %}
     {% else %}
       <div class="text-sm text-gray-500 mb-4">
-        Tarifs réservés aux professionnels. Veuillez vous connecter avec un compte validé pour accéder à vos prix.
+        Connectez‑vous pour voir les prix de ce produit.
       </div>
       <div class="mb-4">
         <a href="{% url 'crm:quote_request' %}?product={{ product.id }}" class="text-brand underline">Demander un devis</a>
       </div>
-      {% if user.is_authenticated and not user.is_b2b_verified %}
-        <div class="text-xs text-yellow-600 mb-4">Compte en vérification</div>
-      {% endif %}
+      <!-- Pas de message de vérification : on se contente d'inviter l'utilisateur à se connecter. -->
     {% endif %}
     {% if product.unit %}
       <div class="text-sm text-gray-500 mb-4">Unit&eacute; : {{ product.unit }}</div>
@@ -66,7 +64,7 @@
       <!-- Note moyenne -->
       <div class="flex items-center mb-3">
         <div class="flex items-center text-yellow-400">
-          {# Génère 5 étoiles en utilisant la valeur du compteur de boucle plutôt que le filtre int #}
+          <!-- Génère 5 étoiles en utilisant la valeur du compteur de boucle plutôt que le filtre int -->
           {% for _ in '12345' %}
             {% if avg_rating|floatformat:0|add:'0' >= forloop.counter %}
               <span>&#9733;</span>
@@ -84,7 +82,7 @@
             <li class="border rounded-lg p-4">
               <div class="flex items-center mb-2">
                 <div class="flex items-center text-yellow-400 text-sm">
-                  {# Affiche les étoiles en fonction de la note du commentaire sans utiliser le filtre int #}
+                  <!-- Affiche les étoiles en fonction de la note du commentaire sans utiliser le filtre int -->
                   {% for _ in '12345' %}
                     {% if review.rating >= forloop.counter %}
                       <span>&#9733;</span>
@@ -138,7 +136,7 @@
     </div>
 
     <div class="mt-6">
-      {# Formulaire d'ajout au panier #}
+      <!-- Formulaire d'ajout au panier -->
       <form method="post" action="{% url 'cart:cart_add' product.id %}" class="flex items-center gap-4">
         {% csrf_token %}
         <label for="id_quantity" class="sr-only">Quantité</label>
@@ -161,7 +159,7 @@
           Ajouter au panier
         </button>
       </form>
-      {# Aide sur les contraintes de quantité #}
+      <!-- Aide sur les contraintes de quantité -->
       <p class="text-xs text-gray-500 mt-2">
         {% if product.order_in_packs and product.pcb_qty > 1 %}
           Vendu par lots de {{ product.pcb_qty }}. Minimum {{ product.min_order_qty }}.

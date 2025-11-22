@@ -127,6 +127,32 @@ class Product(models.Model):
 
     price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+    # Tarifs spécifiques selon la catégorie de client
+    price_wholesaler = models.DecimalField(
+        "Prix grossiste",
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Tarif appliqué aux clients de type grossiste s'il est renseigné.",
+    )
+    price_big_retail = models.DecimalField(
+        "Prix grande distribution",
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Tarif appliqué aux clients de type grande distribution (hypermarchés).",
+    )
+    price_small_retail = models.DecimalField(
+        "Prix petite distribution",
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Tarif appliqué aux clients de type petite distribution ou commerce de proximité.",
+    )
     stock = models.PositiveIntegerField(default=0)
     image = models.ImageField(upload_to="products/", blank=True, null=True)
 
@@ -239,48 +265,53 @@ class Product(models.Model):
     # d'écraser cette logique.
 
     def get_price_for_user(self, user):
-        """Retourne le prix ajusté en fonction du type de client.
+        """
+        Retourne le tarif adapté au type de client.
 
-        Les utilisateurs B2B vérifiés bénéficient de remises selon leur
-        catégorie (:attr:`userauths.models.User.client_type`).  Les réductions
-        s'appliquent au prix réel (discount_price si en promotion, sinon price).
-        Pour les visiteurs non authentifiés ou les comptes non vérifiés, le
-        prix public est retourné sans remise.
+        Cette méthode exploite les champs de prix différenciés du modèle
+        (`price_wholesaler`, `price_big_retail`, `price_small_retail`).
+        Si un tarif spécifique est renseigné pour la catégorie du client,
+        il est renvoyé en priorité.  À défaut, le prix promotionnel
+        (`discount_price`) est renvoyé lorsqu'une promotion est active,
+        sinon le prix public (`price`).  Les visiteurs non connectés ou
+        les comptes non vérifiés reçoivent toujours le prix public ou
+        promotionnel selon le cas.
 
         Parameters
         ----------
         user : django.contrib.auth.models.AbstractBaseUser or None
-            L'utilisateur courant.  Peut être None pour les visiteurs anonymes.
+            L'utilisateur pour lequel on souhaite déterminer le tarif.
 
         Returns
         -------
-        Decimal
-            Le prix unitaire ajusté.
+        decimal.Decimal
+            Le prix unitaire ajusté pour l'utilisateur.
         """
-        from decimal import Decimal  # import local pour éviter les dépendances circulaires
-        # Prix réel (promo si applicable)
-        base_price = self.discount_price if self.is_promo else self.price
-        # Fallback de prix
+        from decimal import Decimal  # import local pour éviter des problèmes de dépendances circulaires
+
+        # Détermine le prix de base (tarif public ou promo si active)
+        base_price = self.discount_price if self.is_promo and self.discount_price else self.price
         try:
-            price = Decimal(str(base_price)) if base_price is not None else Decimal("0.00")
+            base_price = Decimal(str(base_price)) if base_price is not None else Decimal("0.00")
         except Exception:
-            price = Decimal("0.00")
-        # Pas d'utilisateur ou non connecté
+            base_price = Decimal("0.00")
+
+        # Cas où l'utilisateur n'est pas connecté : retourne le prix public/promo
         if not user or not getattr(user, "is_authenticated", False):
-            return price
-        # Si le compte B2B n'est pas encore vérifié, pas de remise
+            return base_price
+        # Si le compte B2B n'est pas vérifié, aucun prix spécifique n'est appliqué
         if not getattr(user, "is_b2b_verified", False):
-            return price
-        # Applique des remises en fonction de la catégorie
-        ctype = getattr(user, "client_type", "regular")
-        if ctype == "wholesaler":
-            return (price * Decimal("0.80")).quantize(Decimal("0.01"))
-        elif ctype == "big_retail":
-            return (price * Decimal("0.90")).quantize(Decimal("0.01"))
-        elif ctype == "small_retail":
-            return (price * Decimal("0.95")).quantize(Decimal("0.01"))
-        else:
-            return price
+            return base_price
+        # Sélectionne la colonne de prix selon le type de client
+        ctype = getattr(user, "client_type", "regular") or "regular"
+        if ctype == "wholesaler" and self.price_wholesaler is not None:
+            return self.price_wholesaler
+        if ctype == "big_retail" and self.price_big_retail is not None:
+            return self.price_big_retail
+        if ctype == "small_retail" and self.price_small_retail is not None:
+            return self.price_small_retail
+        # Par défaut, renvoie le prix public/promo
+        return base_price
     def clean(self):
         # Validation côté serveur, si tu veux garder un garde-fou
         super().clean()

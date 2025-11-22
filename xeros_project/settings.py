@@ -130,6 +130,11 @@ INSTALLED_APPS = [
 
     "django_ckeditor_5",
 
+    # Import/export permet l'importation et l'exportation de données
+    # depuis l'administration (CSV, XLSX). Vous devrez installer
+    # django-import-export via pip pour activer ces fonctionnalités.
+    "import_export",
+
     # Activation du framework sitemap pour SEO
     "django.contrib.sitemaps",
 ]
@@ -335,6 +340,7 @@ JAZZMIN_SETTINGS = {
     # sont utilisées par Jazzmin pour illustrer les menus. Vous pouvez
     # ajuster les classes selon vos préférences (fa-solid, fa-regular…).
     "icons": {
+        # Icônes d'application principales
         "auth": "fas fa-user-shield",
         "catalog": "fas fa-box-open",
         "cart": "fas fa-shopping-basket",
@@ -347,6 +353,27 @@ JAZZMIN_SETTINGS = {
         "loyalty": "fas fa-gift",
         "userauths": "fas fa-users",
     },
+
+    # Icônes spécifiques pour chaque modèle. Jazzmin affichera ces
+    # pictogrammes modernes dans le menu latéral de l'administration.
+    "model_icons": {
+        # Clés app_label.model_name en minuscules comme attendu par Jazzmin
+        "auth.group": "fas fa-users-cog",
+        "catalog.category": "fas fa-layer-group",
+        "catalog.brand": "fas fa-tags",
+        "catalog.product": "fas fa-box",
+        "crm.client": "fas fa-user-tie",
+        "crm.quoterequest": "fas fa-file-signature",
+        "recruitment.jobposting": "fas fa-briefcase",
+        "recruitment.jobapplication": "fas fa-file-lines",
+        "loyalty.loyaltyaccount": "fas fa-gift",
+        "notifications.notification": "fas fa-bell",
+        "returns.returnrequest": "fas fa-undo",
+    },
+
+    # Ajoute un CSS personnalisé pour harmoniser Jazzmin avec la charte graphique
+    # de la boutique. Le fichier se trouve dans static/css/admin-overrides.css
+    "custom_css": "css/admin-overrides.css",
 }
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 14   # 14 jours si "remember" coché (par défaut)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # sera forcé à True au cas par cas via la vue

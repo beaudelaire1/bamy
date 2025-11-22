@@ -202,6 +202,16 @@
   color: var(--ink, #111111);
 }
 
+/* Lisibilité des items dans les menus déroulants de la barre de navigation.
+   Les liens utilisent un texte sombre par défaut et s'illuminent de la couleur
+   principale au survol.  Cela garantit une bonne visibilité sur fond clair. */
+.site-nav .nav-menu div a {
+  color: #111827; /* gris très foncé pour un bon contraste */
+}
+.site-nav .nav-menu div a:hover {
+  color: var(--brand-primary);
+}
+
 /* Récap sidebar sticky: respiration et séparateurs */
 .bg-card{ backdrop-filter: none; }
 @supports (backdrop-filter: blur(6px)){

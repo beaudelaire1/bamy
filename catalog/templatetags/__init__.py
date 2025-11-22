@@ -1,0 +1,1 @@
+"""Espace pour les tags et filtres personnalisés de l'application catalog."""

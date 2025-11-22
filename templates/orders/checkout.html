@@ -59,9 +59,9 @@
         <img src="{% static 'img/payments/paypal.svg' %}" alt="PayPal" width="38" height="24" loading="lazy">
       </div>
 
-      {# --- MOYENS DE PAIEMENT --- #}
+      <!-- --- MOYENS DE PAIEMENT --- -->
       <div class="mt-6 space-y-3">
-        {# Carte bancaire (Stripe Checkout) #}
+        <!-- Carte bancaire (Stripe Checkout) -->
         <form action="{% url 'payments:stripe_checkout' %}" method="post">
           {% csrf_token %}
           <button type="submit" class="btn-primary w-full">
@@ -69,7 +69,7 @@
           </button>
         </form>
 
-        {# PayPal #}
+        <!-- PayPal -->
         <div id="paypal-buttons" class="mt-1"></div>
         <script src="https://www.paypal.com/sdk/js?client-id={{ PAYPAL_CLIENT_ID }}&currency=EUR"></script>
         <script>

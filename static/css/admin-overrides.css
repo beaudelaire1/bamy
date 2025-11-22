@@ -1,0 +1,63 @@
+/*
+ * Personnalisation de l'interface d'administration Jazzmin pour
+ * l'aligner avec l'identité visuelle de la boutique.  Ce fichier est
+ * chargé via la clef ``custom_css`` de ``JAZZMIN_SETTINGS``.  Les
+ * couleurs de base ainsi que les bordures et arrondis sont ajustés
+ * afin de donner une impression plus moderne et luxueuse.
+ */
+
+/* Couleurs principales correspondant à la charte du site */
+:root {
+  --admin-primary: #2b4fff;     /* bleu vif de la marque */
+  --admin-secondary: #7c3aed;   /* violet utilisé en mode sombre */
+  --admin-accent: #0e0e52;      /* bleu nuit pour les survols */
+}
+
+/* En-tête et barre latérale */
+.navbar.navbar-dark {
+  background-color: var(--admin-primary) !important;
+}
+.sidebar-dark .sidebar {
+  background-color: var(--admin-accent) !important;
+}
+
+/* Lien actif dans la sidebar */
+.sidebar-dark .nav-sidebar > .nav-item > .nav-link.active {
+  background-color: var(--admin-secondary) !important;
+  border-radius: 8px;
+}
+
+/* Icônes de la sidebar : couleur claire pour le contraste */
+.sidebar-dark .nav-sidebar .nav-icon {
+  color: #f3f4f6 !important;
+}
+
+/* Boutons primaires et liens */
+.btn-primary {
+  background-color: var(--admin-primary) !important;
+  border-color: var(--admin-primary) !important;
+}
+.btn-primary:hover {
+  background-color: var(--admin-secondary) !important;
+  border-color: var(--admin-secondary) !important;
+}
+
+/* Table header */
+.content-wrapper .card .card-header {
+  background-color: var(--admin-primary) !important;
+  color: #ffffff;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+/* Arrondis sur les cartes */
+.content-wrapper .card {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Retire les gros blocs de commentaires visibles en production.
+   Ils sont remplacés par des commentaires Django qui ne s'affichent pas. */
+body pre.comments {
+  display: none;
+}

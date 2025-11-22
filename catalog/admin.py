@@ -2,15 +2,38 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import Category, Brand, Product
 
+# Importer les ressources pour l'import/export si django-import-export est installé
+try:
+    from import_export import resources  # type: ignore
+    from .resources import CategoryResource, BrandResource, ProductResource  # type: ignore
+except Exception:
+    CategoryResource = None  # type: ignore
+    BrandResource = None  # type: ignore
+    ProductResource = None  # type: ignore
+
+# Si la bibliothèque import_export est disponible, on l'utilise pour
+# permettre l'import/export en masse de produits, marques et catégories
+# depuis des fichiers Excel/CSV. Sinon, on retombe sur la classe
+# ``ModelAdmin`` standard.
+try:
+    from import_export.admin import ImportExportModelAdmin  # type: ignore
+    BaseAdmin = ImportExportModelAdmin
+except Exception:
+    BaseAdmin = admin.ModelAdmin
+
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(BaseAdmin):
     list_display = ("name", "parent", "is_active")
     list_filter = ("is_active",)
     search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
 
+    # Associe une ressource pour permettre l'import/export
+    if CategoryResource:
+        resource_class = CategoryResource
+
 @admin.register(Brand)
-class BrandAdmin(admin.ModelAdmin):
+class BrandAdmin(BaseAdmin):
     list_display = ("name", "is_active", "logo_preview")
     list_filter = ("is_active",)
     search_fields = ("name",)
@@ -28,8 +51,12 @@ class BrandAdmin(admin.ModelAdmin):
         return "—"
     logo_preview.short_description = "Logo"
 
+    # Association de la ressource d'import/export pour Brand
+    if BrandResource:
+        resource_class = BrandResource
+
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(BaseAdmin):
     """Personnalisation de l'interface d'administration pour les produits."""
 
     list_display = (
@@ -40,6 +67,9 @@ class ProductAdmin(admin.ModelAdmin):
         "category",
         "price",
         "discount_price",
+        "price_wholesaler",
+        "price_big_retail",
+        "price_small_retail",
         "pcb_qty",
         "unit",
         "is_week_selection",
@@ -61,7 +91,18 @@ class ProductAdmin(admin.ModelAdmin):
                 )
             },
         ),
-        ("Tarifs", {"fields": ("price", "discount_price")}),
+        (
+            "Tarifs",
+            {
+                "fields": (
+                    "price",
+                    "discount_price",
+                    "price_wholesaler",
+                    "price_big_retail",
+                    "price_small_retail",
+                )
+            },
+        ),
         ("Quantités", {"fields": ("min_order_qty", "pcb_qty", "order_in_packs")}),
         (
             "Sélection semaine",
@@ -86,3 +127,7 @@ class ProductAdmin(admin.ModelAdmin):
     )
     readonly_fields = ("created_at", "updated_at")
     prepopulated_fields = {"slug": ("title",)}
+
+    # Ressource d'import/export pour Product
+    if ProductResource:
+        resource_class = ProductResource
