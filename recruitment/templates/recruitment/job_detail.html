@@ -1,13 +1,3 @@
-{#
-  Gabarit de détail d'une offre d'emploi.
-
-  Ce gabarit affiche le titre, la description et les informations
-  complémentaires (lieu, département) d'une offre. Il propose
-  également un formulaire de candidature basé sur
-  ``JobApplicationForm``. Le formulaire utilise ``multipart/form-data``
-  pour permettre l'envoi d'un CV. Les champs du formulaire
-  héritent des classes Tailwind définies dans le formulaire.
-#}
 
 {% extends "base.html" %}
 
@@ -48,12 +38,19 @@
       {{ form.message }}
       {{ form.message.errors }}
     </div>
-    <div>
-      {{ form.resume.label_tag }}<br />
-      {{ form.resume }}
-      {{ form.resume.errors }}
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        {{ form.resume.label_tag }}<br />
+        {{ form.resume }}
+        {{ form.resume.errors }}
+      </div>
+      <div>
+        {{ form.cover_letter.label_tag }}<br />
+        {{ form.cover_letter }}
+        {{ form.cover_letter.errors }}
+      </div>
     </div>
-    <button type="submit" class="px-5 py-3 rounded-xl text-white" style="background: var(--brand-primary);">
+    <button type="submit" class="px-5 py-3 mt-2 rounded-xl text-white" style="background: var(--brand-primary);">
       Envoyer ma candidature
     </button>
   </form>

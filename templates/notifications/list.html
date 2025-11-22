@@ -5,10 +5,10 @@
   <h1 class="text-2xl font-bold mb-4">Vos notifications</h1>
   <ul class="space-y-3">
     {% for n in notifications %}
-      <li class="p-4 rounded-lg {{ 'bg-gray-50' if not n.read else 'bg-white' }} border">
+      <li class="p-4 rounded-lg border {% if not n.read %}bg-gray-50{% else %}bg-white{% endif %}">
         <div class="flex justify-between items-start">
           <div>
-            <p class="{{ 'font-semibold' if not n.read }}">{{ n.message }}</p>
+            <p {% if not n.read %}class="font-semibold"{% endif %}>{{ n.message }}</p>
             <p class="text-xs text-gray-500">{{ n.created_at|date:"d/m/Y H:i" }}</p>
           </div>
           {% if not n.read %}<span class="text-xs text-blue-600">Non lue</span>{% endif %}

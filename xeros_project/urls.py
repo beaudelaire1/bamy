@@ -47,6 +47,9 @@ urlpatterns += [
 
     # Recrutement : offres et candidatures
     path("recruitment/", include("recruitment.urls", namespace="recruitment")),
+
+    # Programme de fidélité
+    path("loyalty/", include("loyalty.urls", namespace="loyalty")),
 ]
 
 if settings.DEBUG:

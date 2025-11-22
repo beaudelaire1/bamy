@@ -107,6 +107,37 @@ def checkout(request):
                         # Ignore si l'app loyalty n'est pas installée
                         pass
 
+                # Envoi d'un email interne pour signaler la création d'une commande
+                try:
+                    from django.conf import settings
+                    from django.core.mail import send_mail
+                    internal_subject = f"[COMMANDE] Nouvelle commande {order.order_number}"
+                    internal_body = (
+                        f"Une nouvelle commande vient d'être passée.\n\n"
+                        f"Numéro de commande : {order.order_number}\n"
+                        f"Client : {order.first_name} {order.last_name} ({order.email})\n"
+                        f"Date : {order.created_at}\n"
+                        f"Total TTC : {order.total} €\n\n"
+                        "Consultez l'administration pour plus de détails."
+                    )
+                    from_email = getattr(settings, "DEFAULT_FROM_EMAIL", None) or None
+                    send_mail(internal_subject, internal_body, from_email, getattr(settings, "INTERNAL_CONTACTS", []))
+                    # Envoi d'un email de confirmation au client
+                    company_name = getattr(settings, "COMPANY_NAME", "Notre boutique")
+                    client_subject = f"Votre commande {order.order_number} chez {company_name}"
+                    client_body = (
+                        "Bonjour,\n\n"
+                        "Nous vous remercions pour votre commande. Voici un récapitulatif :\n\n"
+                        f"Numéro de commande : {order.order_number}\n"
+                        f"Total TTC : {order.total} €\n\n"
+                        "Nous préparerons votre commande dans les meilleurs délais.\n\n"
+                        f"Cordialement,\nL'équipe {company_name}"
+                    )
+                    send_mail(client_subject, client_body, from_email, [order.email])
+                except Exception:
+                    # Ignore les erreurs d'envoi en développement
+                    pass
+
             messages.success(request, "Commande créée avec succès.")
             return redirect("orders:success", order_number=order.order_number)
         else:

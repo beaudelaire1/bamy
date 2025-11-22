@@ -16,13 +16,13 @@
 
   <!-- Liens principaux -->
   <ul id="nav-menu" class="nav-menu">
-    <!--
+   <!-- {#
       Nouvelle navigation structurée en mega‑menus.
       Le logo à gauche sert de lien vers l'accueil, il n'est donc plus
       nécessaire d'avoir un lien "Accueil" dans la liste. Trois menus
       principaux regroupent les liens par thématique : Produits, Services
       et Entreprise. Chaque sous‑menu apparaît au survol.
-    -->
+    #}-->
     <!-- Menu Produits -->
     <li class="relative group">
       <a class="nav-link flex items-center gap-1" href="{% url 'catalog:product_list' %}" aria-haspopup="true">
@@ -30,7 +30,8 @@
         <span>Produits</span>
       </a>
       {% if nav_categories %}
-      <div class="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-lg ring-1 ring-black/5 hidden group-hover:block z-50 p-4">
+      <div class="absolute left-0 mt-2 w-64 rounded-xl shadow-lg ring-1 ring-black/5 hidden group-hover:block z-50 p-4"
+           style="background: var(--surface, #ffffff); color: var(--ink, #111111);">
         <h3 class="text-sm font-semibold text-gray-700 mb-2">Catégories</h3>
         <ul class="space-y-1 mb-3">
           {% for cat in nav_categories %}
@@ -52,13 +53,14 @@
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         <span>Services</span>
       </a>
-      <div class="absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-lg ring-1 ring-black/5 hidden group-hover:block z-50">
+      <div class="absolute left-0 mt-2 w-56 rounded-xl shadow-lg ring-1 ring-black/5 hidden group-hover:block z-50"
+           style="background: var(--surface, #ffffff); color: var(--ink, #111111);">
         <ul class="py-2">
           <li><a href="{% url 'catalog:week_selection' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sélection semaine</a></li>
           <li><a href="{% url 'crm:contact' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Contact / CRM</a></li>
           <li><a href="{% url 'notifications:list' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Notifications</a></li>
           <li><a href="{% url 'returns:policy' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Politique de retour</a></li>
-          <li><a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Programme fidélité</a></li>
+          <li><a href="{% url 'loyalty:program' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Programme fidélité</a></li>
         </ul>
       </div>
     </li>
@@ -69,7 +71,8 @@
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         <span>Entreprise</span>
       </a>
-      <div class="absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-lg ring-1 ring-black/5 hidden group-hover:block z-50">
+      <div class="absolute left-0 mt-2 w-56 rounded-xl shadow-lg ring-1 ring-black/5 hidden group-hover:block z-50"
+           style="background: var(--surface, #ffffff); color: var(--ink, #111111);">
         <ul class="py-2">
           <li><a href="{% url 'core:about' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">À propos</a></li>
           <li><a href="{% url 'core:contact' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Contact</a></li>

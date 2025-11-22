@@ -163,6 +163,45 @@
 .qty-btn{ font-weight: 800; }
 .qty-input{ font-variant-numeric: tabular-nums; }
 
+/* Disposition horizontale des contrôles de quantité
+   Cette section aligne les boutons +/- et l'input sur une même ligne pour
+   une présentation plus compacte et luxueuse. Les couleurs utilisent les
+   variables CSS pour s'adapter au thème clair ou sombre. */
+.qty-wrap .qty-control{
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.qty-control .qty-btn{
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: var(--surface, #f6f8fb);
+  color: var(--ink, #111111);
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 8px;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.qty-control .qty-btn:hover{
+  background: rgba(0,0,0,.06);
+}
+.qty-control .qty-input{
+  width: 64px;
+  height: 36px;
+  text-align: center;
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 0;
+  background: var(--surface, #ffffff);
+  color: var(--ink, #111111);
+}
+
 /* Récap sidebar sticky: respiration et séparateurs */
 .bg-card{ backdrop-filter: none; }
 @supports (backdrop-filter: blur(6px)){

@@ -65,6 +65,16 @@ def contact_view(request):
             except Exception:
                 # On ignore les exceptions d'envoi en mode dev (console backend)
                 pass
+            # Crée une notification pour l'utilisateur connecté le cas échéant
+            if request.user.is_authenticated:
+                try:
+                    from notifications.models import Notification  # type: ignore
+                    Notification.objects.create(
+                        user=request.user,
+                        message="Votre demande de contact a été envoyée avec succès."
+                    )
+                except Exception:
+                    pass
             messages.success(request, "Votre message a été envoyé. Merci de nous avoir contactés.")
             return redirect("crm:contact")
     else:
@@ -139,6 +149,16 @@ def quote_request_view(request):
                 )
             except Exception:
                 pass
+            # Crée une notification pour l'utilisateur connecté le cas échéant
+            if request.user.is_authenticated:
+                try:
+                    from notifications.models import Notification  # type: ignore
+                    Notification.objects.create(
+                        user=request.user,
+                        message=f"Votre demande de devis #{qr.pk} a été envoyée."
+                    )
+                except Exception:
+                    pass
             messages.success(request, "Votre demande de devis a été envoyée.")
             return redirect("crm:quote_request")
     else:

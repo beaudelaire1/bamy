@@ -15,6 +15,17 @@ body.dark-theme .site-footer {
   background-color: var(--surface);
   color: var(--ink);
 }
+/* Sur le thème sombre, ajuster également l'en‑tête principal pour qu'il
+   adopte une couleur plus uniforme plutôt qu'un dégradé bleu. On
+   remplace le gradient par une couleur de fond sombre et on ajuste la
+   bordure inférieure. */
+body.dark-theme .site-header{
+  background: var(--surface);
+  color: var(--ink);
+}
+body.dark-theme .site-header::after{
+  background: rgba(255,255,255,.1);
+}
 
 body.dark-theme .nav-link,
 body.dark-theme .icon-btn {

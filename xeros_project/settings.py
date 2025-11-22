@@ -320,6 +320,33 @@ JAZZMIN_SETTINGS = {
     "welcome_sign": f"Bienvenue chez {COMPANY_NAME}",
     "site_logo": None,  # on ajoutera plus tard
     "show_ui_builder": False,
+    # Ajout d'un lien vers le site public dans le menu supérieur de l'admin
+    # Ce lien s'ouvre dans une nouvelle fenêtre et permet aux administrateurs
+    # de consulter rapidement la boutique B2B.
+    "topmenu_links": [
+        {
+            "name": "Aller au site",
+            "url": "/",  # URL racine du site
+            "new_window": True,
+        },
+    ],
+
+    # Icônes modernes pour les applications de l'admin. Ces classes FontAwesome
+    # sont utilisées par Jazzmin pour illustrer les menus. Vous pouvez
+    # ajuster les classes selon vos préférences (fa-solid, fa-regular…).
+    "icons": {
+        "auth": "fas fa-user-shield",
+        "catalog": "fas fa-box-open",
+        "cart": "fas fa-shopping-basket",
+        "orders": "fas fa-receipt",
+        "crm": "fas fa-address-card",
+        "marketing": "fas fa-bullhorn",
+        "notifications": "fas fa-bell",
+        "returns": "fas fa-undo",
+        "recruitment": "fas fa-briefcase",
+        "loyalty": "fas fa-gift",
+        "userauths": "fas fa-users",
+    },
 }
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 14   # 14 jours si "remember" coché (par défaut)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # sera forcé à True au cas par cas via la vue

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto py-10">
+  <h1 class="text-3xl font-bold mb-4">Programme de fidélité</h1>
+  <p class="mb-4 text-gray-700">
+    Rejoignez notre programme de fidélité et profitez d'avantages exclusifs réservés à nos meilleurs clients professionnels. Cumulez des points à chaque commande et transformez‑les en remises ou cadeaux.
+  </p>
+  <h2 class="text-xl font-semibold mt-6 mb-2">Comment ça fonctionne ?</h2>
+  <ol class="list-decimal list-inside space-y-2 text-gray-700">
+    <li>Créez un compte professionnel et passez vos commandes comme d'habitude.</li>
+    <li>Pour chaque euro dépensé, vous gagnez des points de fidélité.</li>
+    <li>Votre solde de points est consultable dans votre tableau de bord.</li>
+    <li>Utilisez vos points pour bénéficier de remises lors de vos prochaines commandes ou choisissez des cadeaux dans notre catalogue de récompenses.</li>
+  </ol>
+  <h2 class="text-xl font-semibold mt-6 mb-2">Avantages</h2>
+  <ul class="list-disc list-inside space-y-2 text-gray-700">
+    <li>Remises supplémentaires sur des catégories spécifiques.</li>
+    <li>Accès prioritaire à nos ventes privées et promotions.</li>
+    <li>Service client dédié et assistance personnalisée.</li>
+  </ul>
+  <p class="mt-6 text-gray-600">
+    Pour toute question sur le programme de fidélité, n'hésitez pas à nous contacter via notre formulaire de <a href="{% url 'crm:contact' %}" class="text-brand underline">contact</a>.
+  </p>
+</section>
+{% endblock %}

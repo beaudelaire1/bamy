@@ -63,6 +63,11 @@ class JobApplication(models.Model):
         "CV", upload_to="applications/resumes/", blank=True, null=True
     )
 
+    # Pièce jointe supplémentaire pour la lettre de motivation.
+    cover_letter = models.FileField(
+        "Lettre de motivation", upload_to="applications/cover_letters/", blank=True, null=True
+    )
+
     class Meta:
         verbose_name = "candidature"
         verbose_name_plural = "candidatures"

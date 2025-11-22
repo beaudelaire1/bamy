@@ -20,7 +20,8 @@ class JobApplicationForm(forms.ModelForm):
 
     class Meta:
         model = JobApplication
-        fields = ["name", "email", "phone", "message", "resume"]
+        # Ajout du champ cover_letter dans le formulaire
+        fields = ["name", "email", "phone", "message", "resume", "cover_letter"]
         widgets = {
             "name": forms.TextInput(
                 attrs={
@@ -45,6 +46,18 @@ class JobApplicationForm(forms.ModelForm):
                     "class": "w-full px-3 py-2 border rounded-md",
                     "rows": 6,
                     "placeholder": "Votre message",
+                }
+            ),
+            # Les champs de fichier utilisent l'affichage par défaut ; on peut
+            # spécifier des classes pour harmoniser avec le design.
+            "resume": forms.FileInput(
+                attrs={
+                    "class": "w-full px-3 py-2 border rounded-md",
+                }
+            ),
+            "cover_letter": forms.FileInput(
+                attrs={
+                    "class": "w-full px-3 py-2 border rounded-md",
                 }
             ),
         }
