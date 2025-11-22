@@ -97,7 +97,7 @@ kaggle==1.7.4.5
 kagglehub==0.3.12
 kombu==5.5.4
 latex==0.7.0
-lief==0.13.2
+lief==0.15.0
 loguru==0.7.3
 lxml==6.0.0
 markdown-it-py==4.0.0
