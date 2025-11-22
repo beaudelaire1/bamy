@@ -108,3 +108,10 @@ class EmailChangeRequest(models.Model):
 
     def __str__(self) -> str:
         return f"Changement {self.user} vers {self.new_email}"
+
+from django.contrib.auth.models import AnonymousUser
+
+def get_anonymous_wishlist(self):
+    return []
+
+AnonymousUser.get_wishlist = get_anonymous_wishlist
