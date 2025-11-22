@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto py-10">
+  <h1 class="text-3xl font-bold mb-6">Recrutement</h1>
+  <p class="mb-4">
+    Nous recherchons en permanence des talents pour rejoindre notre équipe.
+    Remplissez le formulaire ci-dessous pour soumettre votre candidature.
+    Nous vous contacterons si votre profil correspond à nos besoins.
+  </p>
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+      {{ form.name.label_tag }}<br>
+      {{ form.name }}
+      {{ form.name.errors }}
+    </div>
+    <div>
+      {{ form.email.label_tag }}<br>
+      {{ form.email }}
+      {{ form.email.errors }}
+    </div>
+    <div>
+      {{ form.phone.label_tag }}<br>
+      {{ form.phone }}
+      {{ form.phone.errors }}
+    </div>
+    <div>
+      {{ form.position.label_tag }}<br>
+      {{ form.position }}
+      {{ form.position.errors }}
+    </div>
+    <div>
+      {{ form.message.label_tag }}<br>
+      {{ form.message }}
+      {{ form.message.errors }}
+    </div>
+    <button type="submit" class="px-5 py-3 rounded-xl text-white" style="background:var(--brand-primary)">
+      Envoyer ma candidature
+    </button>
+  </form>
+</section>
+{% endblock %}

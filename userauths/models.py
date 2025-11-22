@@ -12,6 +12,28 @@ class User(AbstractUser):
     #: utilisateurs non connectés verront également les prix masqués.
     is_b2b_verified = models.BooleanField(default=False, verbose_name="Compte B2B vérifié")
 
+    #: Catégorie de client permettant d'appliquer des conditions tarifaires
+    #: différenciées selon le volume et le type d'acheteur.  Cette liste
+    #: couvre les cas courants :
+    #:
+    #:  * `wholesaler` : grossiste achetant de grandes quantités, bénéficie de remises importantes.
+    #:  * `big_retail` : grande distribution (hypermarchés), remises modérées.
+    #:  * `small_retail` : petite distribution ou commerce de proximité, remises légères.
+    #:  * `regular` : utilisateur lambda sans conditions spéciales.
+    CLIENT_TYPE_CHOICES = [
+        ("wholesaler", "Grossiste"),
+        ("big_retail", "Grande distribution"),
+        ("small_retail", "Petite distribution"),
+        ("regular", "Utilisateur lambda"),
+    ]
+    client_type = models.CharField(
+        max_length=20,
+        choices=CLIENT_TYPE_CHOICES,
+        default="regular",
+        verbose_name="Type de client",
+        help_text="Détermine les conditions tarifaires appliquées aux prix affichés.",
+    )
+
     def __str__(self):
         return self.username
 

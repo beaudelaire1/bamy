@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="max-w-5xl mx-auto py-8">
+  <h1 class="text-3xl font-bold mb-6">Nos offres d'emploi</h1>
+  {% if jobs %}
+    <ul class="space-y-6">
+      {% for job in jobs %}
+        <li class="p-4 border rounded-md shadow-sm">
+          <h2 class="text-xl font-semibold mb-2">
+            <a href="{{ job.get_absolute_url }}" class="hover:underline">{{ job.title }}</a>
+          </h2>
+          {% if job.location %}
+            <p class="text-sm text-gray-600">Lieu : {{ job.location }}</p>
+          {% endif %}
+          {% if job.department %}
+            <p class="text-sm text-gray-600">Département : {{ job.department }}</p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Aucune offre n'est disponible pour le moment.</p>
+  {% endif %}
+</section>
+{% endblock %}

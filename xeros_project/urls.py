@@ -44,6 +44,9 @@ urlpatterns += [
 
     # Marketing (newsletter, campagnes)
     path("marketing/", include("marketing.urls", namespace="marketing")),
+
+    # Recrutement : offres et candidatures
+    path("recruitment/", include("recruitment.urls", namespace="recruitment")),
 ]
 
 if settings.DEBUG:

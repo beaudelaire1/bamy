@@ -132,3 +132,79 @@ def privacy_policy(request):
 def cookies_policy(request):
     """Page de politique relative aux cookies."""
     return render(request, "core/cookies.html")
+
+
+# ======= Formulaire de recrutement =======
+
+class RecruitmentForm(forms.Form):
+    """Formulaire de candidature pour la page recrutement.
+
+    Ce formulaire collecte les informations essentielles d'un candidat :
+    nom, email, numéro de téléphone, poste visé et message. Un champ
+    facultatif de dépôt de CV pourrait être ajouté via un ``FileField``
+    dans une évolution future ; pour l'instant, nous invitons les
+    candidats à inclure un lien dans leur message.
+    """
+
+    name = forms.CharField(
+        label="Nom",
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "class": "w-full px-3 py-2 border rounded-md",
+            "placeholder": "Votre nom complet"
+        }),
+    )
+    email = forms.EmailField(
+        label="E‑mail",
+        max_length=254,
+        required=True,
+        widget=forms.EmailInput(attrs={
+            "class": "w-full px-3 py-2 border rounded-md",
+            "placeholder": "Votre adresse e‑mail"
+        }),
+    )
+    phone = forms.CharField(
+        label="Téléphone",
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={
+            "class": "w-full px-3 py-2 border rounded-md",
+            "placeholder": "Votre numéro de téléphone (facultatif)"
+        }),
+    )
+    position = forms.CharField(
+        label="Poste souhaité",
+        max_length=150,
+        required=True,
+        widget=forms.TextInput(attrs={
+            "class": "w-full px-3 py-2 border rounded-md",
+            "placeholder": "Intitulé du poste auquel vous postulez"
+        }),
+    )
+    message = forms.CharField(
+        label="Message",
+        required=True,
+        widget=forms.Textarea(attrs={
+            "class": "w-full px-3 py-2 border rounded-md",
+            "rows": 6,
+            "placeholder": "Présentez-vous et expliquez votre motivation"
+        }),
+    )
+
+
+def recruitment(request):
+    """Affiche et traite le formulaire de recrutement.
+
+    Les candidatures sont actuellement simplement confirmées via un message
+    de succès. Dans une implémentation réelle, les données pourraient être
+    stockées en base, envoyées par e‑mail ou créées dans un CRM.
+    """
+    if request.method == "POST":
+        form = RecruitmentForm(request.POST)
+        if form.is_valid():
+            messages.success(request, "Votre candidature a été envoyée. Merci pour votre intérêt !")
+            return redirect("core:recruitment")
+    else:
+        form = RecruitmentForm()
+    return render(request, "core/recruitment.html", {"form": form})

@@ -1,0 +1,27 @@
+/* Thème sombre pour la plateforme.
+   Ce fichier définit des variables CSS personnalisées lorsqu'un
+   utilisateur active le mode sombre via le bouton de navigation. Les
+   couleurs sont ajustées pour assurer un contraste suffisant. */
+
+body.dark-theme {
+  --surface: #1f2937; /* fond général sombre */
+  --ink: #f3f4f6;     /* texte clair */
+  --brand-primary: #7c3aed; /* violet plus doux pour le thème sombre */
+  --brand-secondary: #c084fc;
+}
+
+body.dark-theme .site-nav,
+body.dark-theme .site-footer {
+  background-color: var(--surface);
+  color: var(--ink);
+}
+
+body.dark-theme .nav-link,
+body.dark-theme .icon-btn {
+  color: var(--ink);
+}
+
+body.dark-theme .nav-menu div {
+  background-color: #374151;
+  color: var(--ink);
+}

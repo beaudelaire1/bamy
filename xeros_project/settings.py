@@ -123,6 +123,9 @@ INSTALLED_APPS = [
     # Marketing et campagnes
     "marketing",
 
+    # Application de gestion des offres d'emploi et des candidatures
+    "recruitment",
+
 
 
     "django_ckeditor_5",

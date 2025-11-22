@@ -205,7 +205,17 @@ class Product(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
+        """Génère un slug unique à partir du titre et du SKU si absent.
+
+        Cette méthode utilise ``unique_slugify`` pour assurer l'unicité du slug
+        même si plusieurs produits portent le même nom. En combinant le titre
+        et la référence interne (SKU), on limite les collisions et on obtient
+        un identifiant lisible dans les URL.
+        """
         if not self.slug:
+            # Construit un slug à partir du titre et du SKU pour réduire les risques
+            # de duplication.  L'utilisation de ``unique_slugify`` assure
+            # l'unicité en ajoutant un suffixe numérique en cas de conflit.
             base = f"{self.title}-{self.sku}"
             unique_slugify(self, base)
         super().save(*args, **kwargs)
@@ -224,11 +234,53 @@ class Product(models.Model):
     # définition précédente. Laisser une redéfinition sans modification
     # provoquerait des incohérences lors du calcul de la promotion.
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.title)
-        super().save(*args, **kwargs)
+    # NOTE: la méthode save() est définie plus haut dans cette classe pour
+    # générer un slug unique.  Ne redéfinissez pas save() ici pour éviter
+    # d'écraser cette logique.
 
+    def get_price_for_user(self, user):
+        """Retourne le prix ajusté en fonction du type de client.
+
+        Les utilisateurs B2B vérifiés bénéficient de remises selon leur
+        catégorie (:attr:`userauths.models.User.client_type`).  Les réductions
+        s'appliquent au prix réel (discount_price si en promotion, sinon price).
+        Pour les visiteurs non authentifiés ou les comptes non vérifiés, le
+        prix public est retourné sans remise.
+
+        Parameters
+        ----------
+        user : django.contrib.auth.models.AbstractBaseUser or None
+            L'utilisateur courant.  Peut être None pour les visiteurs anonymes.
+
+        Returns
+        -------
+        Decimal
+            Le prix unitaire ajusté.
+        """
+        from decimal import Decimal  # import local pour éviter les dépendances circulaires
+        # Prix réel (promo si applicable)
+        base_price = self.discount_price if self.is_promo else self.price
+        # Fallback de prix
+        try:
+            price = Decimal(str(base_price)) if base_price is not None else Decimal("0.00")
+        except Exception:
+            price = Decimal("0.00")
+        # Pas d'utilisateur ou non connecté
+        if not user or not getattr(user, "is_authenticated", False):
+            return price
+        # Si le compte B2B n'est pas encore vérifié, pas de remise
+        if not getattr(user, "is_b2b_verified", False):
+            return price
+        # Applique des remises en fonction de la catégorie
+        ctype = getattr(user, "client_type", "regular")
+        if ctype == "wholesaler":
+            return (price * Decimal("0.80")).quantize(Decimal("0.01"))
+        elif ctype == "big_retail":
+            return (price * Decimal("0.90")).quantize(Decimal("0.01"))
+        elif ctype == "small_retail":
+            return (price * Decimal("0.95")).quantize(Decimal("0.01"))
+        else:
+            return price
     def clean(self):
         # Validation côté serveur, si tu veux garder un garde-fou
         super().clean()

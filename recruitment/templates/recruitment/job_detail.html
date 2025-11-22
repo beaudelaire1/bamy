@@ -1,0 +1,61 @@
+{#
+  Gabarit de détail d'une offre d'emploi.
+
+  Ce gabarit affiche le titre, la description et les informations
+  complémentaires (lieu, département) d'une offre. Il propose
+  également un formulaire de candidature basé sur
+  ``JobApplicationForm``. Le formulaire utilise ``multipart/form-data``
+  pour permettre l'envoi d'un CV. Les champs du formulaire
+  héritent des classes Tailwind définies dans le formulaire.
+#}
+
+{% extends "base.html" %}
+
+{% block content %}
+<section class="max-w-3xl mx-auto py-10">
+  <h1 class="text-3xl font-bold mb-4">{{ job.title }}</h1>
+  {% if job.location or job.department %}
+    <p class="mb-4 text-sm text-gray-600">
+      {% if job.department %}<span class="font-medium">Département :</span> {{ job.department }}{% endif %}
+      {% if job.department and job.location %} | {% endif %}
+      {% if job.location %}<span class="font-medium">Lieu :</span> {{ job.location }}{% endif %}
+    </p>
+  {% endif %}
+  <div class="prose max-w-none mb-8">
+    {{ job.description|linebreaks }}
+  </div>
+  <h2 class="text-2xl font-semibold mb-4">Postuler à cette offre</h2>
+  <form method="post" enctype="multipart/form-data" class="space-y-4">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+      {{ form.name.label_tag }}<br />
+      {{ form.name }}
+      {{ form.name.errors }}
+    </div>
+    <div>
+      {{ form.email.label_tag }}<br />
+      {{ form.email }}
+      {{ form.email.errors }}
+    </div>
+    <div>
+      {{ form.phone.label_tag }}<br />
+      {{ form.phone }}
+      {{ form.phone.errors }}
+    </div>
+    <div>
+      {{ form.message.label_tag }}<br />
+      {{ form.message }}
+      {{ form.message.errors }}
+    </div>
+    <div>
+      {{ form.resume.label_tag }}<br />
+      {{ form.resume }}
+      {{ form.resume.errors }}
+    </div>
+    <button type="submit" class="px-5 py-3 rounded-xl text-white" style="background: var(--brand-primary);">
+      Envoyer ma candidature
+    </button>
+  </form>
+</section>
+{% endblock %}

@@ -35,5 +35,56 @@
         </a>
       {% endif %}
     </li>
+
+    <!-- Bouton plus pour accéder aux liens secondaires -->
+    <li>
+      <button type="button" id="mobile-more-toggle" class="flex flex-col items-center focus:outline-none">
+        <svg class="w-5 h-5 mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        <span>Plus</span>
+      </button>
+    </li>
   </ul>
 </nav>
+
+<!-- Menu latéral mobile pour les liens secondaires -->
+<div id="mobile-more-menu" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/50" id="mobile-more-overlay"></div>
+  <div class="absolute right-0 top-0 h-full w-64 bg-white shadow-lg p-6 flex flex-col">
+    <button type="button" id="mobile-more-close" class="self-end mb-4 text-gray-600">
+      <!-- Icône X -->
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    </button>
+    <ul class="space-y-4 text-gray-700 text-sm">
+      <li><a href="{% url 'recruitment:job_list' %}" class="block">Recrutement</a></li>
+      <li><a href="{% url 'core:about' %}" class="block">À propos</a></li>
+      <li><a href="{% url 'core:contact' %}" class="block">Contact</a></li>
+      <li><a href="{% url 'core:privacy' %}" class="block">Confidentialité</a></li>
+      <li><a href="{% url 'catalog:week_selection' %}" class="block">Sélection semaine</a></li>
+    </ul>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const toggle = document.getElementById('mobile-more-toggle');
+    const menu = document.getElementById('mobile-more-menu');
+    const closeBtn = document.getElementById('mobile-more-close');
+    const overlay = document.getElementById('mobile-more-overlay');
+    if(toggle && menu){
+      toggle.addEventListener('click', ()=>{
+        menu.classList.remove('hidden');
+      });
+    }
+    function closeMenu(){
+      menu.classList.add('hidden');
+    }
+    if(closeBtn) closeBtn.addEventListener('click', closeMenu);
+    if(overlay) overlay.addEventListener('click', closeMenu);
+  })();
+</script>

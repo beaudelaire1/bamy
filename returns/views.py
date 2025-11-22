@@ -26,3 +26,16 @@ def request_return(request, item_id: int):
         return redirect("orders:success", order_number=item.order.order_number)
     # GET : afficher un formulaire simple
     return render(request, "returns/request_return.html", {"item": item})
+
+
+def return_policy(request):
+    """
+    Affiche la politique de retour et les instructions générales.
+
+    Cette vue ne nécessite pas de paramètres et sert de page d'information
+    accessible depuis la barre de navigation. Elle explique aux clients
+    comment fonctionne la procédure de retour et redirige, si nécessaire,
+    vers la création de demandes pour des articles spécifiques depuis
+    l'historique des commandes.
+    """
+    return render(request, "returns/return_policy.html")

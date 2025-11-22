@@ -10,6 +10,7 @@ from urllib.parse import urlencode
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Min, Max
 from django.db.models.functions import Coalesce
+from django.views.decorators.cache import cache_page
 
 # Les imports ci‑dessus incluent déjà la fonction ``render`` et les modèles nécessaires.
 # Les doublons de ``render`` et ``Product`` ont été supprimés pour éviter toute confusion.
@@ -19,6 +20,7 @@ from .forms import CatalogFilterForm
 from reviews.forms import ReviewForm
 from django.db.models import Avg
 
+@cache_page(60 * 10)  # mise en cache de 10 minutes pour optimiser les performances
 def product_list(request):
     """
     Liste produits avec filtres: Catégorie, Marque, Prix min/max.

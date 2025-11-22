@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto py-10 max-w-3xl">
+  <h1 class="text-3xl font-semibold mb-4">Politique de retour</h1>
+  <p class="mb-4 text-gray-700">
+    Notre objectif est de garantir votre satisfaction. Si vous n'êtes pas entièrement satisfait d'un produit,
+    vous pouvez demander un retour sous certaines conditions. Veuillez lire attentivement les informations ci‑dessous.
+  </p>
+  <h2 class="text-xl font-medium mt-6 mb-2">Conditions de retour</h2>
+  <ul class="list-disc list-inside space-y-2 text-gray-700">
+    <li>Les demandes de retour doivent être effectuées dans les 14&nbsp;jours suivant la date de réception de la commande.</li>
+    <li>Les produits doivent être non utilisés, dans leur emballage d'origine et en parfait état.</li>
+    <li>Certaines catégories de produits peuvent ne pas être éligibles au retour pour des raisons d'hygiène ou de sécurité.</li>
+  </ul>
+  <h2 class="text-xl font-medium mt-6 mb-2">Procédure</h2>
+  <p class="mb-4 text-gray-700">
+    Pour initier une demande de retour, rendez‑vous dans votre historique de commandes et sélectionnez l'article
+    que vous souhaitez retourner. Vous devrez fournir un motif décrivant la raison de votre retour.
+    Après validation, nous vous communiquerons l'adresse de retour et les prochaines étapes.
+  </p>
+  <p class="text-gray-600">
+    Si vous avez des questions supplémentaires, n'hésitez pas à contacter notre service client via le formulaire de
+    <a href="{% url 'crm:contact' %}" class="text-brand-primary underline">contact</a>.
+  </p>
+</div>
+{% endblock %}

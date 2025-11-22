@@ -1,6 +1,7 @@
 # userauths/urls.py
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from . import views
 from .views import RememberLoginView, logout_post, RegisterView
 from .views import AccountView
 from .views import (
@@ -21,6 +22,9 @@ urlpatterns = [
 
     # Tableau de bord / mon compte
     path("account/", AccountView.as_view(), name="account"),
+
+    # Tableau de bord utilisateur
+    path("dashboard/", views.dashboard, name="dashboard"),
 
     # Vues Django auth utiles (optionnel)
     path("password_change/", auth_views.PasswordChangeView.as_view(), name="password_change"),

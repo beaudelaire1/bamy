@@ -16,33 +16,81 @@
 
   <!-- Liens principaux -->
   <ul id="nav-menu" class="nav-menu">
-    <li><a class="nav-link flex items-center gap-1" href="{% url 'core:home' %}"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"/><path d="M9 22V12H15V22"/></svg><span>Accueil</span></a></li>
-    <!-- Menu Catalogue avec sous-catégories -->
+    <!--
+      Nouvelle navigation structurée en mega‑menus.
+      Le logo à gauche sert de lien vers l'accueil, il n'est donc plus
+      nécessaire d'avoir un lien "Accueil" dans la liste. Trois menus
+      principaux regroupent les liens par thématique : Produits, Services
+      et Entreprise. Chaque sous‑menu apparaît au survol.
+    -->
+    <!-- Menu Produits -->
     <li class="relative group">
-      <a class="nav-link flex items-center gap-1" href="{% url 'catalog:product_list' %}"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>Catalogue</span></a>
+      <a class="nav-link flex items-center gap-1" href="{% url 'catalog:product_list' %}" aria-haspopup="true">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Produits</span>
+      </a>
       {% if nav_categories %}
-      <div class="absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-lg ring-1 ring-black/5 hidden group-hover:block z-50">
-        <ul class="py-2">
+      <div class="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-lg ring-1 ring-black/5 hidden group-hover:block z-50 p-4">
+        <h3 class="text-sm font-semibold text-gray-700 mb-2">Catégories</h3>
+        <ul class="space-y-1 mb-3">
           {% for cat in nav_categories %}
             <li>
-              <a href="{{ cat.get_absolute_url }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">{{ cat.name }}</a>
+              <a href="{{ cat.get_absolute_url }}" class="block px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 rounded">
+                {{ cat.name }}
+              </a>
             </li>
           {% endfor %}
-          <li><hr class="my-1 border-t" /></li>
-          <li>
-            <a href="{% url 'catalog:product_list' %}" class="block px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100">Toutes les catégories</a>
-          </li>
         </ul>
+        <a href="{% url 'catalog:product_list' %}" class="block px-2 py-2 text-sm font-medium text-white text-center rounded" style="background: var(--brand-primary);">Tous les produits</a>
       </div>
       {% endif %}
     </li>
-    <li><a class="nav-link flex items-center gap-1" href="{% url 'core:about' %}"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg><span>À propos</span></a></li>
-    <li><a class="nav-link flex items-center gap-1" href="{% url 'core:contact' %}"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" ry="2"/><polyline points="3,5 12,13 21,5"/></svg><span>Contact</span></a></li>
-    <li><a class="nav-link flex items-center gap-1" href="{% url 'catalog:week_selection' %}"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18" /></svg><span>Sélection semaine</span></a></li>
+    <!-- Menu Services -->
+    <li class="relative group">
+      <a class="nav-link flex items-center gap-1" href="#" aria-haspopup="true">
+        <!-- Icône services (cog) -->
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.09a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Services</span>
+      </a>
+      <div class="absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-lg ring-1 ring-black/5 hidden group-hover:block z-50">
+        <ul class="py-2">
+          <li><a href="{% url 'catalog:week_selection' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sélection semaine</a></li>
+          <li><a href="{% url 'crm:contact' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Contact / CRM</a></li>
+          <li><a href="{% url 'notifications:list' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Notifications</a></li>
+          <li><a href="{% url 'returns:policy' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Politique de retour</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Programme fidélité</a></li>
+        </ul>
+      </div>
+    </li>
+    <!-- Menu Entreprise -->
+    <li class="relative group">
+      <a class="nav-link flex items-center gap-1" href="#" aria-haspopup="true">
+        <!-- Icône info cercle -->
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>Entreprise</span>
+      </a>
+      <div class="absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-lg ring-1 ring-black/5 hidden group-hover:block z-50">
+        <ul class="py-2">
+          <li><a href="{% url 'core:about' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">À propos</a></li>
+          <li><a href="{% url 'core:contact' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Contact</a></li>
+          <li><a href="{% url 'recruitment:job_list' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Recrutement</a></li>
+          <li><a href="{% url 'core:privacy' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Confidentialité</a></li>
+          <li><a href="{% url 'core:cookies' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cookies</a></li>
+        </ul>
+      </div>
+    </li>
   </ul>
 
   <!-- Colonne droite : actions -->
   <div class="nav-right">
+    <!-- Bouton mode sombre/clair -->
+    <button type="button" id="theme-toggle" class="icon-btn mr-2" aria-label="Basculer thème">
+      <!-- Icône soleil/lune, affichée via CSS/JS (soleil par défaut) -->
+      <svg id="theme-icon" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5" />
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+      </svg>
+    </button>
     <!-- Barre de recherche (desktop) -->
     <form action="{% url 'catalog:product_list' %}" method="get" class="hidden lg:block mr-4">
       <label for="nav-search" class="sr-only">Rechercher</label>
@@ -51,9 +99,9 @@
     </form>
     <!-- Wishlist -->
     <div class="nav-action" id="nav-wishlist">
-      <button type="button" class="icon-btn" aria-label="Wishlist">
-        <!-- Icône cœur moderne -->
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      <button type="button" class="icon-btn" aria-label="Favoris">
+        <!-- Icône cœur moderne agrandie -->
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
         </svg>
@@ -68,8 +116,8 @@
     <!-- Panier -->
     <div class="nav-action" id="nav-cart">
       <a href="{% url 'cart:detail' %}" class="icon-btn" aria-label="Panier">
-        <!-- Icône panier moderne -->
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        <!-- Icône panier moderne agrandie -->
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="9" cy="21" r="1"/>
           <circle cx="20" cy="21" r="1"/>

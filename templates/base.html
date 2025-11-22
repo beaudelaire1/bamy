@@ -12,6 +12,9 @@
   <!-- Styles du site (APRÈS Tailwind) -->
   <link rel="stylesheet" href="{% static 'css/ui.css' %}"/>
 
+  <!-- Thème sombre (variables) -->
+  <link rel="stylesheet" href="{% static 'css/ui-dark.css' %}"/>
+
   {# Overrides CSS: personnalisation de l'interface premium (panier, hero, etc.) #}
   <link rel="stylesheet" href="{% static 'css/ui-overrides.css' %}"/>
 
@@ -186,6 +189,9 @@
   })();
 
   </script>
+
+  <!-- Script du thème sombre/clair -->
+  <script src="{% static 'js/theme.js' %}"></script>
 
   {% block scripts %}{% endblock %}
 

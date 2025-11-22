@@ -26,6 +26,18 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.urls import reverse
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
+# Importations supplémentaires pour le tableau de bord client
+try:
+    from orders.models import Order  # type: ignore
+except Exception:
+    Order = None  # le module orders peut ne pas être disponible lors de l'analyse
+try:
+    from loyalty.models import LoyaltyAccount  # type: ignore
+except Exception:
+    LoyaltyAccount = None
 class RememberLoginView(LoginView):
     """
     LoginView avec option 'Se souvenir de moi' (checkbox 'remember').
@@ -201,6 +213,38 @@ class AddressUpdateView(LoginRequiredMixin, UpdateView):
     form_class = AddressForm
     template_name = "userauths/address_form.html"
     success_url = reverse_lazy("userauths:address_list")
+
+
+# -----------------------------------------------------------------------------
+# Tableau de bord client
+
+@login_required
+def dashboard(request):
+    """Affiche un tableau de bord récapitulatif pour l'utilisateur.
+
+    Cette vue liste les commandes passées par l'utilisateur connecté et
+    affiche, si disponible, son solde de points de fidélité. Les
+    enregistrements sont triés par date décroissante.
+    """
+    orders = []
+    if Order:
+        orders = list(
+            Order.objects.filter(user=request.user).order_by("-created_at")  # type: ignore
+        )
+    loyalty = None
+    if LoyaltyAccount:
+        try:
+            loyalty = request.user.loyaltyaccount  # type: ignore[attr-defined]
+        except Exception:
+            loyalty = None
+    return render(
+        request,
+        "userauths/dashboard.html",
+        {
+            "orders": orders,
+            "loyalty": loyalty,
+        },
+    )
 
     def get_queryset(self):
         return Address.objects.filter(user=self.request.user)
