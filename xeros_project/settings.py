@@ -107,9 +107,9 @@ INSTALLED_APPS = [
     "orders",
 
     # nouvelles apps internes
-    "crm",
-    "notifications",
-    "integrations",
+    # Les applications CRM, notifications et intégrations ont été retirées
+    # de cette nouvelle version hexagonale.  Elles ne sont plus
+    # présentes dans le code et ne doivent pas être chargées.
 
     # apps avec appel via api tiers
     "payments",
@@ -208,6 +208,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "core.context_processors.brand",  # <- branding global
+                "core.context_processors.branding",  # injecte l'objet BrandingConfig
                 "cart.context_processors.cart",  # <- panier global
                 "payments.context_processors.payment_public_keys",  # <- clés publiques de payement
 
@@ -325,15 +326,24 @@ JAZZMIN_SETTINGS = {
     "site_brand": COMPANY_NAME,
     "welcome_sign": f"Bienvenue chez {COMPANY_NAME}",
     "site_logo": None,  # on ajoutera plus tard
-    "show_ui_builder": False,
+    # Active le générateur d'interface Jazzmin pour permettre aux administrateurs
+    # de personnaliser l'UI.  Conformément au cahier des charges Premium, cette
+    # option est activée.
+    "show_ui_builder": True,
     # Ajout d'un lien vers le site public dans le menu supérieur de l'admin
     # Ce lien s'ouvre dans une nouvelle fenêtre et permet aux administrateurs
     # de consulter rapidement la boutique B2B.
     "topmenu_links": [
         {
-            "name": "Aller au site",
+            "name": "Voir le site",
             "url": "/",  # URL racine du site
             "new_window": True,
+        },
+        {
+            # Lien vers le rapport des ventes dans l'admin (vue personnalisée à créer)
+            "name": "Rapport des ventes",
+            "url": "/admin/orders/order/report/",
+            "new_window": False,
         },
     ],
 
@@ -345,10 +355,11 @@ JAZZMIN_SETTINGS = {
         "auth": "fas fa-user-shield",
         "catalog": "fas fa-box-open",
         "cart": "fas fa-shopping-basket",
-        "orders": "fas fa-receipt",
-        "crm": "fas fa-address-card",
+        # Utilise l'icône facture pour la gestion des commandes
+        "orders": "fas fa-file-invoice-dollar",
+        # L'application marketing conserve son icône bullhorn
         "marketing": "fas fa-bullhorn",
-        "notifications": "fas fa-bell",
+        # Les modules CRM et notifications ont été retirés ; on ne définit pas d'icônes pour eux.
         "returns": "fas fa-undo",
         "recruitment": "fas fa-briefcase",
         "loyalty": "fas fa-gift",
@@ -360,21 +371,31 @@ JAZZMIN_SETTINGS = {
     "model_icons": {
         # Clés app_label.model_name en minuscules comme attendu par Jazzmin
         "auth.group": "fas fa-users-cog",
+        "auth.user": "fas fa-user-shield",
         "catalog.category": "fas fa-layer-group",
-        "catalog.brand": "fas fa-tags",
-        "catalog.product": "fas fa-box",
-        "crm.client": "fas fa-user-tie",
-        "crm.quoterequest": "fas fa-file-signature",
+        # Marque utilise l'icône copyright (©)
+        "catalog.brand": "fas fa-copyright",
+        # Produit utilise l'icône box-open, comme indiqué dans le cahier des charges
+        "catalog.product": "fas fa-box-open",
+        # Commande utilise l'icône de facture
+        "orders.order": "fas fa-file-invoice-dollar",
+        # BrandingConfig (configuration de marque) utilise un rouleau de peinture
+        "core.brandingconfig": "fas fa-paint-roller",
+        # Campagnes marketing
+        "marketing.campaign": "fas fa-bullhorn",
+        # Modules de recrutement et de fidélité conservés
         "recruitment.jobposting": "fas fa-briefcase",
         "recruitment.jobapplication": "fas fa-file-lines",
         "loyalty.loyaltyaccount": "fas fa-gift",
-        "notifications.notification": "fas fa-bell",
         "returns.returnrequest": "fas fa-undo",
     },
 
     # Ajoute un CSS personnalisé pour harmoniser Jazzmin avec la charte graphique
     # de la boutique. Le fichier se trouve dans static/css/admin-overrides.css
     "custom_css": "css/admin-overrides.css",
+
+    # Recherche globale : permet de rechercher rapidement des produits et des commandes depuis la barre de recherche de l'admin
+    "search_model": ["catalog.Product", "orders.Order"],
 }
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 14   # 14 jours si "remember" coché (par défaut)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # sera forcé à True au cas par cas via la vue

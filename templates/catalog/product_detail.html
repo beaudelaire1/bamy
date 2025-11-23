@@ -46,7 +46,8 @@
         Connectez‑vous pour voir les prix de ce produit.
       </div>
       <div class="mb-4">
-        <a href="{% url 'crm:quote_request' %}?product={{ product.id }}" class="text-brand underline">Demander un devis</a>
+        <!-- Lien contact mis à jour : la route CRM quote_request n'existe plus -->
+        <a href="{% url 'core:contact' %}" class="text-brand underline">Contactez‑nous</a>
       </div>
       <!-- Pas de message de vérification : on se contente d'inviter l'utilisateur à se connecter. -->
     {% endif %}

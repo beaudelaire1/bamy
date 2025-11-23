@@ -53,7 +53,8 @@
           <!-- Prix masqué pour les visiteurs ou comptes non validés -->
           <div class="text-sm text-gray-500">Connectez‑vous pour voir les prix</div>
           <div class="mt-1">
-            <a href="{% url 'crm:quote_request' %}?product={{ product.id }}" class="text-brand underline text-sm">Demander un devis</a>
+            <!-- Lien contact mis à jour : l'ancienne route CRM est supprimée -->
+            <a href="{% url 'core:contact' %}" class="text-brand underline text-sm">Contactez‑nous</a>
           </div>
         {% endif %}
         {% if product.unit %}

@@ -34,11 +34,6 @@ except Exception:
     pass
 
 urlpatterns += [
-    # CRM, notifications et intégrations
-    path("crm/", include("crm.urls", namespace="crm")),
-    path("notifications/", include("notifications.urls", namespace="notifications")),
-    path("integrations/", include("integrations.urls", namespace="integrations")),
-
     # Gestion des retours
     path("returns/", include("returns.urls", namespace="returns")),
 

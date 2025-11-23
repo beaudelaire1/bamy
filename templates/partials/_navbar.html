@@ -57,8 +57,9 @@
            style="background: var(--surface, #ffffff);">
         <ul class="py-2">
           <li><a href="{% url 'catalog:week_selection' %}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 hover:text-brand-primary">Sélection semaine</a></li>
-          <li><a href="{% url 'crm:contact' %}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 hover:text-brand-primary">Contact / CRM</a></li>
-          <li><a href="{% url 'notifications:list' %}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 hover:text-brand-primary">Notifications</a></li>
+          <!-- Lien contact mis à jour : l'app CRM est supprimée -->
+          <li><a href="{% url 'core:contact' %}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 hover:text-brand-primary">Contact</a></li>
+          <!-- Le module notifications a été supprimé, on retire le lien pour éviter les erreurs -->
           <li><a href="{% url 'returns:policy' %}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 hover:text-brand-primary">Politique de retour</a></li>
           <li><a href="{% url 'loyalty:program' %}" class="block px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 hover:text-brand-primary">Programme fidélité</a></li>
         </ul>
@@ -142,7 +143,8 @@
             <!-- Bouton primaire : accéder au paiement directement -->
             <a href="{% url 'orders:checkout' %}" class="btn primary">Payer</a>
           {% else %}
-            <a href="{% url 'crm:contact' %}" class="btn primary">Demander un devis</a>
+            <!-- Lien contact mis à jour : l'app CRM n'existe plus -->
+            <a href="{% url 'core:contact' %}" class="btn primary">Contactez‑nous</a>
           {% endif %}
         </div>
       </div>

@@ -64,3 +64,54 @@ class SiteSettings(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+# -----------------------------------------------------------------------------
+# BrandingConfig
+#
+# Ce modèle stocke la configuration de la charte graphique de la boutique B2B.
+# Chaque champ est obligatoire afin de garantir que les couleurs primaires et
+# secondaires, la police personnalisée et les médias (logo, favicon) soient
+# toujours définis.  Une seule instance est généralement nécessaire ; elle
+# sera chargée via le context processor ``branding``.  Les couleurs sont
+# définies au format hexadécimal (#RRGGBB).
+class BrandingConfig(models.Model):
+    primary_color = models.CharField(
+        max_length=7,
+        verbose_name="Couleur principale",
+        help_text="Couleur principale du thème (hexadécimal)",
+    )
+    secondary_color = models.CharField(
+        max_length=7,
+        verbose_name="Couleur secondaire",
+        help_text="Couleur secondaire du thème (hexadécimal)",
+    )
+    font_url = models.URLField(
+        verbose_name="URL de la police",
+        help_text="Lien vers la police personnalisée à charger (Google Fonts par ex.)",
+        blank=True,
+        null=True,
+    )
+    logo = models.ImageField(
+        upload_to="branding/logos/",
+        verbose_name="Logo",
+        help_text="Logo de la marque utilisé dans l'interface",
+        blank=True,
+        null=True,
+    )
+    favicon = models.ImageField(
+        upload_to="branding/favicons/",
+        verbose_name="Favicon",
+        help_text="Icône utilisée dans l'onglet du navigateur",
+        blank=True,
+        null=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Mis à jour le")
+
+    class Meta:
+        verbose_name = "configuration de la marque"
+        verbose_name_plural = "configurations de la marque"
+
+    def __str__(self) -> str:
+        return "Branding configuration"

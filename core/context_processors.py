@@ -1,6 +1,6 @@
 from django.conf import settings
 from catalog.models import Category
-from .models import SiteSettings
+from .models import SiteSettings, BrandingConfig
 
 def brand(request):
     """
@@ -52,3 +52,17 @@ def brand(request):
         "BRAND": brand_colors,
         "nav_categories": nav_cats,
     }
+
+
+# Context processor injectant l'objet BrandingConfig dans les templates.  Il
+# récupère la première instance en base (s'il en existe une).  Si aucun
+# enregistrement n'est trouvé, la clé ``branding`` vaudra ``None`` et les
+# templates utiliseront les valeurs par défaut définies dans les CSS.
+def branding(request):
+    branding_config = None
+    try:
+        branding_config = BrandingConfig.objects.first()
+    except Exception:
+        # La table peut être absente (migrations non appliquées)
+        branding_config = None
+    return {"branding": branding_config}

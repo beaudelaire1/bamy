@@ -31,7 +31,7 @@
     {% if not request.user.is_authenticated %}
       <div class="text-center py-12 text-gray-700">
         <p class="mb-4">Les prix et le paiement sont réservés aux utilisateurs connectés.</p>
-        <p class="mb-4">Veuillez vous connecter pour afficher les tarifs ou <a href="{% url 'crm:contact' %}" class="text-brand-primary underline">contactez‑nous</a> pour obtenir un devis.</p>
+        <p class="mb-4">Veuillez vous connecter pour afficher les tarifs ou <a href="{% url 'core:contact' %}" class="text-brand-primary underline">contactez‑nous</a> pour obtenir un devis.</p>
       </div>
     {% else %}
       <div class="overflow-x-auto">
