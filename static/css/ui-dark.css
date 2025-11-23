@@ -1,38 +1,42 @@
-/* Thème sombre pour la plateforme.
-   Ce fichier définit des variables CSS personnalisées lorsqu'un
-   utilisateur active le mode sombre via le bouton de navigation. Les
-   couleurs sont ajustées pour assurer un contraste suffisant. */
+/* DARK MODE — NO TOUCH */
 
-body.dark-theme {
-  --surface: #1f2937; /* fond général sombre */
-  --ink: #f3f4f6;     /* texte clair */
-  --brand-primary: #7c3aed; /* violet plus doux pour le thème sombre */
-  --brand-secondary: #c084fc;
+:root[data-theme="dark"], body.dark-theme {
+  --surface: #02040a;
+  --surface-1: #0d1117;
+  --surface-2: #161b22;
+  --ink: #f0f6fc;
+  --border: #30363d;
+  --brand-primary: #3b82f6;
 }
 
-body.dark-theme .site-nav,
-body.dark-theme .site-footer {
+body.dark-theme {
   background-color: var(--surface);
   color: var(--ink);
 }
-/* Sur le thème sombre, ajuster également l'en‑tête principal pour qu'il
-   adopte une couleur plus uniforme plutôt qu'un dégradé bleu. On
-   remplace le gradient par une couleur de fond sombre et on ajuste la
-   bordure inférieure. */
-body.dark-theme .site-header{
-  background: var(--surface);
-  color: var(--ink);
-}
-body.dark-theme .site-header::after{
-  background: rgba(255,255,255,.1);
+
+body.dark-theme .site-header {
+  background: rgba(13,17,23,0.85) !important;
+  border-bottom: 1px solid var(--border);
 }
 
-body.dark-theme .nav-link,
-body.dark-theme .icon-btn {
+body.dark-theme .nav-link { color: var(--ink); }
+body.dark-theme .nav-link:hover { color: var(--brand-primary); }
+
+body.dark-theme .card {
+  background-color: var(--surface-1);
+  border-color: var(--border);
+}
+
+body.dark-theme input {
+  background-color: #010409;
+  border-color: var(--border);
   color: var(--ink);
 }
 
-body.dark-theme .nav-menu div {
-  background-color: #374151;
-  color: var(--ink);
+body.dark-theme .site-footer {
+  background-color: #010203 !important;
+  border-top: 1px solid var(--border);
+}
+body.dark-theme .site-footer a {
+  color: #8b949e !important;
 }

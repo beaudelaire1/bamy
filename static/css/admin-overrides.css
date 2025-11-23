@@ -21,43 +21,93 @@
   background-color: var(--admin-accent) !important;
 }
 
-/* Lien actif dans la sidebar */
-.sidebar-dark .nav-sidebar > .nav-item > .nav-link.active {
-  background-color: var(--admin-secondary) !important;
-  border-radius: 8px;
+/* Lien actif / survolé dans le menu */
+.sidebar-dark .nav-sidebar > li > a:hover,
+.sidebar-dark .nav-sidebar > li.menu-open > a,
+.sidebar-dark .nav-sidebar > li > a.active {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px;
 }
 
-/* Icônes de la sidebar : couleur claire pour le contraste */
-.sidebar-dark .nav-sidebar .nav-icon {
-  color: #f3f4f6 !important;
+/* Cartes de contenu dans l'admin */
+.content-wrapper,
+.wrapper {
+  background-color: #f3f4f6;
+}
+.card,
+.box {
+  border-radius: 16px !important;
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12) !important;
 }
 
-/* Boutons primaires et liens */
+/* Boutons primaires */
 .btn-primary {
-  background-color: var(--admin-primary) !important;
-  border-color: var(--admin-primary) !important;
+  background: linear-gradient(90deg, var(--admin-primary), #4f46e5) !important;
+  border-color: transparent !important;
+  border-radius: 999px !important;
+  padding-inline: 18px;
+  font-weight: 500;
 }
 .btn-primary:hover {
-  background-color: var(--admin-secondary) !important;
-  border-color: var(--admin-secondary) !important;
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.35) !important;
 }
 
-/* Table header */
-.content-wrapper .card .card-header {
-  background-color: var(--admin-primary) !important;
-  color: #ffffff;
-  border-radius: 0.5rem 0.5rem 0 0;
+/* Champs de formulaires */
+.form-control,
+.select2-selection,
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea {
+  border-radius: 10px !important;
+  border-color: rgba(148, 163, 184, 0.7) !important;
 }
 
-/* Arrondis sur les cartes */
-.content-wrapper .card {
-  border-radius: 0.5rem;
+/* Titres et en-têtes */
+h1, h2, h3, h4 {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+}
+
+/* Tableau de liste */
+.table {
+  border-radius: 12px !important;
   overflow: hidden;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+}
+.table thead th {
+  background-color: #e5e7eb !important;
+  border-bottom: 1px solid #d1d5db !important;
 }
 
-/* Retire les gros blocs de commentaires visibles en production.
-   Ils sont remplacés par des commentaires Django qui ne s'affichent pas. */
+/* Badges d'état (ex: "Actif", "Brouillon") */
+.badge-success {
+  background-color: #16a34a !important;
+}
+.badge-warning {
+  background-color: #f97316 !important;
+}
+.badge-danger {
+  background-color: #ef4444 !important;
+}
+
+/* Pagination plus arrondie */
+.pagination > li > a,
+.pagination > li > span {
+  border-radius: 999px !important;
+  margin: 0 2px;
+}
+
+/* Login admin */
+.login-page, .register-page {
+  background: radial-gradient(circle at 10% 0, #4f46e5, #0f172a);
+}
+.login-box, .register-box {
+  border-radius: 18px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.6);
+}
+
+/* Masquer les "commentaires" Django non utiles si jamais ils s'affichent pas. */
 body pre.comments {
   display: none;
 }

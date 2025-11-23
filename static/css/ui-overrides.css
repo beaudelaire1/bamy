@@ -1,338 +1,232 @@
 /* =============================
-   XEROS UI — Overrides seniors
-   Objectif: compat, perf, lisibilité, panier premium
-   Version: 1.0
+   XEROS UI — LUXURY OVERRIDES
+   (Version Corrigée - Match Captures)
    ============================= */
 
-/* ======= Variables d’ajustement ======= */
-:root{
-  /* Réglages hero (modifiable sans toucher HTML) */
-  --hero-left: 32%;
-  --hero-right: 68%;
+/* ============================================================
+   1. NAVBAR & HEADER
+   Objectif : Fond bleu vif, Recherche blanche, Icônes outlined
+   ============================================================ */
 
-  /* Offsets badges plus stables */
-  --badge-offset: -4px;
-
-  /* Couleurs de repli (si color-mix non supporté) */
-  --brand-primary-soft: #2b4fff;   /* proche du mix clair */
-  --brand-primary-softer: #4f68ff; /* encore plus doux */
-
-  /* Intégration des variables dynamiques pour les thèmes primaires et secondaires.
-     Ces variables peuvent être surchargées via le context processor branding. */
-  --brand-primary: var(--brand-primary, #0a36ff);
-  --brand-secondary: var(--brand-secondary, #007bff);
+.site-header {
+    background: linear-gradient(90deg, #0033ff 0%, #00156b 100%) !important;
+    border-bottom: none;
+    box-shadow: 0 4px 20px rgba(0, 21, 107, 0.25);
 }
 
-/* ======= Fallbacks color-mix / oklab ======= */
-@supports not (color: color-mix(in oklab, white 50%, black)){
-  .site-header{
-    background: linear-gradient(90deg, #0a36ff, #244dff);
-  }
-  .hero-glass{
-    background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-softer));
-    border-color: var(--brand-primary-soft);
-  }
-  .hero-text p{
-    color: rgba(255,255,255,.85);
-  }
-  .btn-hero-ghost{
-    border-color: rgba(255,255,255,.7);
-  }
+/* Force tous les textes et liens du header en blanc */
+.site-header,
+.site-header a,
+.site-header .nav-link,
+.site-header .nav-logo {
+    color: #ffffff !important;
 }
 
-/* ======= Backdrop-filter gardé par @supports ======= */
-.site-header{
-  will-change: transform;
-  transform: translateZ(0);
-}
-@supports (backdrop-filter: blur(8px)){
-  .site-header{
-    backdrop-filter: saturate(120%) blur(8px);
-  }
-}
-@supports not (backdrop-filter: blur(8px)){
-  .site-header{
-    backdrop-filter: none;
-  }
+/* Barre de recherche */
+.site-header input[type="search"],
+.site-header input[type="text"] {
+    background-color: #ffffff !important;
+    border: 1px solid transparent !important;
+    color: #111827 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* ======= Hero: mise à l’échelle et densité ======= */
-.hero-inner{
-  grid-template-columns: minmax(220px, var(--hero-left)) var(--hero-right);
-  gap: 28px; padding: 18px;
-}
-@media (max-width: 980px){
-  .hero-inner{ grid-template-columns: 1fr; gap: 16px; padding: 14px; }
+.site-header input::placeholder {
+    color: #6b7280 !important;
 }
 
-/* =====================================================================
- * Bootswatch/Bootstrap overrides
- *
- * Les classes ci-dessous redéfinissent les couleurs primaires standard
- * de Bootstrap pour qu'elles utilisent les variables CSS dynamiques définies
- * dans le thème.  Cela permet d'ajuster les boutons, fonds et barres de
- * navigation en fonction des couleurs sélectionnées dans BrandingConfig.
- */
-
-/* Boutons primaires */
-.btn-primary {
-  background-color: var(--brand-primary) !important;
-  border-color: var(--brand-primary) !important;
-  color: #ffffff !important;
+/* Icônes */
+.site-header .icon-btn {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #ffffff !important;
+    border-radius: 10px !important;
 }
 
-/* Fonds primaires */
-.bg-primary {
-  background-color: var(--brand-primary) !important;
+.site-header .icon-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    transform: translateY(-1px);
 }
 
-/* Barres de navigation foncées */
-.navbar-dark {
-  background-color: var(--brand-primary) !important;
+/* ===============================
+   NAVBAR : ALIGNEMENT HORIZONTAL
+   =============================== */
+
+.site-nav {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 24px !important;
+    height: 70px !important;
 }
 
-/* Cadre gauche (verre) allégé + profondeur douce */
-.brand-rail{
-  border: 1px solid color-mix(in oklab, var(--brand-primary) 24%, white);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)),
-    var(--glass-bg);
-  box-shadow:
-    0 18px 42px rgba(10, 18, 50, .18),
-    inset 0 1px 0 rgba(255,255,255,.12);
+.nav-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 32px !important;
 }
 
-/* Titre hero: micro-tracking & line-height luxe */
-.hero-text h1{
-  letter-spacing: .2px;
-  line-height: 1.15;
+.nav-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
 }
 
-/* CTA ghost: meilleure lisibilité sur bleu + hover subtil */
-.btn-hero-ghost{
-  background: var(--surface-1);
-  color: var(--brand-primary);
-  border: 2px solid color-mix(in oklab, var(--brand-primary) 40%, white);
-  box-shadow: 0 10px 26px rgba(10,54,255,.16);
-}
-.btn-hero-ghost:hover{
-  filter: brightness(1.04);
-  box-shadow: 0 14px 34px rgba(10,54,255,.22);
+/* ===============================
+   DROPDOWN — TEXTE INVISIBLE FIX
+   =============================== */
+
+.dropdown-menu {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    padding: 12px 0 !important;
+    border: 1px solid rgba(0,0,0,0.08) !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.18) !important;
 }
 
-/* ======= Navbar: badges & boutons ======= */
-.nav-right{ gap: 18px; }
-.icon-btn{ width: 42px; height: 42px; border-radius: 12px; }
-.badge{
-  top: var(--badge-offset); right: var(--badge-offset);
-  padding: 0 6px; min-width: 20px;
-  font-variant-numeric: tabular-nums; /* clamp visuel stable */
+.dropdown-menu .dropdown-header,
+.dropdown-menu .disabled,
+.dropdown-menu .dropdown-item.disabled {
+    color: #0f172a !important;
+    opacity: 1 !important;
 }
 
-/* Ghost sur fond bleu: garantir contraste */
-.site-header .btn.ghost{
-  border-color: rgba(255,255,255,.55);
-  color: #fff;
-  background: rgba(255,255,255,.08);
-  transition: background .15s var(--ease), border-color .15s var(--ease);
-}
-.site-header .btn.ghost:hover{
-  background: rgba(255,255,255,.16);
+.dropdown-menu .dropdown-item {
+    padding: 10px 18px !important;
+    color: #0f172a !important;
+    font-size: 0.95rem !important;
 }
 
-/* Ghost buttons dans les panneaux (ex: mini panier) : contraste sur fond clair */
-.panel .btn.ghost{
-  /* Dans les panneaux (ex : mini panier), le bouton ghost utilise un fond clair
-     pour que son libellé soit toujours lisible. La bordure et le texte
-     restent aux couleurs de la marque. */
-  background: var(--surface-1);
-  color: var(--brand-primary);
-  border-color: var(--brand-primary);
-  transition: color var(--fast) var(--ease), border-color var(--fast) var(--ease);
-}
-.panel .btn.ghost:hover{
-  background: var(--brand-primary);
-  color: #fff;
-  border-color: var(--brand-primary);
+.dropdown-menu .dropdown-item:hover {
+    background: rgba(0,51,255,0.08) !important;
+    color: #0033ff !important;
 }
 
-/* ======= Accessibilité utilitaires ======= */
-.visually-hidden{
-  position:absolute!important; width:1px!important; height:1px!important;
-  padding:0!important; margin:-1px!important; overflow:hidden!important;
-  clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important;
+/* ===============================
+   2. ENCART HERO (BLEU PREMIUM)
+   =============================== */
+
+.hero-glass {
+    background: linear-gradient(135deg, #0033ff 0%, #00156b 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 50px -10px rgba(0, 50, 255, 0.3);
+    border-radius: 20px !important;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Focus visible sur icônes bouton */
-.icon-btn:focus-visible{
-  outline: none;
-  box-shadow:
-    0 0 0 3px var(--focus-ring),
-    inset 0 0 0 1px rgba(255,255,255,.45);
+.hero-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    opacity: 0.3;
+    mix-blend-mode: overlay;
+    pointer-events: none;
 }
 
-/* ======= Cart / Panier premium ======= */
-.cart-row{
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface-1);
-  transition: transform .15s var(--ease), box-shadow .15s var(--ease);
-}
-.cart-row:hover{
-  transform: translateY(-1px);
-  box-shadow: 0 18px 44px rgba(0,0,0,.08);
+/* ===============================
+   3. FOOTER PREMIUM
+   =============================== */
+
+.site-footer {
+    background-color: #050810 !important;
+    color: #94a3b8 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Images: helper générique si besoin */
-.img-cover{
-  width: 100%; height: 100%; object-fit: cover; display: block;
-  background: var(--surface-2); border-radius: inherit;
-  border: 1px solid var(--border);
-}
-
-/* Quantités: micro-ajustements */
-.qty-btn{ font-weight: 800; }
-.qty-input{ font-variant-numeric: tabular-nums; }
-
-/* Disposition horizontale des contrôles de quantité
-   Cette section aligne les boutons +/- et l'input sur une même ligne pour
-   une présentation plus compacte et luxueuse. Les couleurs utilisent les
-   variables CSS pour s'adapter au thème clair ou sombre. */
-.qty-wrap .qty-control{
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-.qty-control .qty-btn{
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  background: var(--surface, #f6f8fb);
-  color: var(--ink, #111111);
-  border: 1px solid rgba(0,0,0,.12);
-  border-radius: 8px;
-  font-size: 1.25rem;
-  line-height: 1;
-  cursor: pointer;
-  transition: background .15s ease;
-}
-.qty-control .qty-btn:hover{
-  background: rgba(0,0,0,.06);
-}
-.qty-control .qty-input{
-  width: 64px;
-  height: 36px;
-  text-align: center;
-  border: 1px solid rgba(0,0,0,.12);
-  border-radius: 8px;
-  font-size: 1rem;
-  padding: 0;
-  background: var(--surface, #ffffff);
-  color: var(--ink, #111111);
-}
-
-/* Lisibilité des items dans les menus déroulants de la barre de navigation.
-   Les liens utilisent un texte sombre par défaut et s'illuminent de la couleur
-   principale au survol.  Cela garantit une bonne visibilité sur fond clair. */
-.site-nav .nav-menu div a {
-  color: #111827; /* gris très foncé pour un bon contraste */
-}
-.site-nav .nav-menu div a:hover {
-  color: var(--brand-primary);
-}
-
-/* Récap sidebar sticky: respiration et séparateurs */
-.bg-card{ backdrop-filter: none; }
-@supports (backdrop-filter: blur(6px)){
-  .bg-card.shadow-glass{ backdrop-filter: blur(6px); }
-}
-.bg-card hr{ border: none; height: 1px; background: var(--border); }
-
-/* Bouton “Continuer vos achats” (ghost) harmonisé */
-a.btn.ghost, button.btn.ghost{
-  background: var(--surface-1);
-  border: 1px solid var(--border-strong);
-}
-a.btn.ghost:hover, button.btn.ghost:hover{
-  border-color: color-mix(in oklab, var(--brand-primary) 38%, var(--border-strong));
-}
-
-/* ======= Dark mode touches (si data-theme="dark") ======= */
-:root[data-theme="dark"] .cart-row{
-  border-color: var(--border-strong);
-  box-shadow: 0 18px 44px rgba(0,0,0,.35);
-}
-:root[data-theme="dark"] .btn-hero-ghost{
-  background: color-mix(in oklab, var(--surface-1) 86%, transparent);
-  color: var(--on-primary);
-  border-color: rgba(255,255,255,.28);
-}
-
-/* ======= Footer personnalisÃ© ======= */
-.site-footer{
-  /* Même palette que l'en-tête pour une cohérence visuelle */
-  background: linear-gradient(90deg, var(--brand-primary), var(--brand-primary-700));
-  color: var(--on-primary);
-  border-top: none; /* la bordure supérieure est gérée dans le HTML avec une couleur ajustée via utilitaires */
-}
-.site-footer a{
-  color: var(--on-primary);
-  text-decoration: underline;
-}
-.site-footer a:hover{ color: color-mix(in oklab, var(--on-primary) 80%, var(--brand-primary-soft)); }
-.site-footer .social-link{
-  color: var(--on-primary);
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-}
-.site-footer .social-link:hover{
-  color: color-mix(in oklab, var(--on-primary) 75%, var(--brand-primary-soft));
-}
-
-/* ====================================================================
-   Ajustements personnalisés supplémentaires
-   ==================================================================== */
-
-/*
- * Ajustements responsives pour la barre de navigation.
- *
- * Lorsque l'espace horizontal se réduit (par exemple sous la largeur
- * maximale définie par notre conteneur), certains éléments textuels du
- * bloc d'actions — le message de bienvenue et le lien « Admin » — peuvent
- * entrer en collision avec les icônes ou le champ de recherche. Pour
- * éviter que la marque ou les actions soient comprimées ou masquées,
- * ces éléments non essentiels sont masqués à partir d'un certain seuil.
- *
- * Note : le champ de recherche est déjà masqué via la classe Tailwind
- * « lg:block », il n'est donc pas concerné par cette règle.
- */
-@media (max-width: 1180px) {
-  .nav-hello { display: none !important; }
-  .nav-right > a.nav-link { display: none !important; }
-}
-
-/*
- * Lisibilité du pied de page.
- *
- * Sur fond sombre, les textes par défaut (souvent en gris foncé) ne
- * bénéficient pas d'un contraste suffisant et sont difficiles à lire.  Nous
- * augmentons la taille de police et nous forçons la couleur héritée du
- * conteneur (var(--on-primary), généralement blanc ou clair) afin de
- * garantir un contraste optimal.  Ces règles ciblent les paragraphes,
- * listes et titres qui n'ont pas déjà de style spécifique.
- */
-.site-footer p,
-.site-footer li,
 .site-footer h3,
-.site-footer span {
-  color: inherit;
-  font-size: 0.95rem;
-  line-height: 1.5;
+.site-footer h4,
+.site-footer .footer-heading {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
 }
-.site-footer h3{
-  font-size: 1.05rem;
-  font-weight: 600;
+
+.site-footer a {
+    color: #cbd5e1 !important;
+    transition: color 0.2s;
+}
+
+.site-footer a:hover {
+    color: #3b82f6 !important;
+}
+
+.site-footer input[type="email"],
+.site-footer input[type="text"] {
+    background-color: #ffffff !important;
+    border: none !important;
+    color: #000 !important;
+    border-radius: 4px !important;
+}
+
+.site-footer button {
+    background-color: #0033ff !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    font-weight: 600;
+}
+
+/* ===============================
+   4. QUANTITÉ — HORIZONTAL FIX
+   =============================== */
+
+.quantity-control {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.quantity-control button,
+.quantity-control input {
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 12px !important;
+    font-size: 1.2rem !important;
+}
+
+.quantity-control input {
+    font-weight: 700 !important;
+    text-align: center !important;
+}
+
+/* ===============================
+   5. SLIDER LOGOS — REACTIVATION
+   =============================== */
+
+.brand-stack {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.brand-item {
+    position: absolute !important;
+    inset: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: scale(0.95) !important;
+    transition: opacity .4s ease, transform .4s ease !important;
+}
+
+.brand-item.is-active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: scale(1) !important;
+}
+
+.brand-pagination .brand-dot {
+    background: #ffffff55 !important;
+}
+
+.brand-pagination .brand-dot.is-active {
+    background: #ffffff !important;
+    width: 18px !important;
 }

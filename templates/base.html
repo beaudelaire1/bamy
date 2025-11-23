@@ -18,11 +18,11 @@
   <!-- Overrides CSS: personnalisation de l'interface premium (panier, hero, etc.) -->
   <link rel="stylesheet" href="{% static 'css/ui-overrides.css' %}"/>
 
-  <!--Injection dynamique des couleurs de marque.  Si un objet branding est
+ <!-- {# Injection dynamique des couleurs de marque.  Si un objet branding est
      présent dans le contexte, on définit les variables CSS à partir de
      ses champs.  Cela permet de changer la couleur principale et
-     secondaire sans modifier le CSS en dur. -->
-  {% if branding %}
+     secondaire sans modifier le CSS en dur. #}
+  {% if branding %} -->
   <style>
     :root {
       --brand-primary: {{ branding.primary_color }};
