@@ -68,6 +68,8 @@ sitemaps = {
 }
 
 urlpatterns += [
+    path("api/",
+         include("api.urls")),
     path(
         "sitemap.xml",
         sitemap,
@@ -82,3 +84,5 @@ urlpatterns += [
         name="robots",
     ),
 ]
+
+

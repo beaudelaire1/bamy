@@ -13,7 +13,6 @@ except Exception:
     Coupon = None  # fallback when loyalty app is not installed
 
 def detail(request):
-    print(request.user)
     cart = Cart(request)
     # Gestion du coupon appliqué (stocké en session)
     coupon_code = request.session.get("coupon_code")

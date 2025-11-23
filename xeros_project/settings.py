@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import sys # pour vérifier les arguments de la ligne de commande
 
 """
 Importation de la bibliothèque ``django-environ`` (alias ``environ``).
@@ -167,7 +168,7 @@ if ENABLE_REST_API:
     try:
         import rest_framework  # type: ignore
         # Si l'import réussit, on ajoute les apps nécessaires.
-        INSTALLED_APPS += ["rest_framework", "api"]
+        INSTALLED_APPS += ["rest_framework", "rest_framework_simplejwt", "api"]
     except Exception:
         # Si rest_framework est absent ou incompatible, ne pas activer l'API
         # et ne pas lever d'erreur. L'utilisateur devra installer une version
@@ -491,7 +492,34 @@ if not DEBUG:
 
 
 
+# Configuration Django REST Framework + JWT
+from datetime import timedelta
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticated",
+    ),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+}
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+}
+import os
 
+# API toujours activée en mode test
+if os.environ.get("DJANGO_TEST", "") == "true":
+    ENABLE_REST_API = True
 
+import os
+
+# Active automatiquement l'API pendant les tests
+if 'test' in sys.argv:
+    ENABLE_REST_API = True

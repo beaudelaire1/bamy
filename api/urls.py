@@ -19,3 +19,26 @@ urlpatterns = [
     # Recherche produit
     path("products/search/", ProductSearchView.as_view(), name="product-search"),
 ]
+
+
+
+from django.urls import path, include
+from .cart_api import (
+    CartDetailAPIView,
+    CartAddItemAPIView,
+    CartClearAPIView,
+    CartCheckoutAPIView,
+)
+from .auth_api import LoginAPIView, RefreshTokenAPIView
+
+# Routes additionnelles pour le panier et l'authentification JWT
+urlpatterns += [
+    # Panier
+    path("cart/", CartDetailAPIView.as_view(), name="cart-detail-api"),
+    path("cart/add/", CartAddItemAPIView.as_view(), name="cart-add-api"),
+    path("cart/clear/", CartClearAPIView.as_view(), name="cart-clear-api"),
+    path("cart/checkout/", CartCheckoutAPIView.as_view(), name="cart-checkout-api"),
+    # Authentification JWT
+    path("auth/login/", LoginAPIView.as_view(), name="jwt-login"),
+    path("auth/refresh/", RefreshTokenAPIView.as_view(), name="jwt-refresh"),
+]
