@@ -212,7 +212,7 @@ whitenoise==6.9.0
 win32_setctime==1.2.0
 wsproto==1.2.0
 xmltodict==1.0.2
-yt-dlp==2023.6.22
+yt-dlp==2024.7.7
 zipremove==0.8.0
 zipstream-ng==1.9.0
 zstandard==0.25.0
