@@ -13,7 +13,21 @@
       <li>{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} une adresse</li>
     </ol>
   </nav>
-  <h1 class="text-2xl font-semibold mb-6" style="color:var(--brand-primary)">{% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} une adresse</h1>
+  {#
+    Ajout d’un pictogramme de localisation avec un symbole plus pour
+    illustrer l’action d’ajouter ou de modifier une adresse.  La couleur
+    se synchronise grâce à la classe text-brand.  Le bloc flex assure
+    l’alignement de l’icône et du texte.
+  #}
+  <h1 class="flex items-center gap-2 text-2xl font-semibold mb-6" style="color:var(--brand-primary)">
+    <svg class="w-5 h-5 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 10c0 6-9 13-9 13s-9-7-9-13a9 9 0 0 1 18 0z" />
+      <circle cx="12" cy="10" r="3" />
+      <line x1="12" y1="7" x2="12" y2="13" />
+      <line x1="9" y1="10" x2="15" y2="10" />
+    </svg>
+    {% if form.instance.pk %}Modifier{% else %}Ajouter{% endif %} une adresse
+  </h1>
   <form method="post" class="space-y-4">
     {% csrf_token %}
     {{ form.non_field_errors }}

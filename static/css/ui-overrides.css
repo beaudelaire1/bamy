@@ -272,8 +272,14 @@
   font-weight: 700;
   text-transform: uppercase;
   color: #fff;
-  background: linear-gradient(90deg, #f97316, #ef4444);
-  box-shadow: 0 5px 14px rgba(248, 113, 22, 0.6);
+  /*
+   * Dégradé revisité du ruban promo pour rappeler l'identité rouge
+   * et jaune demandée.  Le rouge vif (#ef4444) se fond vers un jaune
+   * chaud (#facc15) et la couleur d'ombre est ajustée pour se
+   * marier avec le nouveau dégradé.
+   */
+  background: linear-gradient(90deg, #ef4444, #facc15);
+  box-shadow: 0 5px 14px rgba(234, 88, 12, 0.6);
 }
 
 /* ===========================================
@@ -351,4 +357,169 @@
   .hero-glass {
     padding: 28px 20px !important;
   }
+}
+
+/*
+ * Restauration du ruban promotionnel
+ *
+ * Le ruban de promotion rouge et jaune avait disparu car aucun style
+ * n'était défini pour la classe `ribbon-promo`.  Nous recréons ici un
+ * ruban visible et cohérent avec la charte graphique.  Le dégradé
+ * part d'un rouge vif vers un jaune chaud, avec un texte blanc et
+ * légère rotation pour donner l'illusion d'un ruban accroché.
+ */
+.ribbon-promo {
+  position: absolute;
+  top: 10px;
+  left: -8px;
+  transform: rotate(-45deg);
+  background: linear-gradient(90deg, #ef4444, #facc15);
+  color: #fff;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  z-index: 5;
+}
+
+/*
+ * Lisibilité des liens de navigation
+ *
+ * Les liens dans la barre de navigation avaient une opacité trop
+ * faible ce qui les rendait difficiles à distinguer, notamment pour
+ * l'icône panier, le lien de connexion et la liste de souhaits.  On
+ * force ici une opacité pleine et une couleur blanche pour tous les
+ * éléments portant la classe `nav-link`, qu'ils soient dans le menu
+ * principal ou dans la colonne droite.  Un léger assombrissement
+ * d'opacité est appliqué au survol pour conserver l'effet.
+ */
+.nav-menu .nav-link,
+.nav-right .nav-link {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+.nav-menu .nav-link:hover,
+.nav-right .nav-link:hover {
+  opacity: 0.85 !important;
+  text-decoration: underline !important;
+}
+
+/*
+ * Amélioration du survol des boutons icônes
+ *
+ * Pour les boutons circulaires (panier, favoris, thème…) nous
+ * augmentons légèrement l'opacité et le contraste lors du survol afin
+ * d'améliorer la lisibilité tout en préservant le style existant.
+ */
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+/*
+ * Panneaux du panier et des favoris
+ *
+ * Les panneaux qui apparaissent au survol du panier ou de la wishlist
+ * manquaient de styles dédiés, ce qui les rendait illisibles et mal
+ * positionnés.  On définit ici un conteneur flottant avec un fond
+ * clair, un léger ombrage et un texte sombre.  Les actions sont
+ * organisées en colonnes avec des boutons primaires et secondaires.
+ */
+.nav-right .panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 220px;
+  background: #ffffff;
+  color: #111827;
+  padding: 14px 16px;
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.15);
+  z-index: 80;
+}
+
+.nav-right .panel-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.nav-right .panel-sub {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  color: #6b7280;
+}
+
+.nav-right .panel-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-right .panel-actions .btn {
+  display: block;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.nav-right .panel-actions .btn.ghost {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.nav-right .panel-actions .btn.primary {
+  background: var(--brand-primary);
+  color: #ffffff;
+}
+
+.nav-right .panel-link {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--brand-primary);
+}
+
+.nav-right .panel-link:hover {
+  text-decoration: underline;
+}
+
+/*
+ * Lisibilité des cartes produits en survol
+ *
+ * Lorsqu’un utilisateur passe la souris sur une carte produit (article.card),
+ * certains textes devenaient peu lisibles, notamment en mode sombre.  Pour
+ * remédier à cela sans bouleverser le design existant, nous accentuons la
+ * couleur des titres et des métadonnées lors du survol.  En clair,
+ * l’en‑tête (h3) passe à la couleur d’encre principale tandis que les
+ * méta‑informations (catégorie, unité, mentions grises) adoptent une
+ * encre plus douce.  Le fond est légèrement nuancé pour suggérer le
+ * focus mais reste translucide afin de conserver la hiérarchie visuelle.
+ */
+.card:hover h3,
+.card:hover h3 a {
+  color: var(--ink) !important;
+}
+.card:hover .text-gray-500,
+.card:hover .text-xs {
+  color: var(--ink-soft) !important;
+}
+/*
+ * Teinte d’arrière‑plan subtile lors du survol de la carte.  En clair,
+ * on applique un voile blanc translucide pour adoucir les contrastes.  En
+ * mode sombre, on utilise un voile sombre translucide.  Ces règles
+ * s’appliquent aussi lorsqu’on navigue au clavier (focus-within).
+ */
+.card:hover,
+.card:focus-within {
+  background-color: rgba(255, 255, 255, 0.45);
+}
+html[data-theme="dark"] .card:hover,
+html[data-theme="dark"] .card:focus-within,
+body.dark-theme .card:hover,
+body.dark-theme .card:focus-within {
+  background-color: rgba(13, 17, 23, 0.55);
 }

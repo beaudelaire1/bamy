@@ -5,7 +5,20 @@
   <h1 class="text-3xl font-bold mb-6">Mon tableau de bord</h1>
 
   <div class="mb-8">
-    <h2 class="text-2xl font-semibold mb-3">Historique de commandes</h2>
+    <!--
+      Ajout d'une icône au titre du module Historique de commandes pour
+      renforcer l'identité visuelle et rappeler la notion de document/commande.
+      L'icône adopte la couleur de la marque via la classe text-brand.
+    -->
+    <h2 class="flex items-center gap-2 text-2xl font-semibold mb-3">
+      <svg class="w-5 h-5 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+      </svg>
+      Historique de commandes
+    </h2>
     {% if orders %}
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -35,7 +48,16 @@
   </div>
 
   <div>
-    <h2 class="text-2xl font-semibold mb-3">Fidélité</h2>
+    <!--
+      Ajout d'une icône étoile pour symboliser le programme de fidélité.
+      L'icône utilise la même palette que les autres éléments du site.
+    -->
+    <h2 class="flex items-center gap-2 text-2xl font-semibold mb-3">
+      <svg class="w-5 h-5 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15 8 22 9 17 14 18 21 12 18 6 21 7 14 2 9 9 8 12 2" />
+      </svg>
+      Fidélité
+    </h2>
     {% if loyalty %}
       <p>Vous disposez de <strong>{{ loyalty.points }}</strong> point(s) de fidélité.</p>
     {% else %}

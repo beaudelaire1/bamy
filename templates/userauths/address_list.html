@@ -11,7 +11,19 @@
       <li>Mes adresses</li>
     </ol>
   </nav>
-  <h1 class="text-2xl font-semibold mb-6" style="color:var(--brand-primary)">Mes adresses</h1>
+  {#
+    Icône localisation avant le titre « Mes adresses ».  On utilise une
+    épingle simplifiée issue des icônes outline et on colore via
+    text-brand.  Le conteneur flex permet un alignement vertical
+    cohérent.
+  #}
+  <h1 class="flex items-center gap-2 text-2xl font-semibold mb-6" style="color:var(--brand-primary)">
+    <svg class="w-5 h-5 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 10c0 6-9 13-9 13s-9-7-9-13a9 9 0 0 1 18 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+    Mes adresses
+  </h1>
   <div class="mb-4 text-right">
     <a href="{% url 'userauths:address_create' %}" class="px-4 py-2 rounded-md text-white" style="background:var(--brand-primary)">Ajouter une adresse</a>
   </div>

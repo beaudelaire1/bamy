@@ -61,3 +61,74 @@ body.dark-theme .site-footer a {
 body.dark-theme .site-footer a:hover {
   color: #3b82f6 !important;
 }
+
+/*
+ * Harmonisation des éléments en mode sombre
+ *
+ * Plusieurs composants du front n'avaient pas de styles spécifiques en
+ * mode sombre, ce qui laissait des zones claires ou mal contrastées.
+ * Les règles ci-dessous adaptent les cartes promotionnelles, le
+ * champ de recherche et les panneaux du panier et des favoris afin
+ * qu'ils s'intègrent proprement au thème sombre.
+ */
+
+/* Cartes promotionnelles dans les carrousels */
+:root[data-theme="dark"] .promo-card,
+body.dark-theme .promo-card {
+  background-color: #0d1117 !important;
+  border-color: var(--border);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75) !important;
+  color: var(--ink) !important;
+}
+
+/* Champ de recherche de la barre de navigation */
+:root[data-theme="dark"] .nav-right input[type="search"],
+body.dark-theme .nav-right input[type="search"] {
+  background-color: #010409 !important;
+  border: 1px solid var(--border) !important;
+  color: var(--ink) !important;
+}
+
+/* Panneaux wishlist et panier (hover) */
+:root[data-theme="dark"] #wishlist-panel,
+body.dark-theme #wishlist-panel,
+:root[data-theme="dark"] #cart-panel,
+body.dark-theme #cart-panel {
+  background-color: #0d1117 !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+:root[data-theme="dark"] #wishlist-panel a,
+body.dark-theme #wishlist-panel a,
+:root[data-theme="dark"] #cart-panel a,
+body.dark-theme #cart-panel a {
+  color: var(--brand-primary) !important;
+}
+:root[data-theme="dark"] #wishlist-panel a:hover,
+body.dark-theme #wishlist-panel a:hover,
+:root[data-theme="dark"] #cart-panel a:hover,
+body.dark-theme #cart-panel a:hover {
+  text-decoration: underline !important;
+}
+
+/* Ombre plus marquée sur le ruban promo en mode sombre */
+:root[data-theme="dark"] .ribbon-promo,
+body.dark-theme .ribbon-promo {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Ajustement des panneaux en mode sombre */
+:root[data-theme="dark"] .nav-right .panel-title,
+body.dark-theme .nav-right .panel-title {
+  color: var(--ink) !important;
+}
+:root[data-theme="dark"] .nav-right .panel-sub,
+body.dark-theme .nav-right .panel-sub {
+  color: var(--ink-soft) !important;
+}
+:root[data-theme="dark"] .nav-right .panel-actions .btn.ghost,
+body.dark-theme .nav-right .panel-actions .btn.ghost {
+  background: #161b22 !important;
+  color: var(--ink) !important;
+}
