@@ -1,6 +1,7 @@
-/* DARK MODE — NO TOUCH */
+/* DARK MODE — support html[data-theme="dark"] et body.dark-theme */
 
-:root[data-theme="dark"], body.dark-theme {
+:root[data-theme="dark"],
+body.dark-theme {
   --surface: #02040a;
   --surface-1: #0d1117;
   --surface-2: #161b22;
@@ -9,34 +10,54 @@
   --brand-primary: #3b82f6;
 }
 
+/* Fond global */
 body.dark-theme {
   background-color: var(--surface);
   color: var(--ink);
 }
 
-body.dark-theme .site-header {
-  background: rgba(13,17,23,0.85) !important;
-  border-bottom: 1px solid var(--border);
+/* On garde le header / hero bleus (identité forte) */
+body.dark-theme .site-header,
+:root[data-theme="dark"] .site-header {
+  background: linear-gradient(90deg, #0043ff 0%, #001a80 100%) !important;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.75);
 }
 
-body.dark-theme .nav-link { color: var(--ink); }
-body.dark-theme .nav-link:hover { color: var(--brand-primary); }
-
-body.dark-theme .card {
-  background-color: var(--surface-1);
+/* Cartes & blocs */
+body.dark-theme .card,
+body.dark-theme .card-vertical,
+body.dark-theme .service-card,
+body.dark-theme .stat-card,
+body.dark-theme .table-shell,
+body.dark-theme .lux-glass {
+  background-color: #0d1117 !important;
   border-color: var(--border);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.75);
 }
 
-body.dark-theme input {
-  background-color: #010409;
-  border-color: var(--border);
-  color: var(--ink);
+/* Inputs */
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea {
+  background-color: #010409 !important;
+  border-color: var(--border) !important;
+  color: var(--ink) !important;
 }
 
+/* Liens nav si classés .nav-link */
+body.dark-theme .nav-link {
+  color: #f9fafb !important;
+}
+
+/* Footer reste sombre mais harmonisé */
 body.dark-theme .site-footer {
-  background-color: #010203 !important;
-  border-top: 1px solid var(--border);
+  background-color: #010409 !important;
+  border-top-color: var(--border);
+  color: #e5e7eb !important;
 }
 body.dark-theme .site-footer a {
-  color: #8b949e !important;
+  color: #cbd5e1 !important;
+}
+body.dark-theme .site-footer a:hover {
+  color: #3b82f6 !important;
 }

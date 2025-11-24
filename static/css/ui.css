@@ -20,6 +20,9 @@
   --ink-subtle: #6b7280;
   --ink-soft: #9ca3af;
 
+  /* Bordure générique (utilisée aussi par ui-dark) */
+  --border: var(--surface-border);
+
   /* Verre & halo */
   --glass-bg: color-mix(in oklab, rgba(255,255,255,.08) 70%, rgba(255,255,255,.4));
   --glass-stroke: color-mix(in oklab, rgba(255,255,255,.58) 65%, rgba(255,255,255,.3));
@@ -137,9 +140,10 @@ a:hover{
   text-decoration:underline;
 }
 .nav-actions{
-  display:flex; align-items:center; gap:12px;
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
-
 /* Bouton icône (ampoule, burger, etc.) */
 .icon-btn{
   width: 34px; height: 34px;
@@ -329,7 +333,6 @@ a:hover{
   max-height:100%;
   object-fit:contain;
 }
-
 /* Points de pagination & texte */
 .brand-pagination{
   position:absolute;
@@ -488,7 +491,7 @@ a:hover{
   color:#e5e7eb;
 }
 
-/* ======= Tableaux de prix / stats etc. (exemple) ======= */
+/* ======= Tableaux de prix / stats etc. ======= */
 .table-shell{
   margin-top: 26px;
   overflow-x:auto;
@@ -529,7 +532,7 @@ tr.total-row td{
   background: linear-gradient(90deg, rgba(219,234,254,.65), rgba(224,231,255,.8));
 }
 
-/* ======= Grille de services / options ======= */
+/* ======= Grille de services ======= */
 .services-grid{
   margin-top: 26px;
   display:grid;

@@ -11,25 +11,42 @@
     <div class="pc-track flex gap-6" style="transition:none;">
       {% load catalog_extras %}
       {% for p in promos_carousel %}
-        <a href="{{ p.get_absolute_url }}" class="block min-w-[240px] max-w-[240px] rounded-2xl bg-white shadow hover:shadow-lg transition overflow-hidden">
-          <div class="aspect-[4/3] bg-gray-100">
-            {% if p.image %}<img src="{{ p.image.url }}" alt="{{ p.title }}" class="w-full h-full object-cover">{% endif %}
+        <a href="{{ p.get_absolute_url }}" class="promo-card group relative block min-w-[240px] max-w-[240px] rounded-2xl bg-white shadow transition-transform duration-200 hover:-translate-y-1 hover:shadow-2xl overflow-hidden">
+          <!-- Ruban promo rouge + jaune -->
+          {% if p.discount_price %}
+          <div class="promo-ribbon">
+            <span class="promo-pill-main">Promo</span>
           </div>
+          {% endif %}
+
+          <div class="relative aspect-[4/3] bg-gray-100 overflow-hidden">
+            {% if p.image %}
+              <img src="{{ p.image.url }}" alt="{{ p.title }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+            {% endif %}
+          </div>
+
           <div class="p-3">
-            <div class="text-xs text-gray-500 mb-1">
-              {% if p.brand.logo %}<img src="{{ p.brand.logo.url }}" class="inline-block w-4 h-4 rounded mr-1" alt="{{ p.brand.name }}">{% endif %}
-              {{ p.brand.name }}
+            <div class="flex items-center gap-1 text-xs text-gray-500 mb-1">
+              {% if p.brand.logo %}
+                <img src="{{ p.brand.logo.url }}" class="inline-block w-4 h-4 rounded mr-1" alt="{{ p.brand.name }}">
+              {% endif %}
+              <span>{{ p.brand.name }}</span>
             </div>
+
             <div class="text-sm font-medium line-clamp-2">{{ p.title }}</div>
-            <div class="mt-1">
+
+            <div class="mt-2 flex items-baseline gap-2">
               {% if request.user.is_authenticated %}
                 {% with user_price=p|price_for_user:request.user %}
                   {% if user_price %}
-                    <span class="font-semibold text-brand">{{ user_price }} €</span>
+                    <span class="text-base font-semibold text-brand">{{ user_price }} €</span>
                   {% endif %}
                 {% endwith %}
+                {% if p.discount_price %}
+                  <span class="text-xs text-gray-400 line-through">{{ p.price }} €</span>
+                {% endif %}
               {% else %}
-                <span class="text-sm text-gray-500">Connectez‑vous pour voir le prix</span>
+                <span class="text-sm text-gray-500">Connectez-vous pour voir le prix</span>
               {% endif %}
             </div>
           </div>
