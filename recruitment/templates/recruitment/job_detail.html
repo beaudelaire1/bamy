@@ -13,7 +13,18 @@
 
 {% block content %}
 <section class="max-w-3xl mx-auto py-10">
-  <h1 class="text-3xl font-bold mb-4">{{ job.title }}</h1>
+  {#
+    Ajout d’une icône « briefcase » avant le titre de l’offre pour
+    renforcer l’identité visuelle.  L’icône se teinte grâce à
+    text-brand et est alignée avec le titre.
+  #}
+  <h1 class="flex items-center gap-2 text-3xl font-bold mb-4">
+    <svg class="w-6 h-6 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+      <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+    </svg>
+    {{ job.title }}
+  </h1>
   {% if job.location or job.department %}
     <p class="mb-4 text-sm text-gray-600">
       {% if job.department %}<span class="font-medium">Département :</span> {{ job.department }}{% endif %}
@@ -24,13 +35,23 @@
   <div class="prose max-w-none mb-8">
     {{ job.description|linebreaks }}
   </div>
-  <h2 class="text-2xl font-semibold mb-4">Postuler à cette offre</h2>
+  {#
+    Icône d’envoi avant le sous-titre « Postuler à cette offre ».  Le
+    dessin représente une plume/feuille symbolisant la candidature.
+  #}
+  <h2 class="flex items-center gap-2 text-2xl font-semibold mb-4">
+    <svg class="w-5 h-5 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 22l21-9L2 4v7l15 2-15 2z" />
+    </svg>
+    Postuler à cette offre
+  </h2>
   <!--
     Le formulaire envoie désormais la candidature vers l'URL
     ``recruitment:job_apply`` qui traite la persistance.  Sans ``action``
     explicite, le navigateur renverrait la requête POST à la page de
     détails, provoquant un rechargement en boucle sans sauvegarde.
   -->
+  <div class="fancy-form">
   <form method="post" action="{% url 'recruitment:job_apply' job.slug %}" enctype="multipart/form-data" class="space-y-4">
     {% csrf_token %}
     {{ form.non_field_errors }}
@@ -70,5 +91,6 @@
       Envoyer ma candidature
     </button>
   </form>
+  </div>
 </section>
 {% endblock %}

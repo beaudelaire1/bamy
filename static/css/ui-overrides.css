@@ -523,3 +523,58 @@ body.dark-theme .card:hover,
 body.dark-theme .card:focus-within {
   background-color: rgba(13, 17, 23, 0.55);
 }
+
+/*
+ * Composant de formulaire animé (fancy-form)
+ *
+ * Les pages de recrutement et de contact du site de luxe bénéficient
+ * d’un design premium avec un encadrement animé rappelant les
+ * dégradés fluides de la marque.  La pseudo‑couche ::before crée
+ * un contour multicolore qui se déplace en continu autour du
+ * conteneur.  L’animation reste discrète (8s) mais apporte une
+ * impression de mouvement élégant.  La couleur de fond s’adapte à
+ * l’environnement clair ou sombre.
+ */
+.fancy-form {
+  position: relative;
+  background: var(--surface-1, #ffffff);
+  border-radius: 22px;
+  padding: 1.75rem;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
+}
+
+.fancy-form::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: linear-gradient(130deg,
+    var(--brand-primary),
+    #c026d3,
+    var(--brand-secondary, #facc15),
+    var(--brand-primary)
+  );
+  background-size: 300% 300%;
+  /* Crée un trou au centre pour que seul le contour soit visible */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  animation: fancyBorderFlow 8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes fancyBorderFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Ajustement du fond en mode sombre */
+html[data-theme="dark"] .fancy-form,
+body.dark-theme .fancy-form {
+  background: #0d1117;
+}
