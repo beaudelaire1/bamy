@@ -110,6 +110,14 @@ INSTALLED_APPS = [
     "orders",
     "crm",
 
+    # Gestion des organisations clientes et multi‑utilisateur
+    "clients",
+    #"xeros_project.clients",
+
+
+    # Module de devis et commandes B2B
+    "quotes",
+
     # apps avec appel via api tiers
     "payments",
 
@@ -125,6 +133,11 @@ INSTALLED_APPS = [
     "recruitment",
 
     "django_ckeditor_5",
+
+    # Gestion des sites (multi‑domaines)
+    "api",
+    "integrations",
+    "notifications",
 
     # Import/export permet l'importation et l'exportation de données
     # depuis l'administration (CSV, XLSX). Vous devrez installer
@@ -194,6 +207,31 @@ WSGI_APPLICATION = "xeros_project.wsgi.application"
 DATABASES = {
     "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "db.sqlite3"}
 }
+
+# -----------------------------------------------------------------------------
+# Mise en cache globale Redis
+# -----------------------------------------------------------------------------
+# Un cache Redis est utilisé pour accélérer les opérations de calcul de prix
+# et stocker temporairement les catalogues et grilles tarifaires.  La
+# variable d'environnement ``REDIS_URL`` peut être définie pour
+# personnaliser l'URL de connexion.  En l'absence de configuration,
+# Django utilisera un backend locmem par défaut.
+try:
+    REDIS_URL = env("REDIS_URL", default="redis://127.0.0.1:6379/0")  # type: ignore[attr-defined]
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": REDIS_URL,
+        }
+    }
+except Exception:
+    # Fallback simple : cache en mémoire locale (non partagé entre processus)
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "xeros-cache",
+        }
+    }
 
 AUTH_USER_MODEL = "userauths.User"  # Custom user dès le départ
 

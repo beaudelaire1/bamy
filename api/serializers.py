@@ -7,6 +7,7 @@ comment nos modèles sont représentés en JSON.
 
 from rest_framework import serializers
 from orders.models import Order, OrderItem
+from quotes.models import Quote, QuoteItem
 from catalog.models import Product
 from core.factory import get_pricing_service
 
@@ -95,3 +96,45 @@ class ProductSerializer(serializers.ModelSerializer):
         user = getattr(request, "user", None) if request is not None else None
         pricing_service = get_pricing_service()
         return pricing_service.get_unit_price(obj, user)
+
+
+# -----------------------------------------------------------------------------
+# Devis (quotes)
+# -----------------------------------------------------------------------------
+class QuoteItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuoteItem
+        fields = ["product", "product_title", "product_sku", "unit_price", "quantity", "line_total"]
+
+    product_title = serializers.CharField(source="product.title", read_only=True)
+    product_sku = serializers.CharField(source="product.sku", read_only=True)
+
+
+class QuoteSerializer(serializers.ModelSerializer):
+    items = QuoteItemSerializer(many=True)
+
+    class Meta:
+        model = Quote
+        fields = ["id", "client", "user", "status", "notes", "created_at", "validated_at", "subtotal", "items"]
+        read_only_fields = ["id", "created_at", "validated_at", "subtotal"]
+
+    def create(self, validated_data):
+        # Détacher les items du payload
+        items_data = validated_data.pop("items", [])
+        quote = Quote.objects.create(**validated_data)
+        # Crée chaque item et calcule le prix final via le service de pricing
+        from core.factory import get_pricing_service
+        pricing_service = get_pricing_service()
+        user = quote.user
+        for item_data in items_data:
+            product = item_data["product"]
+            quantity = item_data.get("quantity", 1)
+            unit_price = pricing_service.preview_price(product, user, quantity)
+            QuoteItem.objects.create(
+                quote=quote,
+                product=product,
+                quantity=quantity,
+                unit_price=unit_price,
+                line_total=(unit_price * quantity),
+            )
+        return quote

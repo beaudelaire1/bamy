@@ -12,6 +12,7 @@ from .views import OrderViewSet, InvoiceViewSet, ProductSearchView
 router = routers.DefaultRouter()
 router.register(r"orders", OrderViewSet, basename="order")
 router.register(r"invoices", InvoiceViewSet, basename="invoice")
+router.register(r"quotes", __import__("api.views", fromlist=["QuoteViewSet"]).QuoteViewSet, basename="quote")
 
 
 urlpatterns = [
@@ -41,4 +42,11 @@ urlpatterns += [
     # Authentification JWT
     path("auth/login/", LoginAPIView.as_view(), name="jwt-login"),
     path("auth/refresh/", RefreshTokenAPIView.as_view(), name="jwt-refresh"),
+
+    # Prévisualisation de prix (endpoint expérimental)
+    path(
+        "pricing/preview/<int:product_id>/",
+        __import__("api.pricing_api", fromlist=["PricingPreviewAPIView"]).PricingPreviewAPIView.as_view(),
+        name="pricing-preview",
+    ),
 ]

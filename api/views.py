@@ -7,8 +7,11 @@ consultation sont implémentés pour les commandes/factures.
 """
 
 from rest_framework import viewsets, permissions
+from django.db import models
 from orders.models import Order
 from .serializers import OrderSerializer, InvoiceSerializer, ProductSerializer
+from .serializers import QuoteSerializer
+from quotes.models import Quote
 from catalog.models import Product
 from django.db.models import Q
 from rest_framework.generics import ListAPIView
@@ -89,3 +92,34 @@ class ProductSearchView(ListAPIView):
                 | Q(ean__icontains=query)
             )
         return qs.order_by("-updated_at")[:20]
+
+
+# -----------------------------------------------------------------------------
+# Devis (quotes)
+# -----------------------------------------------------------------------------
+class QuoteViewSet(viewsets.ModelViewSet):
+    """Endpoint CRUD pour les devis.
+
+    Permet de lister, créer et mettre à jour les devis du système.  Les
+    utilisateurs doivent être authentifiés.  Lors de la création, les
+    items associés sont traités via le sérialiseur.
+    """
+
+    serializer_class = QuoteSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = Quote.objects.all().prefetch_related("items__product")
+        # Si l'utilisateur n'est pas superuser, on restreint aux devis
+        # associés au client via ses liens.  Cette logique de filtrage
+        # pourrait être déplacée dans un ``QuerySet`` custom.
+        if not user.is_superuser:
+            qs = qs.filter(
+                models.Q(client__user_links__user=user) | models.Q(user=user)
+            ).distinct()
+        # Filtrer par statut si nécessaire
+        status = self.request.query_params.get("status")
+        if status:
+            qs = qs.filter(status=status)
+        return qs.order_by("-created_at")

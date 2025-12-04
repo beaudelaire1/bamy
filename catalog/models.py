@@ -8,9 +8,6 @@ from django.core.exceptions import ValidationError
 from decimal import Decimal
 from django.db.models import F, Q, Manager, QuerySet
 
-from django.db import models
-from django.db.models import JSONField
-
 def unique_slugify(instance, value, slug_field_name="slug"):
     slug = slugify(value)
     ModelClass = instance.__class__
@@ -289,17 +286,18 @@ class Product(models.Model):
     # d'écraser cette logique.
 
     def get_price_for_user(self, user):
-        """
-        Retourne le tarif adapté au type de client.
+        """Retourne le tarif ajusté pour ``user`` via le moteur de pricing.
 
-        Cette méthode exploite les champs de prix différenciés du modèle
-        (`price_wholesaler`, `price_big_retail`, `price_small_retail`).
-        Si un tarif spécifique est renseigné pour la catégorie du client,
-        il est renvoyé en priorité.  À défaut, le prix promotionnel
-        (`discount_price`) est renvoyé lorsqu'une promotion est active,
-        sinon le prix public (`price`).  Les visiteurs non connectés ou
-        les comptes non vérifiés reçoivent toujours le prix public ou
-        promotionnel selon le cas.
+        Cette méthode est conservée pour compatibilité avec l'ancien code
+        (notamment le filtre de template ``price_for_user``) mais elle ne
+        contient plus aucune logique métier. Elle délègue désormais le
+        calcul à ``PromoAwareB2BPricingService`` via la fabrique ``core.factory``.
+
+        L'implémentation précédente mélangeait plusieurs règles de tarification
+        directement au sein du modèle, ce qui violait les principes de
+        l'architecture hexagonale. En utilisant ici un simple appel à la
+        couche de service, on respecte la séparation des responsabilités tout
+        en préservant la signature de la méthode.
 
         Parameters
         ----------
@@ -311,31 +309,9 @@ class Product(models.Model):
         decimal.Decimal
             Le prix unitaire ajusté pour l'utilisateur.
         """
-        from decimal import Decimal  # import local pour éviter des problèmes de dépendances circulaires
-
-        # Détermine le prix de base (tarif public ou promo si active)
-        base_price = self.discount_price if self.is_promo and self.discount_price else self.price
-        try:
-            base_price = Decimal(str(base_price)) if base_price is not None else Decimal("0.00")
-        except Exception:
-            base_price = Decimal("0.00")
-
-        # Cas où l'utilisateur n'est pas connecté : retourne le prix public/promo
-        if not user or not getattr(user, "is_authenticated", False):
-            return base_price
-        # Si le compte B2B n'est pas vérifié, aucun prix spécifique n'est appliqué
-        if not getattr(user, "is_b2b_verified", False):
-            return base_price
-        # Sélectionne la colonne de prix selon le type de client
-        ctype = getattr(user, "client_type", "regular") or "regular"
-        if ctype == "wholesaler" and self.price_wholesaler is not None:
-            return self.price_wholesaler
-        if ctype == "big_retail" and self.price_big_retail is not None:
-            return self.price_big_retail
-        if ctype == "small_retail" and self.price_small_retail is not None:
-            return self.price_small_retail
-        # Par défaut, renvoie le prix public/promo
-        return base_price
+        from core.factory import get_pricing_service  # import local pour éviter des dépendances circulaires
+        pricing_service = get_pricing_service()
+        return pricing_service.get_unit_price(self, user)
     def clean(self):
         # Validation côté serveur, si tu veux garder un garde-fou
         super().clean()
@@ -347,20 +323,29 @@ class Product(models.Model):
 
 
 class PromoCatalog(models.Model):
-    title=models.CharField(max_length=255)
-    start_date=models.DateTimeField()
-    end_date=models.DateTimeField()
-    is_active=models.BooleanField(default=True)
-    target_users=models.ManyToManyField('userauths.User',blank=True)
-    target_client_type=models.CharField(max_length=50,blank=True,null=True)
+    title = models.CharField(max_length=255)
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
+    target_users = models.ManyToManyField('userauths.User', blank=True)
+    target_client_type = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.title
+
 
 class PromoItem(models.Model):
-    catalog = models.ForeignKey("PromoCatalog", on_delete=models.CASCADE)
-    product = models.ForeignKey("Product", on_delete=models.CASCADE)
+    catalog = models.ForeignKey(PromoCatalog, on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
     promo_price = models.DecimalField(max_digits=10, decimal_places=2)
 
-    allowed_customer_numbers = JSONField(
-        blank=True,
+    # ✅ JSONField compatible SQLite + Postgres
+    allowed_customer_numbers = models.JSONField(
         default=list,
+        blank=True,
         help_text="Liste des numéros clients autorisés pour cette promo.",
     )
+
+
+    def __str__(self) -> str:
+        return f"{self.product} @ {self.promo_price}"

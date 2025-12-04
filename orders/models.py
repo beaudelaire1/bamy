@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from clients.models import Client
 from decimal import Decimal
 from django.utils import timezone
 
@@ -13,6 +14,12 @@ class Order(models.Model):
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="orders"
+    )
+
+    # Organisation cliente ayant passé cette commande (optionnel pour rétrocompatibilité)
+    client = models.ForeignKey(
+        Client, on_delete=models.SET_NULL, null=True, blank=True, related_name="orders",
+        help_text="Client B2B associé à cette commande."
     )
     order_number = models.CharField(max_length=32, unique=True, editable=False)
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default="pending")

@@ -22,5 +22,22 @@ class UserDTO(BaseModel):
     is_b2b_verified: bool = False
 
 
+class ClientDTO(BaseModel):
+    """Représente une organisation cliente dans le moteur.
+
+    Le ``ClientDTO`` permet de transmettre des paramètres
+    organisationnels depuis les couches supérieures vers les services
+    métier.  Il centralise les propriétés du modèle ``Client`` qui
+    influencent le pricing et l'accès aux fonctionnalités.
+    """
+
+    id: int
+    name: str
+    settings_currency: Optional[str] = None
+    default_pricing_mode: Optional[str] = None
+    allowed_features: list[str] | None = None
+    sales_rep_id: Optional[int] = None
+
+
 class PromoItemDTO(BaseModel):
     promo_price: Decimal

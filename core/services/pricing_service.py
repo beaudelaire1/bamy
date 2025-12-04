@@ -49,9 +49,40 @@ class PromoAwareB2BPricingService:
                 is_b2b_verified=getattr(user, "is_b2b_verified", False),
             )
 
-        promo = self.promo_port.get_applicable_promo(product_dto, user_dto)
+        # Vérifie le cache avant de calculer le prix
+        try:
+            from django.core.cache import cache
+        except Exception:
+            cache = None
+        cache_key = None
+        if cache is not None:
+            user_key = f"u{user.id}" if user is not None else "anon"
+            cache_key = f"pricing:unit:{user_key}:{product.id}"
+            cached_price = cache.get(cache_key)
+            if cached_price is not None:
+                return Decimal(str(cached_price))
 
-        return PricingEngine.determine_price(product_dto, user_dto, promo)
+        promo = self.promo_port.get_applicable_promo(product_dto, user_dto)
+        price = PricingEngine.determine_price(product_dto, user_dto, promo)
+        # Sauvegarde en cache pour 10 minutes
+        if cache is not None and cache_key is not None:
+            cache.set(cache_key, str(price), 600)
+        return price
+
+    # Nouveauté : prévisualisation de prix avec quantité et règles avancées
+    def preview_price(self, product, user=None, quantity: int = 1) -> Decimal:
+        """Simule le calcul du prix pour une quantité donnée.
+
+        Cette méthode ne s'appuie pas sur les promotions de catalogue
+        ciblées (car l'adaptateur promo n'est pas disponible dans
+        ``PricingEngine.determine_price_with_context``) mais applique
+        l'ensemble des règles B2B, promotions simples et règles
+        avancées (quantité, marque, famille, prix plancher).
+        """
+        # On délègue au moteur étendu pour la prévisualisation.
+        from core.domain.pricing_engine import PricingEngine
+
+        return PricingEngine.determine_price_with_context(product, user, quantity)
 
     # Méthode de compatibilité avec l'ancienne interface de PricingService
     def compute_unit_price(self, product: ProductDTO, client_type: str | None = None) -> Decimal:
