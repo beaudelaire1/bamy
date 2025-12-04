@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.utils.text import slugify
 from django.urls import reverse
 from django_ckeditor_5.fields import CKEditor5Field
@@ -6,6 +7,9 @@ from math import ceil
 from django.core.exceptions import ValidationError
 from decimal import Decimal
 from django.db.models import F, Q, Manager, QuerySet
+
+from django.db import models
+from django.db.models import JSONField
 
 def unique_slugify(instance, value, slug_field_name="slug"):
     slug = slugify(value)
@@ -247,6 +251,26 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
     @property
+    def is_catalogue_promo(self) -> bool:
+        """Indique si le produit est dans au moins un catalogue
+        de promotion actif.
+
+        Cette propriété ne gère pas le ciblage par numéro client,
+        qui est pris en charge par le moteur de pricing. Elle sert
+        uniquement à l'affichage d'un badge visuel.
+        """
+        from django.utils import timezone
+        from catalog.models import PromoItem, PromoCatalog  # import local pour éviter les cycles
+
+        now = timezone.now()
+        return PromoItem.objects.filter(
+            product_id=self.id,
+            catalog__is_active=True,
+            catalog__start_date__lte=now,
+            catalog__end_date__gte=now,
+        ).exists()
+
+    @property
     def final_price(self):
         return self.discount_price if self.discount_price else self.price
 
@@ -331,6 +355,12 @@ class PromoCatalog(models.Model):
     target_client_type=models.CharField(max_length=50,blank=True,null=True)
 
 class PromoItem(models.Model):
-    catalog=models.ForeignKey(PromoCatalog,on_delete=models.CASCADE)
-    product=models.ForeignKey('Product',on_delete=models.CASCADE)
-    promo_price=models.DecimalField(max_digits=10,decimal_places=2)
+    catalog = models.ForeignKey("PromoCatalog", on_delete=models.CASCADE)
+    product = models.ForeignKey("Product", on_delete=models.CASCADE)
+    promo_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    allowed_customer_numbers = JSONField(
+        blank=True,
+        default=list,
+        help_text="Liste des numéros clients autorisés pour cette promo.",
+    )

@@ -8,6 +8,7 @@ comment nos modèles sont représentés en JSON.
 from rest_framework import serializers
 from orders.models import Order, OrderItem
 from catalog.models import Product
+from core.factory import get_pricing_service
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -73,10 +74,9 @@ class InvoiceSerializer(OrderSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    """Sérialiseur minimal pour les produits.
+    """Sérialiseur pour les produits avec prix final calculé."""
 
-    Sert aux suggestions et recherches rapides via l'API.
-    """
+    final_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -87,4 +87,11 @@ class ProductSerializer(serializers.ModelSerializer):
             "article_code",
             "price",
             "discount_price",
+            "final_price",
         ]
+
+    def get_final_price(self, obj):
+        request = self.context.get("request")
+        user = getattr(request, "user", None) if request is not None else None
+        pricing_service = get_pricing_service()
+        return pricing_service.get_unit_price(obj, user)

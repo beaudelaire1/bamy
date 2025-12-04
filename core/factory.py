@@ -13,7 +13,8 @@ from django.conf import settings
 from core.repositories.products_django import DjangoProductRepository
 from core.repositories.cart_session import SessionCartRepository
 from core.repositories.orders_django import DjangoOrderRepository
-from core.repositories.pricing_simple import SimplePricingService
+from core.services.pricing_service import PromoAwareB2BPricingService
+from core.adapters.orm_promo_adapter import DjangoPromoCatalogAdapter
 from core.services.cart import CartService
 from core.services.orders import OrderService
 from core.services.products import ProductService
@@ -24,10 +25,16 @@ def get_product_service() -> ProductService:
     return ProductService(product_repo=repo)
 
 
+def get_pricing_service() -> PromoAwareB2BPricingService:
+    """Fabrique du service de pricing centralisé."""
+    promo_adapter = DjangoPromoCatalogAdapter()
+    return PromoAwareB2BPricingService(promo_catalog_adapter=promo_adapter)
+
+
 def get_cart_service() -> CartService:
     product_repo = DjangoProductRepository()
     cart_repo = SessionCartRepository()
-    pricing_service = SimplePricingService()
+    pricing_service = get_pricing_service()
     return CartService(
         product_repo=product_repo,
         cart_repo=cart_repo,

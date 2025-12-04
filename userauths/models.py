@@ -4,6 +4,14 @@ from django.conf import settings
 
 class User(AbstractUser):
     company_name = models.CharField(max_length=255, blank=True, default="")
+    customer_number = models.CharField(
+        "Numéro client",
+        max_length=30,
+        blank=True,
+        null=True,
+        unique=True,
+        help_text="Identifiant client utilisé pour les promotions catalogue ciblées.",
+    )
     # futur: siret, phone, roles, etc.
 
     #: Indique si ce compte B2B a été vérifié par un administrateur.  Tant que

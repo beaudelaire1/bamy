@@ -8,6 +8,7 @@ from django.conf import settings
 from django.utils.functional import cached_property
 from django.apps import apps
 
+from core.factory import get_pricing_service
 
 # Paramètres configurables via settings.py
 CART_SESSION_ID: str = getattr(settings, "CART_SESSION_ID", "cart")
@@ -36,33 +37,17 @@ def _to_decimal(val: Any, default: str = "0.00") -> Decimal:
 
 def _unit_price_of(product: Any) -> Decimal:
     """
-    Détermine le prix unitaire d'un produit.
+    Calcule le prix unitaire d'un produit en déléguant au moteur
+    de pricing centralisé.
 
-    On tente d'abord d'utiliser le prix promotionnel (discount_price) si présent et inférieur
-    au prix normal. Sinon on utilise le prix normal (price). On ajoute quelques
-    fallback (sale_price, unit_price, price_ht) pour compatibilité.
+    Ce module ne dispose pas d'information sur l'utilisateur
+    courant, on appelle donc le service avec ``user=None``.
+    Les promotions ciblées par numéro client ne sont donc pas
+    appliquées ici, mais la source de vérité reste unique.
     """
-    promo = getattr(product, "discount_price", None)
-    price = getattr(product, "price", None)
-    if promo is not None:
-        try:
-            promo_dec = Decimal(str(promo))
-            price_dec = Decimal(str(price)) if price is not None else None
-            if price_dec is not None and Decimal("0") < promo_dec < price_dec:
-                return promo_dec
-        except Exception:
-            pass
-    if price is not None:
-        try:
-            return Decimal(str(price))
-        except Exception:
-            pass
-    for attr in ("sale_price", "unit_price", "price_ht"):
-        if hasattr(product, attr):
-            val = getattr(product, attr)
-            if val is not None:
-                return _to_decimal(val)
-    return Decimal("0.00")
+    pricing_service = get_pricing_service()
+    return pricing_service.get_unit_price(product, user=None)
+
 
 @dataclass
 class CartRow:

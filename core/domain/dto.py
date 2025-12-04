@@ -1,23 +1,26 @@
-
-from dataclasses import dataclass
 from decimal import Decimal
 from typing import Optional
 
-@dataclass(frozen=True)
-class ProductDTO:
+from pydantic import BaseModel
+
+
+class ProductDTO(BaseModel):
     id: int
     sku: str
     price: Decimal
+    discount_price: Optional[Decimal] = None
     price_wholesaler: Optional[Decimal] = None
     price_big_retail: Optional[Decimal] = None
+    price_small_retail: Optional[Decimal] = None
 
-@dataclass(frozen=True)
-class UserDTO:
+
+class UserDTO(BaseModel):
     id: int
     email: str
-    client_type: str
-    is_verified: bool
+    client_type: Optional[str] = None
+    customer_number: Optional[str] = None
+    is_b2b_verified: bool = False
 
-@dataclass(frozen=True)
-class PromoItemDTO:
+
+class PromoItemDTO(BaseModel):
     promo_price: Decimal

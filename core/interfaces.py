@@ -57,4 +57,14 @@ class OrderRepository(Protocol):
 
 
 class PricingService(Protocol):
+    """
+    Interface de service de tarification.
+
+    - ``get_unit_price`` est la méthode principale, utilisée par les
+      couches orientées domaine (Django ORM + moteur de pricing).
+    - ``compute_unit_price`` reste disponible pour compatibilité avec
+      l'ancien code basé sur ``ProductDTO`` minimal.
+    """
+
+    def get_unit_price(self, product, user=None) -> Decimal: ...
     def compute_unit_price(self, product: ProductDTO, client_type: str | None = None) -> Decimal: ...

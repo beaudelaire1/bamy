@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from cart.cart import Cart
+
+
 from core.interfaces import CartRepository, CartDTO, CartItemDTO
 
 

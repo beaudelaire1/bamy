@@ -108,6 +108,7 @@ INSTALLED_APPS = [
     "catalog",
     "cart",
     "orders",
+    "crm",
 
     # apps avec appel via api tiers
     "payments",
