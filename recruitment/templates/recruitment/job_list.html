@@ -2,7 +2,18 @@
 
 {% block content %}
 <section class="max-w-5xl mx-auto py-8">
-  <h1 class="text-3xl font-bold mb-6">Nos offres d'emploi</h1>
+  {#
+    Icône mallette ajoutée avant le titre « Nos offres d'emploi » pour
+    renforcer la thématique recrutement.  On utilise text-brand pour
+    appliquer la couleur principale de la marque.
+  #}
+  <h1 class="flex items-center gap-2 text-3xl font-bold mb-6">
+    <svg class="w-6 h-6 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+      <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+    </svg>
+    Nos offres d'emploi
+  </h1>
   {% if jobs %}
     <ul class="space-y-6">
       {% for job in jobs %}

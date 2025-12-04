@@ -321,3 +321,16 @@ class Product(models.Model):
             if self.discount_price >= self.price:
                 raise ValidationError({"discount_price": "Le prix promo doit être inférieur au prix normal."})
 
+
+class PromoCatalog(models.Model):
+    title=models.CharField(max_length=255)
+    start_date=models.DateTimeField()
+    end_date=models.DateTimeField()
+    is_active=models.BooleanField(default=True)
+    target_users=models.ManyToManyField('userauths.User',blank=True)
+    target_client_type=models.CharField(max_length=50,blank=True,null=True)
+
+class PromoItem(models.Model):
+    catalog=models.ForeignKey(PromoCatalog,on_delete=models.CASCADE)
+    product=models.ForeignKey('Product',on_delete=models.CASCADE)
+    promo_price=models.DecimalField(max_digits=10,decimal_places=2)

@@ -131,3 +131,8 @@ class ProductAdmin(BaseAdmin):
     # Ressource d'import/export pour Product
     if ProductResource:
         resource_class = ProductResource
+
+# Promo Management
+from .models import PromoCatalog, PromoItem
+admin.site.register(PromoCatalog)
+admin.site.register(PromoItem)
