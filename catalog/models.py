@@ -53,6 +53,11 @@ class Brand(models.Model):
     def __str__(self):
         return self.name
 
+    def get_logo_url(self):
+        if self.logo:
+            return self.logo.url
+        return "/static/img/default_brand.png"
+
     def save(self, *args, **kwargs):
         if not self.slug:
             unique_slugify(self, self.name)
@@ -121,7 +126,7 @@ class Product(models.Model):
         null=True,
         help_text="Référence constructeur (PCB) pour le produit.",
     )
-    category = models.ForeignKey(Category, related_name="products", on_delete=models.PROTECT)
+    category = models.ForeignKey(Category, blank=True, null=True, related_name="products", on_delete=models.PROTECT)
     brand = models.ForeignKey(Brand, related_name="products", on_delete=models.PROTECT)
     short_description = models.CharField(max_length=300, blank=True, default="")
     description = CKEditor5Field("Description", blank=True, null=True, config_name="default")

@@ -1,0 +1,113 @@
+/*
+ * Personnalisation de l'interface d'administration Jazzmin pour
+ * l'aligner avec l'identité visuelle de la boutique.  Ce fichier est
+ * chargé via la clef ``custom_css`` de ``JAZZMIN_SETTINGS``.  Les
+ * couleurs de base ainsi que les bordures et arrondis sont ajustés
+ * afin de donner une impression plus moderne et luxueuse.
+ */
+
+/* Couleurs principales correspondant à la charte du site */
+:root {
+  --admin-primary: #2b4fff;     /* bleu vif de la marque */
+  --admin-secondary: #7c3aed;   /* violet utilisé en mode sombre */
+  --admin-accent: #0e0e52;      /* bleu nuit pour les survols */
+}
+
+/* En-tête et barre latérale */
+.navbar.navbar-dark {
+  background-color: var(--admin-primary) !important;
+}
+.sidebar-dark .sidebar {
+  background-color: var(--admin-accent) !important;
+}
+
+/* Lien actif / survolé dans le menu */
+.sidebar-dark .nav-sidebar > li > a:hover,
+.sidebar-dark .nav-sidebar > li.menu-open > a,
+.sidebar-dark .nav-sidebar > li > a.active {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 10px;
+}
+
+/* Cartes de contenu dans l'admin */
+.content-wrapper,
+.wrapper {
+  background-color: #f3f4f6;
+}
+.card,
+.box {
+  border-radius: 16px !important;
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12) !important;
+}
+
+/* Boutons primaires */
+.btn-primary {
+  background: linear-gradient(90deg, var(--admin-primary), #4f46e5) !important;
+  border-color: transparent !important;
+  border-radius: 999px !important;
+  padding-inline: 18px;
+  font-weight: 500;
+}
+.btn-primary:hover {
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.35) !important;
+}
+
+/* Champs de formulaires */
+.form-control,
+.select2-selection,
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea {
+  border-radius: 10px !important;
+  border-color: rgba(148, 163, 184, 0.7) !important;
+}
+
+/* Titres et en-têtes */
+h1, h2, h3, h4 {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+}
+
+/* Tableau de liste */
+.table {
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+.table thead th {
+  background-color: #e5e7eb !important;
+  border-bottom: 1px solid #d1d5db !important;
+}
+
+/* Badges d'état (ex: "Actif", "Brouillon") */
+.badge-success {
+  background-color: #16a34a !important;
+}
+.badge-warning {
+  background-color: #f97316 !important;
+}
+.badge-danger {
+  background-color: #ef4444 !important;
+}
+
+/* Pagination plus arrondie */
+.pagination > li > a,
+.pagination > li > span {
+  border-radius: 999px !important;
+  margin: 0 2px;
+}
+
+/* Login admin */
+.login-page, .register-page {
+  background: radial-gradient(circle at 10% 0, #4f46e5, #0f172a);
+}
+.login-box, .register-box {
+  border-radius: 18px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.6);
+}
+
+/* Masquer les "commentaires" Django non utiles si jamais ils s'affichent pas. */
+body pre.comments {
+  display: none;
+}

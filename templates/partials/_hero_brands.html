@@ -9,7 +9,12 @@
             {% for b in brands %}
               <a class="brand-item{% if forloop.first %} is-active{% endif %}" href="{{ b.get_absolute_url }}">
                 <div class="brand-logo-frame">
-                  <img src="{{ b.logo.url }}" alt="{{ b.name }}">
+                  {% if b.logo %}
+                      <img src="{{ b.logo.url }}" alt="{{ b.name }}">
+                  {% else %}
+                      <img src="/static/img/default_brand.png" alt="{{ b.name }}">
+                  {% endif %}
+
                 </div>
               </a>
             {% endfor %}

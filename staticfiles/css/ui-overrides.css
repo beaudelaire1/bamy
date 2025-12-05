@@ -1,0 +1,580 @@
+/* ===========================================
+   NAVBAR — alignement premium
+   =========================================== */
+
+.site-header {
+  background: linear-gradient(90deg, #0043ff 0%, #001a80 100%) !important;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 8px 20px rgba(0, 26, 128, 0.4);
+}
+
+.site-nav {
+  height: 72px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 32px;
+}
+
+/* Gauche : logo */
+.nav-left .brand {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #fff !important;
+}
+
+/* Centre : menu */
+.nav-menu {
+  display: flex !important;
+  align-items: center !important;
+  gap: 32px !important;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nav-menu .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff !important;
+  font-weight: 500;
+}
+
+/* Droite : actions */
+.nav-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 18px !important;
+}
+
+/* Icônes */
+.icon-btn {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(4px);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #fff !important;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: #fff !important;
+  transform: translateY(-1px);
+}
+
+/* Recherche */
+.nav-right input[type="search"] {
+  width: 300px !important;
+  height: 46px !important;
+  border-radius: 14px !important;
+  border: none !important;
+  background: #fff !important;
+  padding: 0 16px !important;
+  font-size: 0.95rem !important;
+  color: #111 !important;
+}
+
+/* Bonjour, masterjay */
+.nav-hello {
+  color: #fff !important;
+  font-size: 0.95rem !important;
+}
+
+/* Pas de burger sur desktop */
+.nav-burger {
+  display: none !important;
+}
+
+/* ===========================================
+   HERO — encart bleu premium + diaporama logos
+   =========================================== */
+
+.hero-glass {
+  background: linear-gradient(135deg, #0043ff 0%, #001a80 100%) !important;
+  border-radius: 32px !important;
+  padding: 42px 52px !important;
+  border: none !important;
+  color: #fff !important;
+  box-shadow: 0 38px 80px rgba(0, 34, 120, 0.25) !important;
+  margin-top: 32px;
+}
+
+.hero-inner {
+  display: grid !important;
+  grid-template-columns: 340px minmax(0, 1fr) !important;
+  gap: 40px !important;
+  align-items: center !important;
+}
+
+/* Colonne gauche : verre + logos */
+.hero-media-col {
+  display: flex;
+  justify-content: center;
+}
+
+.hero-media-shell {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  height: 260px;
+}
+
+.hero-media-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.18), rgba(15, 23, 42, 0.08));
+  box-shadow:
+    0 16px 40px rgba(15, 23, 42, 0.46),
+    0 0 0 1px rgba(15, 23, 42, 0.3);
+}
+
+.hero-media-inner {
+  position: absolute;
+  inset: 10px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: rgba(7, 15, 43, 0.75);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+}
+
+/* Stack de logos */
+.brand-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.brand-item {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.96);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.brand-item.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+.brand-logo-frame {
+  width: 74%;
+  max-width: 230px;
+  aspect-ratio: 4 / 3;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.32);
+  padding: 22px;
+  display: grid;
+  place-items: center;
+}
+.brand-logo-frame img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Pagination du slider */
+.brand-pagination {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.brand-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+}
+.brand-dot.is-active {
+  width: 22px;
+  background: #fff;
+}
+
+/* Label "Marques partenaires" */
+.brand-label {
+  position: absolute;
+  inset: 16px auto auto 18px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.78);
+  color: #e5e7eb;
+  font-size: 0.74rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.brand-label span:first-child {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, #22c55e, #15803d);
+}
+
+/* Texte du hero */
+.hero-text h1 {
+  font-size: 2.6rem !important;
+  font-weight: 700 !important;
+  line-height: 1.1 !important;
+  color: #fff !important;
+}
+.hero-text p {
+  font-size: 1.05rem;
+  color: #e6e9ff !important;
+}
+
+/* Bouton hero */
+.btn-hero-main {
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  background: transparent !important;
+  color: #fff !important;
+  padding: 11px 30px !important;
+  border-radius: 999px !important;
+  font-size: 1rem !important;
+}
+
+/* ===========================================
+   CARTES PROMO — ruban + hover
+   =========================================== */
+
+.promo-card {
+  position: relative;
+}
+
+.promo-ribbon {
+  position: absolute;
+  top: 10px;
+  left: -36px;
+  transform: rotate(-40deg);
+  z-index: 10;
+}
+
+.promo-pill-main {
+  display: inline-block;
+  padding: 4px 26px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #fff;
+  /*
+   * Dégradé revisité du ruban promo pour rappeler l'identité rouge
+   * et jaune demandée.  Le rouge vif (#ef4444) se fond vers un jaune
+   * chaud (#facc15) et la couleur d'ombre est ajustée pour se
+   * marier avec le nouveau dégradé.
+   */
+  background: linear-gradient(90deg, #ef4444, #facc15);
+  box-shadow: 0 5px 14px rgba(234, 88, 12, 0.6);
+}
+
+/* ===========================================
+   FOOTER — version sombre premium
+   =========================================== */
+
+.site-footer {
+  background-color: #050810 !important;
+  color: #e5e7eb !important;
+  padding-top: 3rem;
+  padding-bottom: 2.5rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.site-footer h3,
+.site-footer h4 {
+  color: #ffffff !important;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.site-footer a {
+  color: #cbd5e1 !important;
+  text-decoration: none;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.site-footer a:hover {
+  color: #3b82f6 !important;
+}
+
+/* Newsletter */
+.site-footer input[type="email"] {
+  background: #ffffff !important;
+  border-radius: 999px;
+  border: none;
+  height: 42px;
+  padding: 0 14px;
+  color: #0f172a;
+}
+.site-footer button,
+.site-footer input[type="submit"] {
+  background-color: #0043ff !important;
+  color: #fff !important;
+  border-radius: 999px;
+  border: none;
+  padding: 0 18px;
+  height: 42px;
+  font-weight: 600;
+}
+
+/* Icônes réseaux */
+.site-footer .social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.site-footer .social-link:hover {
+  background: #0043ff;
+}
+
+/* Responsive hero (éviter encart trop grand en mobile) */
+@media (max-width: 900px) {
+  .hero-inner {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+  .hero-glass {
+    padding: 28px 20px !important;
+  }
+}
+
+/*
+ * Restauration du ruban promotionnel
+ *
+ * Le ruban de promotion rouge et jaune avait disparu car aucun style
+ * n'était défini pour la classe `ribbon-promo`.  Nous recréons ici un
+ * ruban visible et cohérent avec la charte graphique.  Le dégradé
+ * part d'un rouge vif vers un jaune chaud, avec un texte blanc et
+ * légère rotation pour donner l'illusion d'un ruban accroché.
+ */
+.ribbon-promo {
+  position: absolute;
+  top: 10px;
+  left: -8px;
+  transform: rotate(-45deg);
+  background: linear-gradient(90deg, #ef4444, #facc15);
+  color: #fff;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  z-index: 5;
+}
+
+/*
+ * Lisibilité des liens de navigation
+ *
+ * Les liens dans la barre de navigation avaient une opacité trop
+ * faible ce qui les rendait difficiles à distinguer, notamment pour
+ * l'icône panier, le lien de connexion et la liste de souhaits.  On
+ * force ici une opacité pleine et une couleur blanche pour tous les
+ * éléments portant la classe `nav-link`, qu'ils soient dans le menu
+ * principal ou dans la colonne droite.  Un léger assombrissement
+ * d'opacité est appliqué au survol pour conserver l'effet.
+ */
+.nav-menu .nav-link,
+.nav-right .nav-link {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+.nav-menu .nav-link:hover,
+.nav-right .nav-link:hover {
+  opacity: 0.85 !important;
+  text-decoration: underline !important;
+}
+
+/*
+ * Amélioration du survol des boutons icônes
+ *
+ * Pour les boutons circulaires (panier, favoris, thème…) nous
+ * augmentons légèrement l'opacité et le contraste lors du survol afin
+ * d'améliorer la lisibilité tout en préservant le style existant.
+ */
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+/*
+ * Panneaux du panier et des favoris
+ *
+ * Les panneaux qui apparaissent au survol du panier ou de la wishlist
+ * manquaient de styles dédiés, ce qui les rendait illisibles et mal
+ * positionnés.  On définit ici un conteneur flottant avec un fond
+ * clair, un léger ombrage et un texte sombre.  Les actions sont
+ * organisées en colonnes avec des boutons primaires et secondaires.
+ */
+.nav-right .panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 220px;
+  background: #ffffff;
+  color: #111827;
+  padding: 14px 16px;
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.15);
+  z-index: 80;
+}
+
+.nav-right .panel-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.nav-right .panel-sub {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  color: #6b7280;
+}
+
+.nav-right .panel-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nav-right .panel-actions .btn {
+  display: block;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.nav-right .panel-actions .btn.ghost {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.nav-right .panel-actions .btn.primary {
+  background: var(--brand-primary);
+  color: #ffffff;
+}
+
+.nav-right .panel-link {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--brand-primary);
+}
+
+.nav-right .panel-link:hover {
+  text-decoration: underline;
+}
+
+/*
+ * Lisibilité des cartes produits en survol
+ *
+ * Lorsqu’un utilisateur passe la souris sur une carte produit (article.card),
+ * certains textes devenaient peu lisibles, notamment en mode sombre.  Pour
+ * remédier à cela sans bouleverser le design existant, nous accentuons la
+ * couleur des titres et des métadonnées lors du survol.  En clair,
+ * l’en‑tête (h3) passe à la couleur d’encre principale tandis que les
+ * méta‑informations (catégorie, unité, mentions grises) adoptent une
+ * encre plus douce.  Le fond est légèrement nuancé pour suggérer le
+ * focus mais reste translucide afin de conserver la hiérarchie visuelle.
+ */
+.card:hover h3,
+.card:hover h3 a {
+  color: var(--ink) !important;
+}
+.card:hover .text-gray-500,
+.card:hover .text-xs {
+  color: var(--ink-soft) !important;
+}
+/*
+ * Teinte d’arrière‑plan subtile lors du survol de la carte.  En clair,
+ * on applique un voile blanc translucide pour adoucir les contrastes.  En
+ * mode sombre, on utilise un voile sombre translucide.  Ces règles
+ * s’appliquent aussi lorsqu’on navigue au clavier (focus-within).
+ */
+.card:hover,
+.card:focus-within {
+  background-color: rgba(255, 255, 255, 0.45);
+}
+html[data-theme="dark"] .card:hover,
+html[data-theme="dark"] .card:focus-within,
+body.dark-theme .card:hover,
+body.dark-theme .card:focus-within {
+  background-color: rgba(13, 17, 23, 0.55);
+}
+
+/*
+ * Composant de formulaire animé (fancy-form)
+ *
+ * Les pages de recrutement et de contact du site de luxe bénéficient
+ * d’un design premium avec un encadrement animé rappelant les
+ * dégradés fluides de la marque.  La pseudo‑couche ::before crée
+ * un contour multicolore qui se déplace en continu autour du
+ * conteneur.  L’animation reste discrète (8s) mais apporte une
+ * impression de mouvement élégant.  La couleur de fond s’adapte à
+ * l’environnement clair ou sombre.
+ */
+.fancy-form {
+  position: relative;
+  background: var(--surface-1, #ffffff);
+  border-radius: 22px;
+  padding: 1.75rem;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
+}
+
+.fancy-form::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: linear-gradient(130deg,
+    var(--brand-primary),
+    #c026d3,
+    var(--brand-secondary, #facc15),
+    var(--brand-primary)
+  );
+  background-size: 300% 300%;
+  /* Crée un trou au centre pour que seul le contour soit visible */
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  animation: fancyBorderFlow 8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes fancyBorderFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Ajustement du fond en mode sombre */
+html[data-theme="dark"] .fancy-form,
+body.dark-theme .fancy-form {
+  background: #0d1117;
+}
