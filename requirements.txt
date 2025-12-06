@@ -90,7 +90,7 @@ platformdirs==4.1.0
 pluggy==1.6.0
 priority==2.0.0
 prompt-toolkit==3.0.38
-protobuf==6.31.0
+protobuf==6.31.1
 psutil==7.1.2
 psycopg2==2.9.11
 pure-eval==0.2.2
