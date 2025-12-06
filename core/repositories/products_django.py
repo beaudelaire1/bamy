@@ -13,13 +13,34 @@ class DjangoProductRepository(ProductRepository):
     """
 
     def _to_dto(self, obj: Product) -> ProductDTO:
-        price = obj.discount_price or obj.price
+        """Convert a Django ``Product`` instance into a ``ProductDTO``.
+
+        The DTO exposes all pricing related fields along with
+        merchandising attributes.  The ``unit_price`` is initialised
+        with the discount price if present, otherwise the public
+        ``price``.  This field will be recomputed by the pricing
+        service when necessary.
+        """
+        # Public price fields
+        base_price = getattr(obj, "price", None)
+        discount = getattr(obj, "discount_price", None)
+        # B2B grid values, they may not exist on older models
+        wholesaler = getattr(obj, "price_wholesaler", None)
+        big_retail = getattr(obj, "price_big_retail", None)
+        small_retail = getattr(obj, "price_small_retail", None)
+        # Choose the most specific price as the initial unit_price
+        unit = discount or base_price
         return ProductDTO(
             id=obj.id,
             sku=obj.article_code or str(obj.pk),
-            title=obj.title,
-            unit_price=price,
-            is_active=obj.is_active,
+            price=base_price,
+            discount_price=discount,
+            price_wholesaler=wholesaler,
+            price_big_retail=big_retail,
+            price_small_retail=small_retail,
+            title=getattr(obj, "title", None),
+            is_active=getattr(obj, "is_active", None),
+            unit_price=unit,
         )
 
     def get_by_id(self, product_id: int) -> ProductDTO:

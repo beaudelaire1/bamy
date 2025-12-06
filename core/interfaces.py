@@ -1,42 +1,16 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from decimal import Decimal
-from typing import Iterable, Protocol
+from typing import Iterable, Optional, Protocol
 
-
-@dataclass
-class ProductDTO:
-    id: int
-    sku: str
-    title: str
-    unit_price: Decimal
-    is_active: bool
-
-
-@dataclass
-class CartItemDTO:
-    product_id: int
-    sku: str
-    quantity: int
-    unit_price: Decimal
-    total_price: Decimal
-
-
-@dataclass
-class CartDTO:
-    user_id: int | None
-    items: list[CartItemDTO]
-    total: Decimal
-
-
-@dataclass
-class OrderDTO:
-    id: int
-    order_number: str
-    user_id: int | None
-    total: Decimal
-    status: str
+# The domain now provides canonical DTOs in ``core.domain.dto``.
+from core.domain.dto import (
+    ProductDTO,
+    CartItemDTO,
+    CartDTO,
+    OrderDTO,
+    UserDTO,
+)
 
 
 class ProductRepository(Protocol):
@@ -66,5 +40,6 @@ class PricingService(Protocol):
       l'ancien code basé sur ``ProductDTO`` minimal.
     """
 
-    def get_unit_price(self, product, user=None) -> Decimal: ...
-    def compute_unit_price(self, product: ProductDTO, client_type: str | None = None) -> Decimal: ...
+    def get_unit_price(self, product: ProductDTO, user: Optional[UserDTO] = None) -> Decimal: ...
+    def compute_unit_price(self, product: ProductDTO, client_type: Optional[str] = None) -> Decimal: ...
+    def calculate_cart(self, items: Iterable[CartItemDTO], user: Optional[UserDTO] = None): ...

@@ -3,6 +3,7 @@ from typing import Optional
 from django.utils import timezone
 
 from catalog.models import PromoCatalog, PromoItem
+from decimal import Decimal
 from core.domain.dto import PromoItemDTO, ProductDTO, UserDTO
 
 
@@ -58,35 +59,55 @@ class DjangoPromoCatalogAdapter:
             end_date__gte=now,
         )
 
-        # Filtre les catalogues selon le ciblage client_type ou utilisateur.
-        # Un catalogue est considéré applicable si :
-        # - target_client_type est vide ou égal au client_type de l'utilisateur ;
-        # - ET target_users est vide ou contient l'utilisateur.
-        from django.db.models import Q
-        catalogs_qs = catalogs_qs.filter(
-            # Un catalogue sans ciblage client_type ou dont le client_type correspond à celui de l'utilisateur
-            Q(target_client_type__isnull=True) | Q(target_client_type__exact="") | Q(target_client_type=user_dto.client_type),
-            # Un catalogue sans ciblage explicite d'utilisateurs ou contenant cet utilisateur
-            Q(target_users__isnull=True) | Q(target_users=user_dto.id),
-        ).distinct()
-
-        # Recherche les items correspondant au produit et au ciblage.
-        # On sélectionne à la fois les items dont allowed_customer_numbers contient
-        # explicitement le numéro client, et ceux dont la liste est vide (promo
-        # ouverte à tous les clients du catalogue).
+        # Récupère tous les items du produit dans ces catalogues actifs
         items_qs = PromoItem.objects.filter(
             product_id=product_dto.id,
             catalog__in=catalogs_qs,
-        ).filter(
-            Q(allowed_customer_numbers__contains=[user_dto.customer_number]) |
-            Q(allowed_customer_numbers__exact=[]) |
-            Q(allowed_customer_numbers__isnull=True)
         )
 
-        # Ordre de tri : d'abord par prix croissant, puis par identifiant décroissant (promo la plus récente).
-        item = items_qs.order_by('promo_price', '-id').first()
+        # Applique un filtrage de base sur les numéros clients : un item est
+        # candidat s'il ne restreint pas ``allowed_customer_numbers`` ou
+        # si le numéro client de l'utilisateur est présent dans la liste.
+        from django.db.models import Q
+        items_qs = items_qs.filter(
+            Q(allowed_customer_numbers__isnull=True) |
+            Q(allowed_customer_numbers__exact=[]) |
+            Q(allowed_customer_numbers__contains=[user_dto.customer_number])
+        )
 
-        if not item:
+        candidates: list[tuple[int, Decimal, int, PromoItem]] = []
+        for item in items_qs.select_related("catalog"):
+            # Vérifie à nouveau les numéros clients pour déterminer la priorité
+            allowed = item.allowed_customer_numbers or []
+            priority = 4
+            if allowed and user_dto.customer_number in allowed:
+                priority = 1
+            else:
+                catalog = item.catalog
+                # Ciblage explicite par utilisateurs
+                try:
+                    # ManyToManyField ``target_users`` peut être vide ou None
+                    if catalog.target_users and catalog.target_users.filter(id=user_dto.id).exists():
+                        priority = 2
+                    elif catalog.target_client_type:
+                        if catalog.target_client_type == user_dto.client_type:
+                            priority = 3
+                        else:
+                            priority = 4
+                    else:
+                        priority = 4
+                except Exception:
+                    # Si la relation n'est pas chargée ou absente, on considère qu'il n'y a pas de ciblage
+                    if getattr(catalog, "target_client_type", None) == user_dto.client_type:
+                        priority = 3
+                    else:
+                        priority = 4
+            # Utilise l'identifiant négatif pour favoriser les items récents
+            candidates.append((priority, item.promo_price, -item.id, item))
+
+        if not candidates:
             return None
-
-        return PromoItemDTO(promo_price=item.promo_price)
+        # Trie par priorité croissante, puis par prix croissant, puis par id décroissant
+        candidates.sort()
+        selected_item = candidates[0][3]
+        return PromoItemDTO(promo_price=selected_item.promo_price)

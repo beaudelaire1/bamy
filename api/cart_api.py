@@ -20,14 +20,14 @@ class CartDetailAPIView(APIView):
         service = get_cart_service()
         cart = service.get_cart(request)
         data = {
-            "total": str(cart.total),
+            "total": str(cart.total or 0),
             "items": [
                 {
-                    "product_id": it.product_id,
-                    "sku": it.sku,
+                    "product_id": it.product.id,
+                    "sku": it.product.sku,
                     "quantity": it.quantity,
-                    "unit_price": str(it.unit_price),
-                    "total_price": str(it.total_price),
+                    "unit_price": str(it.unit_price) if it.unit_price is not None else None,
+                    "total_price": str(it.total_price) if it.total_price is not None else None,
                 }
                 for it in cart.items
             ],
@@ -49,7 +49,7 @@ class CartAddItemAPIView(APIView):
         service = get_cart_service()
         cart = service.add_item(request, sku=sku, quantity=qty, client_type=client_type)
         return Response(
-            {"total": str(cart.total)},
+            {"total": str(cart.total or 0)},
             status=status.HTTP_200_OK,
         )
 
@@ -64,7 +64,7 @@ class CartClearAPIView(APIView):
     def post(self, request, *args, **kwargs):
         service = get_cart_service()
         cart = service.clear(request)
-        return Response({"total": str(cart.total), "items": []})
+        return Response({"total": str(cart.total or 0), "items": []})
 
 
 class CartCheckoutAPIView(APIView):

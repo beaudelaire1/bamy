@@ -1,7 +1,8 @@
-PLUSIEURS classes Cart détectées (2). Risque de divergence panier/checkout.
+PLUSIEURS classes Cart détectées (3). Risque de divergence panier/checkout.
   - audit_report.md
-  - cart/cart.py
-Méthodes add(...) trouvées: 4 occurrence(s).
+  - audit_report.md
+  - cart\cart.py
+Méthodes add(...) trouvées: 6 occurrence(s).
 Référence 'checkout_success' détectée (vérifier route + template).
 Utilisation de STRIPE_SECRET_KEY détectée. Si PayPal est prioritaire, isoler Stripe derrière un flag.
 Route nommée 'cart_add' détectée. OK pour reverse('cart:cart_add').

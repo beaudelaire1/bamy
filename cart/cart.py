@@ -8,7 +8,8 @@ from django.conf import settings
 from django.utils.functional import cached_property
 from django.apps import apps
 
-from core.factory import get_pricing_service
+# ``get_pricing_service`` n'est plus utilisé dans ce module ; le prix
+# unitaire est désormais calculé au niveau du service de panier.
 
 # Paramètres configurables via settings.py
 CART_SESSION_ID: str = getattr(settings, "CART_SESSION_ID", "cart")
@@ -37,16 +38,15 @@ def _to_decimal(val: Any, default: str = "0.00") -> Decimal:
 
 def _unit_price_of(product: Any) -> Decimal:
     """
-    Calcule le prix unitaire d'un produit en déléguant au moteur
-    de pricing centralisé.
+    **Déprécié.**
 
-    Ce module ne dispose pas d'information sur l'utilisateur
-    courant, on appelle donc le service avec ``user=None``.
-    Les promotions ciblées par numéro client ne sont donc pas
-    appliquées ici, mais la source de vérité reste unique.
+    À compter de cette version, aucun calcul de prix ne doit avoir lieu
+    dans l'objet ``Cart``.  Les informations de prix sont calculées
+    exclusivement par le service de tarification du domaine.  Cette
+    fonction persiste uniquement pour compatibilité avec d'anciens
+    appels éventuels mais renvoie systématiquement zéro.
     """
-    pricing_service = get_pricing_service()
-    return pricing_service.get_unit_price(product, user=None)
+    return Decimal("0.00")
 
 
 @dataclass
@@ -143,7 +143,9 @@ class Cart:
 
         self._cart[pid_str] = {
             "qty": new_qty,
-            "unit_price": str(_unit_price_of(product_obj)),
+            # On ne stocke plus de prix en session afin de respecter la règle
+            # du single source of truth.  Le prix sera calculé par le service
+            # de panier.
         }
         self._save()
 
@@ -180,24 +182,22 @@ class Cart:
             qty = int(entry.get("qty", 0))
             if qty <= 0:
                 continue
-            unit_price = _to_decimal(entry.get("unit_price", "0.00"))
+            # On ne fournit plus de prix ici ; seul l'identifiant et la
+            # quantité sont exposés.  Le service de panier enrichira le
+            # reste des champs.
             yield {
                 "product": product_obj,
                 "product_id": pid,
                 "quantity": qty,
-                "qty": qty,  # alias tolérant
-                "unit_price": unit_price,
-                "price": unit_price,  # alias tolérant
-                "total_price": unit_price * qty,
-                "total": unit_price * qty,  # alias tolérant
+                "qty": qty,
             }
 
     @property
     def total(self) -> Decimal:
-        total = Decimal("0.00")
-        for it in self:
-            total += it["total_price"]
-        return total
+        # La somme des lignes du panier ne doit pas être calculée dans
+        # l'objet ``Cart``.  Le service de panier prendra en charge ce
+        # calcul.  Pour compatibilité, on retourne zéro.
+        return Decimal("0.00")
 
     def get_total_price(self) -> Decimal:
         """

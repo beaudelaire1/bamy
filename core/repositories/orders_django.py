@@ -22,15 +22,22 @@ class DjangoOrderRepository(OrderRepository):
         )
 
     def create_from_cart(self, cart: CartDTO, user_id: int | None) -> OrderDTO:
+        """Crée une commande à partir d'un ``CartDTO``.
+
+        Les identifiants de produit et les quantités sont extraits du
+        ``product`` contenu dans chaque ``CartItemDTO``.  Le prix
+        unitaire est lu directement depuis la ligne.  Le total de la
+        commande est fourni par le cart.
+        """
         order = Order.objects.create(
             user_id=user_id,
-            total=cart.total,
+            total=cart.total or 0,
             status="pending",
         )
         for item in cart.items:
             OrderItem.objects.create(
                 order=order,
-                product_id=item.product_id,
+                product_id=item.product.id,
                 quantity=item.quantity,
                 price=item.unit_price,
             )

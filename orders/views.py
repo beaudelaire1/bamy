@@ -6,6 +6,8 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from cart.cart import Cart
+from core.signals import order_validated
+from core.factory import get_cart_service  # importe le service de panier
 from .forms import CheckoutForm
 from .models import Order, OrderItem
 
@@ -17,17 +19,26 @@ except Exception:
 User = get_user_model()
 
 def checkout(request):
-    cart = Cart(request)
-    if len(cart) == 0:
+    # On récupère le panier brut stocké en session et le convertit en DTO
+    # via le service de panier afin de disposer des prix calculés.  Le
+    # service applique les promotions et les tarifs B2B ; aucun calcul
+    # de prix ne doit être effectué dans cette vue.
+    cart_session = Cart(request)
+    if len(cart_session) == 0:
         messages.info(request, "Votre panier est vide.")
         return redirect("cart:detail")
+    cart_service = get_cart_service()
+    cart_dto = cart_service.get_cart(request)
 
     if request.method == "POST":
         form = CheckoutForm(request.POST)
         if form.is_valid():
             with transaction.atomic():
                 data = form.cleaned_data
-                # Calcul du total et éventuelle remise via coupon
+                # Calcul du total et éventuelle remise via coupon en se basant
+                # sur le panier tarifé.  Le total TTC du panier est
+                # ``cart_dto.total`` ; on n'utilise plus ``cart.total`` qui n'est
+                # plus calculé dans l'objet session.
                 coupon_code = request.session.get("coupon_code") if Coupon else None
                 discount_amount = 0
                 if coupon_code and Coupon:
@@ -35,16 +46,17 @@ def checkout(request):
                         coupon = Coupon.objects.get(code__iexact=coupon_code, is_active=True)
                         # Si le coupon est valide et non expiré
                         if coupon.expires_at > timezone.now():
+                            base_total = cart_dto.total or 0
                             if coupon.discount_type == "percent":
-                                discount_amount = (cart.total * coupon.discount_value) / 100
+                                discount_amount = (base_total * coupon.discount_value) / 100
                             else:
                                 discount_amount = coupon.discount_value
-                            if discount_amount > cart.total:
-                                discount_amount = cart.total
+                            if discount_amount > base_total:
+                                discount_amount = base_total
                     except Coupon.DoesNotExist:
                         discount_amount = 0
 
-                subtotal = cart.total
+                subtotal = cart_dto.total or 0
                 total = subtotal - discount_amount
 
                 order = Order.objects.create(
@@ -52,14 +64,14 @@ def checkout(request):
                     email=data["email"],
                     first_name=data["first_name"],
                     last_name=data["last_name"],
-                    phone=data.get("phone",""),
-                    company=data.get("company",""),
+                    phone=data.get("phone", ""),
+                    company=data.get("company", ""),
                     address1=data["address1"],
-                    address2=data.get("address2",""),
+                    address2=data.get("address2", ""),
                     city=data["city"],
                     postcode=data["postcode"],
                     country=data["country"],
-                    notes=data.get("notes",""),
+                    notes=data.get("notes", ""),
                     subtotal=subtotal,
                     shipping=0,
                     total=total,
@@ -67,25 +79,24 @@ def checkout(request):
                     discount=discount_amount,
                 )
 
-                # Lignes
-                for item in cart:
+                # Lignes de commande : on utilise les items tarifés du CartDTO
+                for item_dto in cart_dto.items:
                     OrderItem.objects.create(
                         order=order,
-                        product_title=item["product"].title,
-                        product_sku=item["product"].sku,
-                        unit_price=item["price"],
-                        quantity=item["quantity"],
-                        line_total=item["total_price"],
+                        product_title=getattr(item_dto.product, "title", ""),
+                        product_sku=item_dto.product.sku,
+                        unit_price=item_dto.unit_price,
+                        quantity=item_dto.quantity,
+                        line_total=item_dto.total_price,
                     )
 
-                # Nettoyage panier
-                cart.clear()
+                # Nettoyage panier (session)
+                cart_session.clear()
                 # Supprime le coupon utilisé de la session pour éviter une réutilisation
                 request.session.pop("coupon_code", None)
 
-                # Création d'une notification et attribution de points fidélité à l'utilisateur connecté
+                # Création d'une notification interne pour l'utilisateur connecté
                 if request.user.is_authenticated:
-                    # Notification interne (si l'application notifications est présente)
                     try:
                         from notifications.models import Notification  # import local pour éviter dépendance circulaire
                         Notification.objects.create(
@@ -95,16 +106,12 @@ def checkout(request):
                     except Exception:
                         # Laisse passer silencieusement si l'app notifications n'est pas installée
                         pass
-
-                    # Ajout de points de fidélité : 1 point par euro dépensé (hors centimes)
+                    # Émet un signal pour permettre à des applications tierces
+                    # (par exemple loyalty) de réagir à la validation d'une commande
                     try:
-                        from loyalty.models import LoyaltyAccount
-                        account, _ = LoyaltyAccount.objects.get_or_create(user=request.user)
-                        # On attribue des points équivalents à la partie entière du total
-                        account.points = account.points + int(order.total)
-                        account.save(update_fields=["points"])
+                        order_validated.send(sender=Order, order=order, user=request.user)
                     except Exception:
-                        # Ignore si l'app loyalty n'est pas installée
+                        # Si l'émetteur échoue on n'empêche pas la commande de se créer
                         pass
 
                 # Envoi d'un email interne pour signaler la création d'une commande
@@ -171,7 +178,57 @@ def checkout(request):
                 pass
         form = CheckoutForm(initial=initial)
 
-    return render(request, "orders/checkout.html", {"cart": cart, "form": form})
+    # Pour l'affichage dans la page de checkout, on reconstruit un
+    # objet panier « vue » similaire à celui utilisé dans cart/views.py.
+    # Cela permet aux templates existants de continuer à itérer sur
+    # ``cart`` et d'accéder aux champs ``price``, ``unit_price`` et
+    # ``total_price``.  On fusionne les lignes brutes du panier (issues de
+    # la session) avec les prix calculés (issus du service de panier).
+    from decimal import Decimal
+    priced_map = {ci.product.id: ci for ci in cart_dto.items}
+    view_items = []
+    for entry in cart_session:
+        pid = entry["product_id"]
+        product = entry["product"]
+        qty = entry["quantity"]
+        priced = priced_map.get(pid)
+        unit_price = getattr(priced, "unit_price", None)
+        line_total = getattr(priced, "total_price", None)
+        view_items.append({
+            "product": product,
+            "product_id": pid,
+            "quantity": qty,
+            "qty": qty,
+            "price": unit_price,
+            "unit_price": unit_price,
+            "total_price": line_total,
+            "total": line_total,
+        })
+
+    class ViewCart:
+        def __init__(self, items, total):
+            self._items = items
+            self.total = total
+
+        def __iter__(self):
+            return iter(self._items)
+
+        def __len__(self):
+            return len(self._items)
+
+        def items(self):  # pragma: no cover
+            return list(self._items)
+
+    view_cart = ViewCart(view_items, cart_dto.total or Decimal("0"))
+
+    return render(
+        request,
+        "orders/checkout.html",
+        {
+            "cart": view_cart,
+            "form": form,
+        },
+    )
 
 def checkout_success(request, order_number):
     try:
