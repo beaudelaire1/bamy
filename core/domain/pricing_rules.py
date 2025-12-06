@@ -24,6 +24,12 @@ class B2BPricingRules:
 
     @staticmethod
     def apply(user, product) -> Optional[Decimal]:
+        """Applique la grille B2B sur un *objet compatible DTO*.
+
+        ``user`` et ``product`` sont traités en mode duck-typing : le domaine
+        n'a pas besoin de connaître la nature exacte de l'objet (DTO Pydantic
+        ou simple objet avec les bons attributs).
+        """
         if user is None:
             return None
 
@@ -33,9 +39,9 @@ class B2BPricingRules:
             return None
 
         if client_type == "wholesaler":
-            base = product.price_wholesaler or product.price
+            base = getattr(product, "price_wholesaler", None) or product.price
         elif client_type == "big_retail":
-            base = product.price_big_retail or product.price
+            base = getattr(product, "price_big_retail", None) or product.price
         else:  # small_retail
             base = getattr(product, "price_small_retail", None) or product.price
 
@@ -60,7 +66,7 @@ class AdvancedPricingRules:
 
     # Tableaux simples de remise par quantité.  Dans un cas réel ces
     # valeurs seraient stockées en base ou configurables.  Ici on
-    # applique 10 % de remise à partir de 50 unités et 20 % à partir
+    # applique 10 % de remise à partir de 50 unités et 20 % à partir
     # de 100 unités.  Les valeurs sont exprimées en pourcentage.
     QUANTITY_DISCOUNTS = {
         100: Decimal("0.20"),
@@ -68,14 +74,14 @@ class AdvancedPricingRules:
     }
     # Remises par marque (slug ou nom) → pourcentage.
     BRAND_DISCOUNTS = {
-        "acme": Decimal("0.05"),  # 5 % de remise sur la marque Acme
+        "acme": Decimal("0.05"),  # 5 % de remise sur la marque Acme
     }
     # Remises par famille de produits (catégorie) → pourcentage.
     FAMILY_DISCOUNTS = {
         "Electronics": Decimal("0.03"),
     }
     # Prix plancher exprimé en pourcentage du prix public.  Le prix
-    # final ne descendra jamais en dessous de 70 % du prix public.
+    # final ne descendra jamais en dessous de 70 % du prix public.
     FLOOR_PERCENT = Decimal("0.70")
 
     @classmethod
@@ -84,7 +90,7 @@ class AdvancedPricingRules:
 
         Les remises sont cumulables avec la grille B2B et les promos.
         La remise la plus élevée applicable est choisie (ex: pour
-        120 unités, la remise de 20 % s'applique).
+        120 unités, la remise de 20 % s'applique).
         """
         discount_rate = Decimal("0")
         for threshold, rate in sorted(cls.QUANTITY_DISCOUNTS.items(), reverse=True):
@@ -92,53 +98,62 @@ class AdvancedPricingRules:
                 discount_rate = rate
                 break
         if discount_rate > 0:
-            unit_price = (unit_price * (Decimal("1.0") - discount_rate)).quantize(Decimal("0.01"))
+            unit_price = (unit_price * (Decimal("1.0") - discount_rate)).quantize(
+                Decimal("0.01")
+            )
         return unit_price
 
     @classmethod
-    def apply_brand_discount(cls, unit_price: Decimal, product, quantity: int = 1) -> Decimal:
+    def apply_brand_discount(
+        cls,
+        unit_price: Decimal,
+        brand_slug: Optional[str] = None,
+        brand_name: Optional[str] = None,
+    ) -> Decimal:
         """Applique une remise en fonction de la marque.
 
-        Cette méthode inspecte ``product.brand`` (s'il existe) et
-        vérifie la présence d'une remise dans ``BRAND_DISCOUNTS``.
+        Le domaine ne dépend plus d'un objet produit concret ; seules les
+        informations nécessaires (slug / nom de la marque) sont passées.
         """
-        brand_slug = getattr(getattr(product, "brand", None), "slug", None)
-        brand_name = getattr(getattr(product, "brand", None), "name", None)
         discount_rate = Decimal("0")
         if brand_slug and brand_slug.lower() in cls.BRAND_DISCOUNTS:
             discount_rate = cls.BRAND_DISCOUNTS[brand_slug.lower()]
         elif brand_name and brand_name in cls.BRAND_DISCOUNTS:
             discount_rate = cls.BRAND_DISCOUNTS[brand_name]
         if discount_rate > 0:
-            unit_price = (unit_price * (Decimal("1.0") - discount_rate)).quantize(Decimal("0.01"))
+            unit_price = (unit_price * (Decimal("1.0") - discount_rate)).quantize(
+                Decimal("0.01")
+            )
         return unit_price
 
     @classmethod
-    def apply_family_discount(cls, unit_price: Decimal, product, quantity: int = 1) -> Decimal:
+    def apply_family_discount(
+        cls,
+        unit_price: Decimal,
+        category_name: Optional[str] = None,
+    ) -> Decimal:
         """Applique une remise basée sur la catégorie du produit.
 
-        Si le nom de la catégorie du produit figure dans ``FAMILY_DISCOUNTS``,
-        la remise correspondante est appliquée.  Les remises ne sont pas
-        cumulables par famille; la première trouvée est appliquée.
+        Si le nom de la catégorie du produit figure dans
+        ``FAMILY_DISCOUNTS``, la remise correspondante est appliquée.
         """
-        category = getattr(product, "category", None)
-        category_name = getattr(category, "name", None)
         discount_rate = Decimal("0")
         if category_name and category_name in cls.FAMILY_DISCOUNTS:
             discount_rate = cls.FAMILY_DISCOUNTS[category_name]
         if discount_rate > 0:
-            unit_price = (unit_price * (Decimal("1.0") - discount_rate)).quantize(Decimal("0.01"))
+            unit_price = (unit_price * (Decimal("1.0") - discount_rate)).quantize(
+                Decimal("0.01")
+            )
         return unit_price
 
     @classmethod
-    def apply_floor(cls, unit_price: Decimal, product) -> Decimal:
+    def apply_floor(cls, unit_price: Decimal, public_price: Optional[Decimal]) -> Decimal:
         """Assure que le prix ne descend pas sous un prix plancher.
 
-        Le prix plancher est défini comme un pourcentage du prix public
-        ``product.price``.  Si le prix actuel est inférieur à ce
-        minimum, on le remonte au prix plancher.
+        Le prix plancher est défini comme un pourcentage du prix public.
+        Si le prix actuel est inférieur à ce minimum, on le remonte au
+        prix plancher.
         """
-        public_price = getattr(product, "price", None)
         if public_price is None:
             return unit_price
         floor_price = (Decimal(public_price) * cls.FLOOR_PERCENT).quantize(Decimal("0.01"))

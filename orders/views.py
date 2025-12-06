@@ -72,7 +72,7 @@ def checkout(request):
             # Envoi d'emails (interne + confirmation client)
             try:
                 from django.conf import settings
-                from django.core.mail import send_mail
+                from core.utils.async_email import async_send_mail
 
                 internal_subject = f"[COMMANDE] Nouvelle commande {order.order_number}"
                 internal_body = (
@@ -84,7 +84,7 @@ def checkout(request):
                     "Consultez l'administration pour plus de détails."
                 )
                 from_email = getattr(settings, "DEFAULT_FROM_EMAIL", None) or None
-                send_mail(
+                async_send_mail(
                     internal_subject,
                     internal_body,
                     from_email,
@@ -101,7 +101,7 @@ def checkout(request):
                     "Nous préparerons votre commande dans les meilleurs délais.\n\n"
                     f"Cordialement,\nL'équipe {company_name}"
                 )
-                send_mail(client_subject, client_body, from_email, [order.email])
+                async_send_mail(client_subject, client_body, from_email, [order.email])
             except Exception:
                 # Ignore les erreurs d'envoi en développement
                 pass
