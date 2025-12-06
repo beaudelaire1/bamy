@@ -110,7 +110,7 @@ rarfile==4.2
 redis==3.5.3
 referencing==0.37.0
 reportlab==4.4.4
-requests==2.31.0
+requests==2.32.4
 requests-cache==0.5.2
 rich==14.2.0
 rich-argparse==1.7.1
