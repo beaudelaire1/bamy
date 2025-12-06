@@ -1,20 +1,33 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.http import require_POST
+from decimal import Decimal
+
 from django.contrib import messages
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.utils import timezone  # conservé pour compat éventuelle
+from django.views.decorators.http import require_POST
+
 from catalog.models import Product
+
 from .cart import Cart
 from core.factory import get_cart_service
-from decimal import Decimal
-from django.utils import timezone
+from orders.services import CheckoutService
 
-# Evitez les doublons d'import : messages et reverse sont importés une seule fois ci-dessus.
 try:
     from loyalty.models import Coupon  # type: ignore
 except Exception:
     Coupon = None  # fallback when loyalty app is not installed
 
+
 def detail(request):
+    """Affichage du panier.
+
+    Les calculs de prix unitaires et de totals sont fournis par le
+    ``CartService`` (core.services.cart) et la logique de coupon est
+    factorisée dans ``CheckoutService.compute_coupon_discount`` afin de
+    garantir une seule source de vérité entre l'écran panier et le
+    checkout.
+    """
+
     # Utilise le service de panier pour obtenir un panier enrichi
     service = get_cart_service()
     cart_dto = service.get_cart(request)
@@ -33,16 +46,18 @@ def detail(request):
         qty = entry["quantity"]
         unit_price = getattr(priced, "unit_price", None)
         line_total = getattr(priced, "total_price", None)
-        view_items.append({
-            "product": product,
-            "product_id": pid,
-            "quantity": qty,
-            "qty": qty,
-            "price": unit_price,
-            "unit_price": unit_price,
-            "total_price": line_total,
-            "total": line_total,
-        })
+        view_items.append(
+            {
+                "product": product,
+                "product_id": pid,
+                "quantity": qty,
+                "qty": qty,
+                "price": unit_price,
+                "unit_price": unit_price,
+                "total_price": line_total,
+                "total": line_total,
+            }
+        )
 
     class ViewCart:
         def __init__(self, items, total):
@@ -61,32 +76,19 @@ def detail(request):
 
     view_cart = ViewCart(view_items, cart_dto.total or Decimal("0"))
 
-    # Gestion du coupon appliqué (stocké en session)
-    coupon_code = request.session.get("coupon_code")
+    # Gestion du coupon appliqué (stocké en session) via CheckoutService
+    checkout_service = CheckoutService(cart_service=service)
     discount_amount: Decimal = Decimal("0")
     coupon_obj = None
+    coupon_code = request.session.get("coupon_code") or ""
     total_after_discount = view_cart.total
-    if coupon_code and Coupon:
-        try:
-            coupon = Coupon.objects.get(code__iexact=coupon_code, is_active=True)
-            # Vérifie expiration
-            if coupon.expires_at > timezone.now():
-                coupon_obj = coupon
-                base_total = view_cart.total
-                if coupon.discount_type == "percent":
-                    discount_amount = (base_total * coupon.discount_value) / 100
-                else:
-                    discount_amount = coupon.discount_value
-                # Évite un total négatif
-                if discount_amount > base_total:
-                    discount_amount = base_total
-                total_after_discount = base_total - discount_amount
-            else:
-                # Coupon expiré : on le supprime de la session
-                request.session.pop("coupon_code", None)
-        except Coupon.DoesNotExist:
-            # Coupon inexistant : on nettoie la session
-            request.session.pop("coupon_code", None)
+
+    if coupon_code:
+        discount_amount, coupon_code, coupon_obj = checkout_service.compute_coupon_discount(
+            view_cart.total, request
+        )
+        total_after_discount = view_cart.total - discount_amount
+
     context = {
         "cart": view_cart,
         "cart_count": len(view_cart),
@@ -96,6 +98,7 @@ def detail(request):
         "coupon_code": coupon_code,
     }
     return render(request, "cart/detail.html", context)
+
 
 @require_POST
 def apply_coupon(request):
@@ -117,6 +120,7 @@ def apply_coupon(request):
         request.session.pop("coupon_code", None)
         messages.error(request, "Code promo invalide ou expiré.")
     return redirect(reverse("cart:detail"))
+
 
 @require_POST
 def add(request, product_id):
@@ -140,6 +144,7 @@ def add(request, product_id):
     messages.success(request, "Produit ajouté au panier.")
     return redirect(request.POST.get("next") or reverse("cart:detail"))
 
+
 @require_POST
 def update(request, product_id):
     # Met à jour directement la session puis recalcule les prix via le service
@@ -152,12 +157,14 @@ def update(request, product_id):
     messages.info(request, "Quantité mise à jour.")
     return redirect(request.POST.get("next") or reverse("cart:detail"))
 
+
 @require_POST
 def remove(request, product_id):
     cart = Cart(request)
     cart.remove(product_id)
     messages.warning(request, "Produit retiré du panier.")
     return redirect(request.POST.get("next") or reverse("cart:detail"))
+
 
 @require_POST
 def clear(request):
@@ -166,10 +173,12 @@ def clear(request):
     messages.info(request, "Panier vidé.")
     return redirect(reverse("cart:detail"))
 
+
 @require_POST
 def add_legacy(request, product_id):
-    """
-    Compatibilité pour les anciennes URL / cart/add-legacy/<id>/.
+    """Compatibilité pour les anciennes URL / cart/add-legacy/<id>/.
+
     Redirige vers l’ajout normal.
     """
     return add(request, product_id)
+
