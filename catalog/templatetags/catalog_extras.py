@@ -13,7 +13,6 @@ from django import template
 # Il délègue entièrement le calcul à PromoAwareB2BPricingService via
 # core.factory.get_pricing_service() et ne dépend plus de méthodes sur le
 # modèle Product (qui ne doit pas contenir de logique métier).
-from core.factory import get_pricing_service
 
 
 register = template.Library()

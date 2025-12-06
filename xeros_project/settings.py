@@ -52,6 +52,15 @@ class _EnvFallback(dict):
 
     def __call__(self, key: str, default=None):
         val = os.environ.get(key)
+        # Pour certaines variables critiques (comme SECRET_KEY),
+        # on préfère échouer bruyamment plutôt que d'utiliser une
+        # valeur de repli silencieuse.
+        if val is None and key == "SECRET_KEY":
+            from django.core.exceptions import ImproperlyConfigured
+
+            raise ImproperlyConfigured(
+                "SECRET_KEY must be defined in the environment or .env file.",
+            )
         return val if val is not None else default
 
     def bool(self, key: str, default: bool = False):
@@ -86,7 +95,7 @@ else:
 # DEBUG est activé par défaut afin de faciliter le développement et le débogage.
 # Vous pouvez toujours le désactiver via la variable d'environnement DEBUG=False.
 DEBUG = env("DEBUG", default=True) if _has_environ else env.bool("DEBUG", default=True)
-SECRET_KEY = env("SECRET_KEY", default="unsafe")
+SECRET_KEY = env("SECRET_KEY")
 _allowed_hosts = env("ALLOWED_HOSTS", default="")
 if isinstance(_allowed_hosts, str):
     ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts.split(",") if h.strip()]

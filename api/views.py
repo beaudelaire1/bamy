@@ -5,16 +5,16 @@ serialiseurs, permettant l'intégration avec des systèmes externes
 (SAGE X3, Biziipad). Actuellement, seuls les endpoints de
 consultation sont implémentés pour les commandes/factures.
 """
-
 from rest_framework import viewsets, permissions
 from django.db import models
-from orders.models import Order
+from rest_framework.generics import ListAPIView
+
 from .serializers import OrderSerializer, InvoiceSerializer, ProductSerializer
 from .serializers import QuoteSerializer
 from quotes.models import Quote
-from catalog.models import Product
-from django.db.models import Q
-from rest_framework.generics import ListAPIView
+
+from core.factory import get_order_service, get_product_service
+
 
 
 class OrderViewSet(viewsets.ReadOnlyModelViewSet):
@@ -30,19 +30,23 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        qs = Order.objects.all().prefetch_related("items")
-        # Filtrage par statut
+        """
+        Récupère le queryset des commandes via le service métier.
+        
+        La vue ne construit plus directement le queryset sur le modèle
+        ``Order`` ; elle délègue cette responsabilité à
+        ``OrderService`` exposé par la factory centrale.
+        """
+        service = get_order_service()
         status = self.request.query_params.get("status")
-        if status:
-            qs = qs.filter(status=status)
-        # Filtrage par date de création
         from_date = self.request.query_params.get("from")
         to_date = self.request.query_params.get("to")
-        if from_date:
-            qs = qs.filter(created_at__date__gte=from_date)
-        if to_date:
-            qs = qs.filter(created_at__date__lte=to_date)
-        return qs.order_by("-created_at")
+        return service.get_orders_queryset(
+            status=status,
+            from_date=from_date,
+            to_date=to_date,
+            only_paid=False,
+        )
 
 
 class InvoiceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -57,18 +61,23 @@ class InvoiceViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        qs = Order.objects.filter(status="paid").prefetch_related("items")
-        # Les mêmes paramètres de filtre que pour les commandes
+        """
+        Récupère le queryset des factures via le service métier.
+
+        Dans cette version, une facture correspond à une commande
+        ayant le statut ``paid``. Le filtrage est centralisé dans
+        ``OrderService``.
+        """
+        service = get_order_service()
         status = self.request.query_params.get("status")
-        if status:
-            qs = qs.filter(status=status)
         from_date = self.request.query_params.get("from")
         to_date = self.request.query_params.get("to")
-        if from_date:
-            qs = qs.filter(created_at__date__gte=from_date)
-        if to_date:
-            qs = qs.filter(created_at__date__lte=to_date)
-        return qs.order_by("-created_at")
+        return service.get_orders_queryset(
+            status=status,
+            from_date=from_date,
+            to_date=to_date,
+            only_paid=True,
+        )
 
 
 class ProductSearchView(ListAPIView):
@@ -83,15 +92,16 @@ class ProductSearchView(ListAPIView):
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
+        """
+        Délègue la recherche de produits au ``ProductService``.
+
+        La vue ne construit plus directement de requêtes sur le modèle
+        ``Product`` ; elle transmet simplement le terme de recherche
+        fourni en paramètre de requête.
+        """
+        service = get_product_service()
         query = self.request.GET.get("q", "").strip()
-        qs = Product.objects.filter(is_active=True)
-        if query:
-            qs = qs.filter(
-                Q(title__icontains=query)
-                | Q(article_code__icontains=query)
-                | Q(ean__icontains=query)
-            )
-        return qs.order_by("-updated_at")[:20]
+        return service.search_queryset_for_api(query=query, limit=20)
 
 
 # -----------------------------------------------------------------------------

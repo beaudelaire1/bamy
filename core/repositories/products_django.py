@@ -30,9 +30,18 @@ class DjangoProductRepository(ProductRepository):
         small_retail = getattr(obj, "price_small_retail", None)
         # Choose the most specific price as the initial unit_price
         unit = discount or base_price
+        # SKU : en B2B, il doit s'agir d'un identifiant métier stable.
+        # On refuse désormais de tomber en repli sur l'identifiant
+        # technique de base de données afin d'éviter toute confusion.
+        article_code = getattr(obj, "article_code", None)
+        if not article_code:
+            raise ValueError(
+                f"Product {obj.pk} is missing an 'article_code' value; "
+                "cannot derive a stable SKU for B2B operations.",
+            )
         return ProductDTO(
             id=obj.id,
-            sku=obj.article_code or str(obj.pk),
+            sku=article_code,
             price=base_price,
             discount_price=discount,
             price_wholesaler=wholesaler,
